@@ -32,7 +32,7 @@ namespace CleanersAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection")));
+            services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
             
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
@@ -79,7 +79,7 @@ namespace CleanersAPI
             app.UseMvc();
         }
 
-        public static class DbInitializer
+        private static class DbInitializer
         {
             public static void Initialize(IApplicationBuilder applicationBuilder)
             {

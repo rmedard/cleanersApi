@@ -10,9 +10,11 @@ namespace CleanersAPI.Models
         
         public int CustomerId { get; set; }
         
-        public DateTime StarTime { get; set; }
+        public DateTime StartTime { get; set; }
         
         public int Duration { get; set; }
+
+        public decimal TotalCost { get; set; }
         
         public Status Status { get; set; }
         

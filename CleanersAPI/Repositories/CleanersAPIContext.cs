@@ -12,6 +12,7 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Address>().ToTable("addresses");
             modelBuilder.Entity<Customer>().ToTable("customers");
             modelBuilder.Entity<User>().ToTable("users");
+            modelBuilder.Entity<Service>().ToTable("services");
             modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => new {e.ProfessionId, e.ProfessionalId});
         }
 
