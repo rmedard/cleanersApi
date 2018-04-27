@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
+using SQLitePCL;
 
-namespace CleanersAPI.Repositories
+namespace CleanersAPI.Repositories.Impl
 {
     public class ProfessionalsRepository : IProfessionalsRepository
     {
@@ -16,14 +18,14 @@ namespace CleanersAPI.Repositories
             _context = context;
         }
 
-        public IEnumerable<Professional> GetAllProfessionals()
+        public async Task<IEnumerable<Professional>> GetAll()
         {
-            return _context.Professionals.Include(prof => prof.Person).ThenInclude(pers => pers.Address).AsEnumerable();
+            return await _context.Professionals.Include(prof => prof.User).Include(prof => prof.Address).ToListAsync();
         }
 
-        public Task<Professional> GetOneById(int id)
+        public Task<Professional> GetById(int id)
         {
-            return _context.Professionals.Include(prof => prof.Person).ThenInclude(pers => pers.Address)
+            return _context.Professionals.Include(prof => prof.User).Include(prof => prof.Address)
                 .SingleOrDefaultAsync(m => m.Id == id);
         }
 
@@ -39,7 +41,7 @@ namespace CleanersAPI.Repositories
             _context.SaveChanges();
         }
 
-        public IEnumerable<Profession> GetProfessions(int professionalId)
+        public async Task<IEnumerable<Profession>> GetProfessions(int professionalId)
         {
             var professional = _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Profession).Single(prof => prof.Id == professionalId);
             return professional.Expertises.Select(expertise => expertise.Profession).ToList();
@@ -57,7 +59,7 @@ namespace CleanersAPI.Repositories
             return newProfessional;
         }
 
-        public bool Update(Professional professional)
+        public Task<Professional> Update(Professional professional)
         {
             _context.Entry(professional).State = EntityState.Modified;
             try
@@ -66,10 +68,10 @@ namespace CleanersAPI.Repositories
             }
             catch (DbUpdateException)
             {
-                return false;
+                return null;
             }
             
-            return true;
+            return null;
         }
 
         public bool Delete(int professionalId)

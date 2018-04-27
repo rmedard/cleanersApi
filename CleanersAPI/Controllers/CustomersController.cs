@@ -1,43 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/[controller]")]
-    public class PersonsController : Controller
+    public class CustomersController : Controller
     {
         private readonly CleanersApiContext _context;
 
-        public PersonsController(CleanersApiContext context)
+        public CustomersController(CleanersApiContext context)
         {
             _context = context;
         }
 
-        // GET: api/People
         [HttpGet]
-        public IEnumerable<Person> GetPersons()
+        public IEnumerable<Customer> GetPersons()
         {
-            return _context.Persons;
+            return _context.Customers;
         }
 
-        // GET: api/People/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPerson([FromRoute] int id)
+        public async Task<IActionResult> GetClient([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var person = await _context.Persons.SingleOrDefaultAsync(m => m.Id == id);
+            var person = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
             if (person == null)
             {
@@ -49,19 +43,19 @@ namespace CleanersAPI.Controllers
 
         // PUT: api/People/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPerson([FromRoute] int id, [FromBody] Person person)
+        public async Task<IActionResult> PutClient([FromRoute] int id, [FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != person.Id)
+            if (id != customer.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(person).State = EntityState.Modified;
+            _context.Entry(customer).State = EntityState.Modified;
 
             try
             {
@@ -73,10 +67,6 @@ namespace CleanersAPI.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
             }
 
             return NoContent();
@@ -84,17 +74,17 @@ namespace CleanersAPI.Controllers
 
         // POST: api/People
         [HttpPost]
-        public async Task<IActionResult> PostPerson([FromBody] Person person)
+        public async Task<IActionResult> PostClient([FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Persons.Add(person);
+            _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPerson", new { id = person.Id }, person);
+            return CreatedAtAction("GetClient", new { id = customer.Id }, customer);
         }
 
         // DELETE: api/People/5
@@ -106,21 +96,21 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var person = await _context.Persons.SingleOrDefaultAsync(m => m.Id == id);
-            if (person == null)
+            var client = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+            if (client == null)
             {
                 return NotFound();
             }
 
-            _context.Persons.Remove(person);
+            _context.Customers.Remove(client);
             await _context.SaveChangesAsync();
 
-            return Ok(person);
+            return Ok(client);
         }
 
         private bool PersonExists(int id)
         {
-            return _context.Persons.Any(e => e.Id == id);
+            return _context.Customers.Any(e => e.Id == id);
         }
     }
 }

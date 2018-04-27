@@ -6,13 +6,8 @@ using CleanersAPI.Models;
 
 namespace CleanersAPI.Services
 {
-    public interface IProfessionsService
+    public interface IProfessionsService : ICleanersService<Profession>
     {
-        IEnumerable<Profession> GetAllProfessionals();
-        Task<Profession> GetOneById(int id);
-        bool DoesExist(int id);
-        Task<Profession> Create(Profession profession);
-        Task<Profession> Update(Profession profession);
-        bool Delete(int id);
+        
     }
 }

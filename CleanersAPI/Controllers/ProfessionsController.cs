@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CleanersAPI.Models;
+using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Controllers
 {
@@ -71,10 +72,6 @@ namespace CleanersAPI.Controllers
                 if (!ProfessionExists(id))
                 {
                     return NotFound();
-                }
-                else
-                {
-                    throw;
                 }
             }
 

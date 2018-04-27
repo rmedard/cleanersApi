@@ -23,14 +23,12 @@ namespace CleanersAPI.Controllers
             _professionsService = professionsService;
         }
 
-        // GET: api/Professionals
         [HttpGet]
-        public IEnumerable<Professional> GetProfessional()
+        public Task<IEnumerable<Professional>> GetProfessionals()
         {
-            return _professionalsService.GetAllProfessionals();
+            return _professionalsService.GetAll();
         }
 
-        // GET: api/Professionals/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProfessional([FromRoute] int id)
         {
@@ -59,7 +57,6 @@ namespace CleanersAPI.Controllers
             return Ok(_professionalsService.GetProfessions(id));
         }
 
-        // PUT: api/Professionals/5
         [HttpPut("{id}")]
         public IActionResult PutProfessional([FromRoute] int id, [FromBody] Professional professional)
         {
@@ -74,13 +71,12 @@ namespace CleanersAPI.Controllers
             }
 
             var updated = _professionalsService.Update(professional);
-            if (updated)
+            if (updated == null)
             {
-                return NoContent();
+                return BadRequest("Update failed");
             }
 
-            return BadRequest("Update failed");
-
+            return NoContent();
         }
 
         // POST: api/Professionals

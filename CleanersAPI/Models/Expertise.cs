@@ -13,12 +13,12 @@ namespace CleanersAPI.Models
 
         [Required]
         public int ProfessionalId { get; set; }
-
+        
+        public double UnitPrice { get; set; }
+        
         public Profession Profession { get; set; }
 
         public Professional Professional { get; set; }
-
-
 
     }
 }

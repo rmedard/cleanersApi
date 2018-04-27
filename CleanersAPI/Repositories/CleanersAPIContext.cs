@@ -10,15 +10,18 @@ namespace CleanersAPI.Repositories
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Address>().ToTable("addresses");
-            modelBuilder.Entity<Person>().ToTable("persons");
+            modelBuilder.Entity<Customer>().ToTable("customers");
+            modelBuilder.Entity<User>().ToTable("users");
             modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => new {e.ProfessionId, e.ProfessionalId});
         }
 
-        public DbSet<Person> Persons { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         public DbSet<Professional> Professionals { get; set; }
 
         public DbSet<Profession> Professions { get; set; }
+        
+        public DbSet<User> Users { get; set; }
 
         public DbSet<Expertise> Expertises { get; set; }
     }

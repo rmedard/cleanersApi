@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 
-namespace CleanersAPI.Repositories
+namespace CleanersAPI.Repositories.Impl
 {
     public class ProfessionsRepository : IProfessionsRepository
     {
@@ -16,12 +16,12 @@ namespace CleanersAPI.Repositories
             _context = context;
         }
 
-        public IEnumerable<Profession> GetAllProfessionals()
+        public async Task<IEnumerable<Profession>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Profession> GetOneById(int id)
+        public Task<Profession> GetById(int id)
         {
             throw new NotImplementedException();
         }
@@ -41,7 +41,7 @@ namespace CleanersAPI.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(int id)
+        public bool Delete(int id)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
 
-namespace CleanersAPI.Services
+namespace CleanersAPI.Services.Impl
 {
     public class ProfessionalsService : IProfessionalsService
     {
@@ -17,14 +17,14 @@ namespace CleanersAPI.Services
             _professionalsRepository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public IEnumerable<Professional> GetAllProfessionals()
+        public Task<IEnumerable<Professional>> GetAll()
         {
-            return _professionalsRepository.GetAllProfessionals();
+            return _professionalsRepository.GetAll();
         }
 
         public Task<Professional> GetOneById(int id)
         {
-            return _professionalsRepository.GetOneById(id);
+            return _professionalsRepository.GetById(id);
         }
 
         public void GrantExpertise(int professionalId, int professionId)
@@ -32,7 +32,7 @@ namespace CleanersAPI.Services
             _professionalsRepository.GrantExpertise(professionalId, professionId);
         }
 
-        public IEnumerable<Profession> GetProfessions(int professionalId)
+        public Task<IEnumerable<Profession>> GetProfessions(int professionalId)
         {
             return _professionalsRepository.GetProfessions(professionalId);
         }
@@ -47,7 +47,7 @@ namespace CleanersAPI.Services
             return _professionalsRepository.Create(professional);
         }
 
-        public bool Update(Professional professional)
+        public Task<Professional> Update(Professional professional)
         {
             return _professionalsRepository.Update(professional);
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
 
-namespace CleanersAPI.Services
+namespace CleanersAPI.Services.Impl
 {
     public class ProfessionsService : IProfessionsService
     {
@@ -17,7 +17,7 @@ namespace CleanersAPI.Services
             _professionsRepository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public IEnumerable<Profession> GetAllProfessionals()
+        public Task<IEnumerable<Profession>> GetAll()
         {
             throw new NotImplementedException();
         }

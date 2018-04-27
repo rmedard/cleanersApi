@@ -9,14 +9,14 @@ using Newtonsoft.Json;
 
 namespace CleanersAPI.Models
 {
-    public class Professional
+    public class Professional : Person
     {
         public int Id { get; set; }
 
-        public int PersonId { get; set; }
+        public int UserId { get; set; }
         
-        public Person Person { get; set; }
-
+        public User User { get; set; }
+        
         [JsonIgnore]
         public ICollection<Expertise> Expertises { get; } = new List<Expertise>();
     }
