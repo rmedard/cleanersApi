@@ -1,4 +1,5 @@
-﻿namespace CleanersAPI.Models
+﻿
+namespace CleanersAPI.Models
 {
     public class User
     {

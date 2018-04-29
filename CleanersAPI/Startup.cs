@@ -32,7 +32,8 @@ namespace CleanersAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
+            //services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
+            services.AddDbContext<CleanersApiContext>(options => options.UseMySQL(Configuration.GetConnectionString("LocalMysql")));
             
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
