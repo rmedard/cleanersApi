@@ -26,7 +26,8 @@ namespace CleanersAPI.Models
     public enum Status
     {
         Initiated,
+        Accepted,
         Rejected,
-        Finished
+        Done
     }
 }

@@ -33,23 +33,25 @@ namespace CleanersAPI
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
-            services.AddDbContext<CleanersApiContext>(options => options.UseMySQL(Configuration.GetConnectionString("LocalMysql")));
-            
+            services.AddDbContext<CleanersApiContext>(options =>
+                options.UseMySql(Configuration.GetConnectionString("RemoteMysql")));
+
+            services.AddScoped<DbContext, CleanersApiContext>();
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
-            
+
             services.AddScoped<IProfessionsService, ProfessionsService>();
             services.AddScoped<IProfessionsRepository, ProfessionsRepository>();
 
             services.AddScoped<ICustomersService, CustomersService>();
             services.AddScoped<ICustomersRepository, CustomersRepository>();
-            
+
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +78,7 @@ namespace CleanersAPI
                     });
                 });
             }
+
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
             app.UseMvc();
         }
@@ -84,7 +87,8 @@ namespace CleanersAPI
         {
             public static void Initialize(IApplicationBuilder applicationBuilder)
             {
-                using (var serviceScope = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                using (var serviceScope = applicationBuilder.ApplicationServices
+                    .GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     var context = serviceScope.ServiceProvider.GetService<CleanersApiContext>();
                     context.Database.EnsureCreated();
@@ -93,12 +97,51 @@ namespace CleanersAPI
                         return;
                     }
 
+                    context.Professions.Add(new Profession {Title = "Montage meubles", Description = "Montage blablaaaa...",Category = Category.Bricolage});
+                    context.Professions.Add(new Profession {Title = "Ménage", Description = "Les travaux ménagers etc",Category = Category.Cleaning});
+                    context.Professions.Add(new Profession {Title = "Peinture", Category = Category.Construction});
+
                     CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
-                    var user = context.Users.Add(new User {Username = "Admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt}).Entity;
-                    context.Users.Add(user);
+                    var admin = new User {Username = "Admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                    var profession = new Profession {Title = "Gutera akabariro", Category = Category.Construction};
+                    var professional = new Professional
+                    {
+                        Address = new Address
+                        {
+                            Commune = "Schaerbeek",
+                            Street = "Rue Gaucheret",
+                            Zipcode = "1030",
+                            Number = "4"
+                        },
+                        FirstName = "Igwe",
+                        LastName = "Kabutindi",
+                        RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000),
+                        User = new User
+                        {
+                            Username = "Igwe",
+                            PasswordHash = passwordHash,
+                            PasswordSalt = passwordSalt
+                        }
+                    };
+
+                    var expertise = new Expertise
+                    {
+                        Profession = profession,
+                        Professional = professional,
+                        UnitPrice = 500
+                    };
+
+                    context.Users.Add(admin);
+                    context.Expertises.Add(expertise);
                     context.SaveChanges();
                 }
             }
+        }
+
+        private static int GenerateRegistrationNumber(int min, int max)  
+        {  
+            var random = new Random();  
+            return random.Next(min, max);  
         }
         
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

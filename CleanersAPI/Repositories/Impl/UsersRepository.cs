@@ -38,12 +38,21 @@ namespace CleanersAPI.Repositories.Impl
             return userEntry.Entity;
         }
 
-        public Task<User> Update(User t)
+        public async Task<bool> Update(User t)
         {
-            throw new System.NotImplementedException();
+            _context.Entry(t).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }            
+            return true;
         }
 
-        public bool Delete(int id)
+        public Task<bool> Delete(int id)
         {
             throw new System.NotImplementedException();
         }

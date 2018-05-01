@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -14,34 +18,66 @@ namespace CleanersAPI.Repositories.Impl
             _context = context;
         }
 
-        public Task<IEnumerable<Customer>> GetAll()
+        public async Task<IEnumerable<Customer>> GetAll()
         {
-            throw new System.NotImplementedException();
+            return await _context.Customers.Include(c => c.Address).ToListAsync();
         }
 
-        public Task<Customer> GetById(int id)
+        public async Task<Customer> GetById(int id)
         {
-            throw new System.NotImplementedException();
+            return await _context.Customers.FirstOrDefaultAsync(customer => customer.Id == id);
         }
 
         public bool DoesExist(int id)
         {
-            throw new System.NotImplementedException();
+            return _context.Customers.Any(customer => customer.Id == id);
         }
 
-        public Task<Customer> Create(Customer customer)
+        public async Task<Customer> Create(Customer customer)
         {
-            throw new System.NotImplementedException();
+            var saved = _context.Customers.Add(customer).Entity;
+            await _context.SaveChangesAsync();
+            return saved;
         }
 
-        public Task<Customer> Update(Customer customer)
+        public async Task<bool> Update(Customer customer)
         {
-            throw new System.NotImplementedException();
+//            _context.Entry(customer).State = EntityState.Modified;
+            try
+            {
+                _context.Update(customer);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+            
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var customer = _context.Customers.SingleOrDefault(cust => cust.Id == id);
+            try
+            {
+                if (customer == null) return false;
+                _context.Entry(customer).State = EntityState.Deleted;
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException e)
+            {
+                Console.WriteLine(e);
+            }
+            return false;
+        }
+
+        public async Task<IEnumerable<Service>> getCustomerOrderedServices(int customerId)
+        {
+            return await _context.Services.Where(s => s.CustomerId == customerId).ToListAsync();
         }
     }
 }

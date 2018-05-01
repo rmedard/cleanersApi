@@ -71,7 +71,7 @@ namespace CleanersAPI.Controllers
             }
 
             var updated = _professionalsService.Update(professional);
-            if (updated == null)
+            if (!updated.Result)
             {
                 return BadRequest("Update failed");
             }
@@ -88,20 +88,29 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _professionalsService.Create(professional);
+            var newProfessional = await _professionalsService.Create(professional);
 
-            return CreatedAtAction("GetProfessional", new { id = professional.Id }, professional);
+            return CreatedAtAction("GetProfessional", new { id = newProfessional.Id }, newProfessional);
         }
 
-        [HttpPost("{professionalId}/{professionId}")]
-        public IActionResult AddExpertise([FromRoute] int professionalId, [FromRoute] int professionId)
+        [HttpPost("{id}/expertises")]
+        public IActionResult AddExpertise([FromRoute] int id, [FromBody] Expertise expertise)
         {
-            if (!ProfessionalExists(professionalId) || !ProfessionExists(professionId))
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            _professionalsService.GrantExpertise(professionalId, professionId);
+            if (id != expertise.ProfessionalId)
+            {
+                return BadRequest();
+            }
+//            if (!ProfessionalExists(id))
+//            {
+//                return NotFound();
+//            }
+
+            _professionalsService.GrantExpertise(expertise);
             return Ok();
         }
 
@@ -120,7 +129,7 @@ namespace CleanersAPI.Controllers
             }
 
             var deleted = _professionalsService.Delete(id);
-            if (deleted)
+            if (deleted.Result)
             {
                 return Ok();
             }
@@ -128,6 +137,23 @@ namespace CleanersAPI.Controllers
             return BadRequest("Delete failed");
         }
 
+        [HttpGet("{professionalId}/orders")]
+        public async Task<IActionResult> GetOrders([FromRoute] int professionalId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            if (!ProfessionalExists(professionalId))
+            {
+                return NotFound("Professional not found");
+            }
+
+            return Ok(await _professionalsService.GetOrders(professionalId));
+        }
+        
+        
         private bool ProfessionalExists(int id)
         {
             return _professionalsService.DoesExist(id);

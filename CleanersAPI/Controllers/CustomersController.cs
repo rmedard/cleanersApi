@@ -2,43 +2,47 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
-using CleanersAPI.Repositories;
+using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Controllers
 {
+    [Produces("application/json")]
+    [Route("api/[controller]")]
     public class CustomersController : Controller
     {
-        private readonly CleanersApiContext _context;
+        private readonly ICustomersService _customersService;
 
-        public CustomersController(CleanersApiContext context)
+        public CustomersController(ICustomersService customersService)
         {
-            _context = context;
+            _customersService = customersService;
         }
 
         [HttpGet]
-        public IEnumerable<Customer> GetPersons()
+        public Task<IEnumerable<Customer>> GetCustomers()
         {
-            return _context.Customers;
+            return _customersService.GetAll();
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetClient([FromRoute] int id)
+        public async Task<IActionResult> GetCustomer([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var person = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
+//            var person = await _customersService.Customers.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (person == null)
+            var customer = await _customersService.GetOneById(id);
+            
+            if (customer == null)
             {
                 return NotFound();
             }
 
-            return Ok(person);
+            return Ok(customer);
         }
 
         // PUT: api/People/5
@@ -50,67 +54,69 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != customer.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(customer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PersonExists(id))
-                {
-                    return NotFound();
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/People
-        [HttpPost]
-        public async Task<IActionResult> PostClient([FromBody] Customer customer)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetClient", new { id = customer.Id }, customer);
-        }
-
-        // DELETE: api/People/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePerson([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var client = await _context.Customers.SingleOrDefaultAsync(m => m.Id == id);
-            if (client == null)
+            if (id != customer.Id || !_customersService.DoesExist(id))
             {
                 return NotFound();
             }
 
-            _context.Customers.Remove(client);
-            await _context.SaveChangesAsync();
+            var updated = await _customersService.Update(customer);
+            if (updated)
+            {
+                return Ok(customer);
+            }
 
-            return Ok(client);
+            return BadRequest();
         }
 
-        private bool PersonExists(int id)
+        // POST: api/People
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
         {
-            return _context.Customers.Any(e => e.Id == id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var created = await _customersService.Create(customer);
+
+            return CreatedAtAction("GetCustomer", new { id = created.Id }, created);
+        }
+
+        // DELETE: api/People/5
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCustomer([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_customersService.DoesExist(id))
+            {
+                return NotFound();
+            }
+
+            if (_customersService.Delete(id).Result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("{id}/services")]
+        public async Task<IActionResult> GetCustomerOrderedServices([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            if (!_customersService.DoesExist(id))
+            {
+                return NotFound("Customer not found");
+            }
+
+            return Ok(await _customersService.getOrderedServices(id));
         }
     }
 }

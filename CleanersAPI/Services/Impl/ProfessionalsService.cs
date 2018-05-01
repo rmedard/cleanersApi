@@ -27,9 +27,14 @@ namespace CleanersAPI.Services.Impl
             return _professionalsRepository.GetById(id);
         }
 
-        public void GrantExpertise(int professionalId, int professionId)
+        public void GrantExpertise(Expertise expertise)
         {
-            _professionalsRepository.GrantExpertise(professionalId, professionId);
+            _professionalsRepository.GrantExpertise(expertise);
+        }
+
+        public Task<IEnumerable<Service>> GetOrders(int professionalId)
+        {
+            return _professionalsRepository.GetOrders(professionalId);
         }
 
         public Task<IEnumerable<Profession>> GetProfessions(int professionalId)
@@ -44,17 +49,24 @@ namespace CleanersAPI.Services.Impl
 
         public Task<Professional> Create(Professional professional)
         {
+            professional.RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000);
             return _professionalsRepository.Create(professional);
         }
 
-        public Task<Professional> Update(Professional professional)
+        public Task<bool> Update(Professional professional)
         {
             return _professionalsRepository.Update(professional);
         }
 
-        public bool Delete(int professionalId)
+        public Task<bool> Delete(int professionalId)
         {
             return _professionalsRepository.Delete(professionalId);
+        }
+        
+        private static int GenerateRegistrationNumber(int min, int max)  
+        {  
+            var random = new Random();  
+            return random.Next(min, max);  
         }
     }
 }

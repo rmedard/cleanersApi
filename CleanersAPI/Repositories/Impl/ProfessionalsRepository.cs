@@ -20,30 +20,31 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Professional>> GetAll()
         {
-            return await _context.Professionals.Include(prof => prof.User).Include(prof => prof.Address).ToListAsync();
+            return await _context.Professionals.Include(prof => prof.Address)
+                .Include(prof => prof.Expertises)
+                .ThenInclude(exp => exp.Profession).ToListAsync();
         }
 
         public Task<Professional> GetById(int id)
         {
-            return _context.Professionals.Include(prof => prof.User).Include(prof => prof.Address)
+            return _context.Professionals.Include(prof => prof.Address)
                 .SingleOrDefaultAsync(m => m.Id == id);
         }
 
-        public void GrantExpertise(int professionalId, int professionId)
+        public async Task<IEnumerable<Service>> GetOrders(int professionalId)
         {
-            var professional = _context.Professionals.Include(prof => prof.Expertises).Single(prof => prof.Id == professionalId);
-            var profession = _context.Professions.Find(professionId);
-            if (professional.Expertises.Any(exp => exp.ProfessionId == professionId))
-            {
-                return;
-            }
-            professional.Expertises.Add(new Expertise { Profession = profession, Professional = professional });
+            return await _context.Services.Where(s => s.Expertise.ProfessionalId == professionalId).ToListAsync();
+        }
+
+        public void GrantExpertise(Expertise expertise)
+        {
+            _context.Expertises.Add(expertise);
             _context.SaveChanges();
         }
 
         public async Task<IEnumerable<Profession>> GetProfessions(int professionalId)
         {
-            var professional = _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Profession).Single(prof => prof.Id == professionalId);
+            var professional = await _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Profession).SingleAsync(prof => prof.Id == professionalId);
             return professional.Expertises.Select(expertise => expertise.Profession).ToList();
         }
 
@@ -59,22 +60,21 @@ namespace CleanersAPI.Repositories.Impl
             return newProfessional;
         }
 
-        public Task<Professional> Update(Professional professional)
+        public async Task<bool> Update(Professional professional)
         {
             _context.Entry(professional).State = EntityState.Modified;
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                return null;
-            }
-            
-            return null;
+                return false;
+            }            
+            return true;
         }
 
-        public bool Delete(int professionalId)
+        public Task<bool> Delete(int professionalId)
         {
             throw new NotImplementedException();
         }

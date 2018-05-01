@@ -9,7 +9,7 @@ namespace CleanersAPI.Services
         Task<T> GetOneById(int id);
         bool DoesExist(int id);
         Task<T> Create(T t);
-        Task<T> Update(T t);
-        bool Delete(int id);
+        Task<bool> Update(T t);
+        Task<bool> Delete(int id);
     }
 }

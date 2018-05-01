@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -18,7 +19,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Profession>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.Professions.ToListAsync();
         }
 
         public Task<Profession> GetById(int id)
@@ -36,12 +37,21 @@ namespace CleanersAPI.Repositories.Impl
             throw new NotImplementedException();
         }
 
-        public Task<Profession> Update(Profession profession)
+        public async Task<bool> Update(Profession profession)
         {
-            throw new NotImplementedException();
+            _context.Entry(profession).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }            
+            return true;
         }
 
-        public bool Delete(int id)
+        public Task<bool> Delete(int id)
         {
             throw new NotImplementedException();
         }

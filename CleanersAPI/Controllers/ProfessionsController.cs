@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CleanersAPI.Models;
-using CleanersAPI.Repositories;
+using CleanersAPI.Services;
 
 namespace CleanersAPI.Controllers
 {
@@ -14,18 +14,18 @@ namespace CleanersAPI.Controllers
     [Route("api/[controller]")]
     public class ProfessionsController : Controller
     {
-        private readonly CleanersApiContext _context;
+        private readonly IProfessionsService _professionsService;
 
-        public ProfessionsController(CleanersApiContext context)
+        public ProfessionsController(IProfessionsService professionsService)
         {
-            _context = context;
+            _professionsService = professionsService;
         }
 
         // GET: api/Professions
         [HttpGet]
-        public IEnumerable<Profession> GetProfession()
+        public Task<IEnumerable<Profession>> GetProfession()
         {
-            return _context.Professions;
+            return _professionsService.GetAll();
         }
 
         // GET: api/Professions/5
@@ -37,7 +37,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var profession = await _context.Professions.SingleOrDefaultAsync(m => m.Id == id);
+            var profession = await _professionsService.GetOneById(id);
 
             if (profession == null)
             {
@@ -49,7 +49,7 @@ namespace CleanersAPI.Controllers
 
         // PUT: api/Professions/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProfession([FromRoute] int id, [FromBody] Profession profession)
+        public IActionResult PutProfession([FromRoute] int id, [FromBody] Profession profession)
         {
             if (!ModelState.IsValid)
             {
@@ -61,20 +61,13 @@ namespace CleanersAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(profession).State = EntityState.Modified;
+            var updated = _professionsService.Update(profession);
 
-            try
+            if (!updated.Result)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest("Update failed");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProfessionExists(id))
-                {
-                    return NotFound();
-                }
-            }
-
+            
             return NoContent();
         }
 
@@ -87,36 +80,32 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.Professions.Add(profession);
-            await _context.SaveChangesAsync();
+            var newProfession = await _professionsService.Create(profession); 
 
-            return CreatedAtAction("GetProfession", new { id = profession.Id }, profession);
+            return CreatedAtAction("GetProfession", new { id = newProfession.Id }, newProfession);
         }
 
         // DELETE: api/Professions/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProfession([FromRoute] int id)
+        public IActionResult DeleteProfession([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var profession = await _context.Professions.SingleOrDefaultAsync(m => m.Id == id);
-            if (profession == null)
+            if (!_professionsService.DoesExist(id))
             {
-                return NotFound();
+                return NotFound("Profession not found");
             }
 
-            _context.Professions.Remove(profession);
-            await _context.SaveChangesAsync();
-
-            return Ok(profession);
+            var deleted = _professionsService.Delete(id);
+            if (!deleted.Result)
+            {
+                return BadRequest("Deletion failed");
+            }
+            return Ok();
         }
 
-        private bool ProfessionExists(int id)
-        {
-            return _context.Professions.Any(e => e.Id == id);
-        }
     }
 }

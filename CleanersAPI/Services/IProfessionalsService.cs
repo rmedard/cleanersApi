@@ -8,7 +8,8 @@ namespace CleanersAPI.Services
 {
     public interface IProfessionalsService : ICleanersService<Professional>
     {
-        void GrantExpertise(int professionalId, int professionId);
+        void GrantExpertise(Expertise expertise);
+        Task<IEnumerable<Service>> GetOrders(int professionalId); 
         Task<IEnumerable<Profession>> GetProfessions(int professionalId);
     }
 }

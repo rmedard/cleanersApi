@@ -19,12 +19,12 @@ namespace CleanersAPI.Services.Impl
 
         public Task<IEnumerable<Profession>> GetAll()
         {
-            throw new NotImplementedException();
+            return _professionsRepository.GetAll();
         }
 
         public Task<Profession> GetOneById(int id)
         {
-            throw new NotImplementedException();
+            return _professionsRepository.GetById(id);
         }
 
         public bool DoesExist(int professionId)
@@ -34,17 +34,17 @@ namespace CleanersAPI.Services.Impl
 
         public Task<Profession> Create(Profession profession)
         {
-            throw new NotImplementedException();
+            return _professionsRepository.Create(profession);
         }
 
-        public Task<Profession> Update(Profession profession)
+        public Task<bool> Update(Profession profession)
         {
-            throw new NotImplementedException();
+            return _professionsRepository.Update(profession);
         }
 
-        public bool Delete(int id)
+        public Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            return _professionsRepository.Delete(id);
         }
     }
 }
