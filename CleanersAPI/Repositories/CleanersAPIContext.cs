@@ -27,6 +27,8 @@ namespace CleanersAPI.Repositories
             
             modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => new {e.ProfessionId, e.ProfessionalId});
             modelBuilder.Entity<Expertise>().Property(p => p.UnitPrice).HasColumnType("decimal(10,2)");
+
+            modelBuilder.Entity<Email>().ToTable("emails");
         }
 
         public DbSet<Customer> Customers { get; set; }
@@ -40,5 +42,7 @@ namespace CleanersAPI.Repositories
         public DbSet<Expertise> Expertises { get; set; }
         
         public DbSet<Service> Services { get; set; }
+        
+        public DbSet<Email> Emails { get; set; }
     }
 }

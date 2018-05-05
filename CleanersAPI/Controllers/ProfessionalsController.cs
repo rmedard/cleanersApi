@@ -105,10 +105,6 @@ namespace CleanersAPI.Controllers
             {
                 return BadRequest();
             }
-//            if (!ProfessionalExists(id))
-//            {
-//                return NotFound();
-//            }
 
             _professionalsService.GrantExpertise(expertise);
             return Ok();

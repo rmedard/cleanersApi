@@ -46,6 +46,9 @@ namespace CleanersAPI
             services.AddScoped<ICustomersService, CustomersService>();
             services.AddScoped<ICustomersRepository, CustomersRepository>();
 
+            services.AddScoped<IEmailsService, EmailsService>();
+            services.AddScoped<IEmailsRepository, EmailsRepository>();
+
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
