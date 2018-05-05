@@ -66,10 +66,12 @@ namespace CleanersAPI.Services.Impl
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(email.From),
+                Sender = new MailAddress(email.From, email.SenderNames),
                 Body = email.Body,
                 Subject = email.Subject
             };
             mailMessage.To.Add(email.To);
+            mailMessage.ReplyToList.Add(email.ReplyTo); 
             try
             {
                 client.Send(mailMessage);

@@ -25,7 +25,9 @@ namespace CleanersAPI.Controllers
             }
 
             var emailValidator = new EmailAddressAttribute();
-            if (!emailValidator.IsValid(email.From) || !emailValidator.IsValid(email.To))
+            if (!emailValidator.IsValid(email.From) 
+                || !emailValidator.IsValid(email.To) 
+                || !emailValidator.IsValid(email.ReplyTo))
             {
                 return BadRequest("Invalid email address...");
             }
