@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,12 @@ namespace CleanersAPI.Controllers
         public MailsController(IEmailsService emailsService)
         {
             _emailsService = emailsService;
+        }
+
+        [HttpGet]
+        public Task<IEnumerable<Email>> GetEmails()
+        {
+            return _emailsService.GetAll();
         }
 
         [HttpPost]

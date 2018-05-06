@@ -74,7 +74,7 @@ namespace CleanersAPI.Services.Impl
             mailMessage.ReplyToList.Add(email.ReplyTo); 
             try
             {
-                client.Send(mailMessage);
+                client.SendAsync(mailMessage, "CleanersAppEmail:" + DateTime.Now);
                 email.Sent = true;
             }
             catch (Exception e)

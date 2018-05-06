@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanersAPI.Models
 {
@@ -28,5 +29,7 @@ namespace CleanersAPI.Models
         public string Body { get; set; }
         
         public bool Sent { get; set; }
+        
+        public DateTime Date { get; set; } = DateTime.Now;
     }
 }
