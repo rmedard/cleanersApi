@@ -17,6 +17,13 @@ namespace CleanersAPI.Models
         [Required]
         public int AddressId { get; set; }
 
+        [Required]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Invalid Email Address")]
+        public string Email { get; set; }
+        
+        [DataType(DataType.PhoneNumber)]
+        public string Phone { get; set; }
+        
         public Address Address { get; set; }
     }
 }

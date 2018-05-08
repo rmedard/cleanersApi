@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using CleanersAPI.Helpers.Auth;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
 using CleanersAPI.Repositories.Impl;
 using CleanersAPI.Services;
 using CleanersAPI.Services.Impl;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace CleanersAPI
@@ -33,10 +38,14 @@ namespace CleanersAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
             //services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
             services.AddDbContext<CleanersApiContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("RemoteMysql")));
 
+            services.AddCors();
+            services.AddAutoMapper();
+            
             services.AddScoped<DbContext, CleanersApiContext>();
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
@@ -50,6 +59,24 @@ namespace CleanersAPI
             services.AddScoped<IEmailsService, EmailsService>();
             services.AddScoped<IEmailsRepository, EmailsRepository>();
 
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false, //Read about Issuer and Audience
+                    ValidateAudience = false
+                };
+            });
+
+//            services.AddAuthorization(options =>
+//            {
+//                options.AddPolicy("AdminRole", policy => policy.Requirements.Add(new RoleRequirement(RoleName.ADMIN.ToString())));
+//            });
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
@@ -85,6 +112,7 @@ namespace CleanersAPI
             }
 
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
+            app.UseAuthentication();
             app.UseMvc();
         }
 
@@ -107,7 +135,10 @@ namespace CleanersAPI
                     context.Professions.Add(new Profession {Title = "Peinture", Category = Category.Construction});
 
                     CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
-                    var admin = new User {Username = "Admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                    var admin = new User {Username = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                    var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                    var adminRoleUser = new RoleUser{role = new Role {Name = RoleName.ADMIN}, user = admin};
+                    var userRoleUser = new RoleUser{role = new Role {Name = RoleName.USER}, user = igwe};
                     var profession = new Profession {Title = "Gutera akabariro", Category = Category.Construction};
                     var professional = new Professional
                     {
@@ -121,12 +152,9 @@ namespace CleanersAPI
                         FirstName = "Igwe",
                         LastName = "Kabutindi",
                         RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000),
-                        User = new User
-                        {
-                            Username = "Igwe",
-                            PasswordHash = passwordHash,
-                            PasswordSalt = passwordSalt
-                        }
+                        Email = "medard.rebero@gmail.com",
+                        Phone = "+32483378014",
+                        User = igwe
                     };
 
                     var expertise = new Expertise
@@ -138,6 +166,8 @@ namespace CleanersAPI
 
                     context.Users.Add(admin);
                     context.Expertises.Add(expertise);
+                    context.RoleUsers.Add(adminRoleUser);
+                    context.RoleUsers.Add(userRoleUser);
                     context.SaveChanges();
                 }
             }
@@ -154,7 +184,7 @@ namespace CleanersAPI
             using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
             {
                 passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
     }

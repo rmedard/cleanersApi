@@ -34,7 +34,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<User> Create(User t)
         {
-            EntityEntry<User> userEntry =  await _context.AddAsync(t);
+            var userEntry =  await _context.AddAsync(t);
             return userEntry.Entity;
         }
 

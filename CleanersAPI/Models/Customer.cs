@@ -12,6 +12,8 @@ namespace CleanersAPI.Models
         
         public string RegNumber { get; set; }
         
+        public int UserId { get; set; }
+        
         public User User { get; set; }
     }
 }

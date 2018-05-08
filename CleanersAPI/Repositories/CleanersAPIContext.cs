@@ -13,7 +13,7 @@ namespace CleanersAPI.Repositories
             
             modelBuilder.Entity<Customer>().ToTable("customers");
             modelBuilder.Entity<Customer>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+//            modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Professional>().ToTable("professionals");
             modelBuilder.Entity<Professional>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
@@ -21,7 +21,11 @@ namespace CleanersAPI.Repositories
             
             modelBuilder.Entity<Profession>().ToTable("professions");
             
-            modelBuilder.Entity<User>().ToTable("users");
+            modelBuilder.Entity<User>().ToTable("users").HasIndex(u => u.Username).IsUnique();
+            modelBuilder.Entity<Role>().ToTable("roles");
+            modelBuilder.Entity<RoleUser>().HasKey(key => new {key.roleId, key.userId});
+            modelBuilder.Entity<RoleUser>().HasOne(key => key.role).WithMany(r => r.Users).HasForeignKey(r => r.roleId);
+            modelBuilder.Entity<RoleUser>().HasOne(key => key.user).WithMany(u => u.Roles).HasForeignKey(u => u.userId);
             
             modelBuilder.Entity<Service>().ToTable("services");
             
@@ -36,13 +40,17 @@ namespace CleanersAPI.Repositories
         public DbSet<Professional> Professionals { get; set; }
 
         public DbSet<Profession> Professions { get; set; }
-        
-        public DbSet<User> Users { get; set; }
 
         public DbSet<Expertise> Expertises { get; set; }
         
         public DbSet<Service> Services { get; set; }
         
         public DbSet<Email> Emails { get; set; }
+        
+        public DbSet<User> Users { get; set; }
+        
+        public DbSet<Role> Roles { get; set; }
+        
+        public DbSet<RoleUser> RoleUsers { get; set; }
     }
 }
