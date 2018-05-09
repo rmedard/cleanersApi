@@ -27,7 +27,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<Professional> GetById(int id)
         {
-            return _context.Professionals.Include(prof => prof.Address)
+            return _context.Professionals.Include(prof => prof.Address).Include(prof => prof.Expertises).ThenInclude(ex => ex.Profession)
                 .SingleOrDefaultAsync(m => m.Id == id);
         }
 
