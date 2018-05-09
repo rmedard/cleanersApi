@@ -109,6 +109,23 @@ namespace CleanersAPI.Controllers
             _professionalsService.GrantExpertise(expertise);
             return Ok();
         }
+        
+        [HttpPut("{id}/expertises")]
+        public IActionResult UpdateExpertise([FromRoute] int id, [FromBody] Expertise expertise)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != expertise.ProfessionalId)
+            {
+                return BadRequest();
+            }
+
+            _professionalsService.UpdateExpertise(expertise);
+            return Ok();
+        }
 
         // DELETE: api/Professionals/5
         [HttpDelete("{id}")]

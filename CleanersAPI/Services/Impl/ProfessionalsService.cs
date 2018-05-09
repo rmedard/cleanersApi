@@ -32,6 +32,11 @@ namespace CleanersAPI.Services.Impl
             _professionalsRepository.GrantExpertise(expertise);
         }
 
+        public void UpdateExpertise(Expertise expertise)
+        {
+            _professionalsRepository.UpdateExpertise(expertise);
+        }
+
         public Task<IEnumerable<Service>> GetOrders(int professionalId)
         {
             return _professionalsRepository.GetOrders(professionalId);

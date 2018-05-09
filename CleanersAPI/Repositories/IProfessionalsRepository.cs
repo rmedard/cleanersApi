@@ -11,5 +11,6 @@ namespace CleanersAPI.Repositories
         Task<IEnumerable<Profession>> GetProfessions(int professionalId);
         Task<IEnumerable<Service>> GetOrders(int professionalId);
         void GrantExpertise(Expertise expertise);
+        void UpdateExpertise(Expertise expertise);
     }
 }
