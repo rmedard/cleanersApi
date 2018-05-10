@@ -34,8 +34,9 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<User> Create(User t)
         {
-            var userEntry =  await _context.AddAsync(t);
-            return userEntry.Entity;
+            var userEntry = _context.Add(t).Entity;
+            await _context.SaveChangesAsync();
+            return userEntry;
         }
 
         public async Task<bool> Update(User t)
@@ -56,7 +57,13 @@ namespace CleanersAPI.Repositories.Impl
         {
             throw new System.NotImplementedException();
         }
-        
+
+        public void CreateRoleUser(RoleUser roleUser)
+        {
+            _context.RoleUsers.Add(roleUser);
+            _context.SaveChanges();
+        }
+
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable

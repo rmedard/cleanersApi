@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CleanersAPI.Models;
+using CleanersAPI.Models.Dtos;
 using CleanersAPI.Services;
 
 namespace CleanersAPI.Controllers
@@ -16,11 +17,15 @@ namespace CleanersAPI.Controllers
     {
         private readonly IProfessionalsService _professionalsService;
         private readonly IProfessionsService _professionsService;
+        private readonly IAuthService _authService;
 
-        public ProfessionalsController(IProfessionalsService professionalsService, IProfessionsService professionsService)
+        public ProfessionalsController(IProfessionalsService professionalsService, 
+            IProfessionsService professionsService, 
+            IAuthService authService)
         {
             _professionalsService = professionalsService;
             _professionsService = professionsService;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -91,6 +96,28 @@ namespace CleanersAPI.Controllers
             var newProfessional = await _professionalsService.Create(professional);
 
             return CreatedAtAction("GetProfessional", new { id = newProfessional.Id }, newProfessional);
+        }
+
+        [HttpPost("{id}/user")]
+        public IActionResult AddUser([FromRoute] int id, [FromBody] UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_authService.UserExists(userForLoginDto.Username).Result)
+            {
+                return BadRequest("Username already exists");
+            }
+
+            var professional = _professionalsService.GetOneById(id);
+            if (professional == null)
+            {
+                return NotFound("Professional not found");
+            }
+            _authService.AddUserToProfessional(professional.Result, userForLoginDto);
+            return NoContent();
         }
 
         [HttpPost("{id}/expertises")]

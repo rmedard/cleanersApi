@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CleanersAPI.Models;
+using CleanersAPI.Models.Dtos;
 
 namespace CleanersAPI.Services
 {
@@ -8,5 +9,8 @@ namespace CleanersAPI.Services
         Task<User> Login(string username, string password);
 
         Task<bool> UserExists(string username);
+
+        void AddUserToProfessional(Professional professional, UserForLoginDto userForLoginDto);
+        void AddUserToCustomer(Customer customer, UserForLoginDto userForLoginDto);
     }
 }
