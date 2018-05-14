@@ -63,7 +63,7 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult PutProfessional([FromRoute] int id, [FromBody] Professional professional)
+        public IActionResult UpdateProfessional([FromRoute] int id, [FromBody] Professional professional)
         {
             if (!ModelState.IsValid)
             {

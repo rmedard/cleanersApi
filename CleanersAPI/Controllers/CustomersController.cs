@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
+using CleanersAPI.Models.Dtos;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace CleanersAPI.Controllers
     public class CustomersController : Controller
     {
         private readonly ICustomersService _customersService;
+        private readonly IAuthService _authService;
 
-        public CustomersController(ICustomersService customersService)
+        public CustomersController(ICustomersService customersService, IAuthService authService)
         {
             _customersService = customersService;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -34,8 +37,6 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-//            var person = await _customersService.Customers.SingleOrDefaultAsync(m => m.Id == id);
-
             var customer = await _customersService.GetOneById(id);
             
             if (customer == null)
@@ -48,7 +49,7 @@ namespace CleanersAPI.Controllers
 
         // PUT: api/People/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutClient([FromRoute] int id, [FromBody] Customer customer)
+        public async Task<IActionResult> UpdateCustomer([FromRoute] int id, [FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
             {
@@ -83,6 +84,28 @@ namespace CleanersAPI.Controllers
             return CreatedAtAction("GetCustomer", new { id = created.Id }, created);
         }
 
+        [HttpPost("{id}/user")]
+        public IActionResult AddUser([FromRoute] int id, [FromBody] UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_authService.UserExists(userForLoginDto.Username).Result)
+            {
+                return BadRequest("Username already exists");
+            }
+
+            var customer = _customersService.GetOneById(id);
+            if (customer == null)
+            {
+                return NotFound("Professional not found");
+            }
+            _authService.AddUserToCustomer(customer.Result, userForLoginDto);
+            return NoContent();
+        }
+        
         // DELETE: api/People/5
         [HttpDelete("{id}")]
         public IActionResult DeleteCustomer([FromRoute] int id)

@@ -32,6 +32,11 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Users.AnyAsync(user => user.Username == username);
         }
+
+        public Role GetRoleByName(RoleName roleName)
+        {
+            return _context.Roles.First(r => r.Name == roleName);
+        }
         
         private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {

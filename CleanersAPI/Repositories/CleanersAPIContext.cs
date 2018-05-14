@@ -13,16 +13,18 @@ namespace CleanersAPI.Repositories
             
             modelBuilder.Entity<Customer>().ToTable("customers");
             modelBuilder.Entity<Customer>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
-//            modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Customer>().HasOne(a => a.User)
+                .WithOne(u => u.Customer).HasForeignKey<Customer>(c => c.UserId).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Professional>().ToTable("professionals");
             modelBuilder.Entity<Professional>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
-//            modelBuilder.Entity<Professional>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Professional>().HasOne(a => a.User)
+                .WithOne(u => u.Professional).HasForeignKey<Professional>(p => p.UserId).OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<Profession>().ToTable("professions");
             
             modelBuilder.Entity<User>().ToTable("users").HasIndex(u => u.Username).IsUnique();
-            modelBuilder.Entity<Role>().ToTable("roles");
+            modelBuilder.Entity<Role>().ToTable("roles").HasIndex(r => r.Name).IsUnique();
             modelBuilder.Entity<RoleUser>().HasKey(key => new {key.roleId, key.userId});
             modelBuilder.Entity<RoleUser>().HasOne(key => key.role).WithMany(r => r.Users).HasForeignKey(r => r.roleId);
             modelBuilder.Entity<RoleUser>().HasOne(key => key.user).WithMany(u => u.Roles).HasForeignKey(u => u.userId);

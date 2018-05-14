@@ -40,16 +40,12 @@ namespace CleanersAPI.Services.Impl
             var newUser = new User {
                 Username = userForLoginDto.Username,
                 PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt
+                PasswordSalt = passwordSalt,
+                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.USER)}}
             };
-            var newRoleUser = new RoleUser
-            {
-                role = new Role {Name = RoleName.USER}, 
-                user = newUser
-            };
+            
             professional.User = newUser;
             _professionalsRepository.Update(professional);
-            _usersRepository.CreateRoleUser(newRoleUser);
         }
 
         public void AddUserToCustomer(Customer customer, UserForLoginDto userForLoginDto)
@@ -58,18 +54,14 @@ namespace CleanersAPI.Services.Impl
             var newUser = new User {
                 Username = userForLoginDto.Username,
                 PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt
+                PasswordSalt = passwordSalt,
+                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.USER)}}
             };
-            var newRoleUser = new RoleUser
-            {
-                role = new Role {Name = RoleName.USER}, 
-                user = newUser
-            };
+
             customer.User = newUser;
             _customersRepository.Update(customer);
-            _usersRepository.CreateRoleUser(newRoleUser);
         }
-
+        
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
