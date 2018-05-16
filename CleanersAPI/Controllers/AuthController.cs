@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,6 @@ namespace CleanersAPI.Controllers
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
-
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
@@ -49,10 +50,14 @@ namespace CleanersAPI.Controllers
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                    new Claim(ClaimTypes.Name, userFromRepo.Username)
+                    new Claim(ClaimTypes.Name, userFromRepo.Username),
+                    new Claim(ClaimTypes.Role,
+                        userFromRepo.Roles.Select(roleUser => roleUser.role).Select(role => role.Name)
+                            .Contains(RoleName.ADMIN) ? RoleName.ADMIN.ToString() : RoleName.USER.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
+                SigningCredentials =
+                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
@@ -60,6 +65,5 @@ namespace CleanersAPI.Controllers
             var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
             return Ok(new {tokenString, user});
         }
-        
     }
 }

@@ -12,6 +12,7 @@ namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [Authorize(Roles = "ADMIN")]
     public class CustomersController : Controller
     {
         private readonly ICustomersService _customersService;

@@ -43,9 +43,17 @@ namespace CleanersAPI
             services.AddDbContext<CleanersApiContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("RemoteMysql")));
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .Build());
+            });
             services.AddAutoMapper();
-            
+
             services.AddScoped<DbContext, CleanersApiContext>();
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
@@ -113,7 +121,7 @@ namespace CleanersAPI
                 });
             }
 
-            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
+            app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseMvc();
         }
@@ -132,15 +140,25 @@ namespace CleanersAPI
                         return;
                     }
 
-                    context.Professions.Add(new Profession {Title = "Montage meubles", Description = "Montage blablaaaa...",Category = Category.Bricolage});
-                    context.Professions.Add(new Profession {Title = "Ménage", Description = "Les travaux ménagers etc",Category = Category.Cleaning});
+                    context.Professions.Add(new Profession
+                    {
+                        Title = "Montage meubles",
+                        Description = "Montage blablaaaa...",
+                        Category = Category.Bricolage
+                    });
+                    context.Professions.Add(new Profession
+                    {
+                        Title = "Ménage",
+                        Description = "Les travaux ménagers etc",
+                        Category = Category.Cleaning
+                    });
                     context.Professions.Add(new Profession {Title = "Peinture", Category = Category.Construction});
 
                     CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
                     var admin = new User {Username = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                     var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                    var adminRoleUser = new RoleUser{role = new Role {Name = RoleName.ADMIN}, user = admin};
-                    var userRoleUser = new RoleUser{role = new Role {Name = RoleName.USER}, user = igwe};
+                    var adminRoleUser = new RoleUser {role = new Role {Name = RoleName.ADMIN}, user = admin};
+                    var userRoleUser = new RoleUser {role = new Role {Name = RoleName.USER}, user = igwe};
                     var profession = new Profession {Title = "Gutera akabariro", Category = Category.Construction};
                     var professional = new Professional
                     {
@@ -175,15 +193,16 @@ namespace CleanersAPI
             }
         }
 
-        private static int GenerateRegistrationNumber(int min, int max)  
-        {  
-            var random = new Random();  
-            return random.Next(min, max);  
+        private static int GenerateRegistrationNumber(int min, int max)
+        {
+            var random = new Random();
+            return random.Next(min, max);
         }
-        
+
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
+            using (var hmac = new System.Security.Cryptography.HMACSHA512()
+            ) //Because HMACSHA512() implements IDisposable
             {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
