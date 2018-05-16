@@ -83,16 +83,11 @@ namespace CleanersAPI
                 };
             });
 
-//            services.AddAuthorization(options =>
-//            {
-//                options.AddPolicy("AdminRole", policy => policy.Requirements.Add(new RoleRequirement(RoleName.ADMIN.ToString())));
-//            });
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-//                options.SerializerSettings.DateFormatString = "dd/MM/yyyy HH:mm";
             });
         }
 
@@ -201,8 +196,7 @@ namespace CleanersAPI
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512()
-            ) //Because HMACSHA512() implements IDisposable
+            using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
             {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
