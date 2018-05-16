@@ -12,6 +12,6 @@ namespace CleanersAPI.Models
 
     public enum RoleName
     {
-        ADMIN, USER
+        Admin, User
     }
 }

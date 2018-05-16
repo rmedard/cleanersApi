@@ -53,7 +53,7 @@ namespace CleanersAPI.Controllers
                     new Claim(ClaimTypes.Name, userFromRepo.Username),
                     new Claim(ClaimTypes.Role,
                         userFromRepo.Roles.Select(roleUser => roleUser.role).Select(role => role.Name)
-                            .Contains(RoleName.ADMIN) ? RoleName.ADMIN.ToString() : RoleName.USER.ToString())
+                            .Contains(RoleName.Admin) ? RoleName.Admin.ToString() : RoleName.User.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials =

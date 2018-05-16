@@ -41,7 +41,7 @@ namespace CleanersAPI.Services.Impl
                 Username = userForLoginDto.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.USER)}}
+                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.User)}}
             };
             
             professional.User = newUser;
@@ -55,7 +55,7 @@ namespace CleanersAPI.Services.Impl
                 Username = userForLoginDto.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.USER)}}
+                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.User)}}
             };
 
             customer.User = newUser;
