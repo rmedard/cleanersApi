@@ -1,16 +1,12 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CleanersAPI.Controllers
 {
@@ -19,13 +15,11 @@ namespace CleanersAPI.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public AuthController(IAuthService authService, IConfiguration configuration, IMapper mapper)
         {
             _authService = authService;
-            _configuration = configuration;
             _mapper = mapper;
         }
 
@@ -43,27 +37,9 @@ namespace CleanersAPI.Controllers
                 return Unauthorized();
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Token").Value);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                    new Claim(ClaimTypes.Name, userFromRepo.Username),
-                    new Claim(ClaimTypes.Role,
-                        userFromRepo.Roles.Select(roleUser => roleUser.role).Select(role => role.Name)
-                            .Contains(RoleName.Admin) ? RoleName.Admin.ToString() : RoleName.User.ToString())
-                }),
-                Expires = DateTime.Now.AddDays(1),
-                SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
+            var token = _authService.generateLoginToken(userFromRepo);
             var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
-            return Ok(new {tokenString, user});
+            return Ok(new {token, user});
         }
     }
 }
