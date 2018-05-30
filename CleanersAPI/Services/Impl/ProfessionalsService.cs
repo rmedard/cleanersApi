@@ -7,7 +7,7 @@ using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class ProfessionalsService : IProfessionalsService
+    public class ProfessionalsService : CleanersService<Professional>, IProfessionalsService
     {
 
         private readonly IProfessionalsRepository _professionalsRepository;
@@ -17,14 +17,9 @@ namespace CleanersAPI.Services.Impl
             _professionalsRepository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public Task<IEnumerable<Professional>> GetAll()
+        protected override ICleanersRepository<Professional> GetRepository()
         {
-            return _professionalsRepository.GetAll();
-        }
-
-        public Task<Professional> GetOneById(int id)
-        {
-            return _professionalsRepository.GetById(id);
+            return _professionalsRepository;
         }
 
         public void GrantExpertise(Expertise expertise)
@@ -47,25 +42,20 @@ namespace CleanersAPI.Services.Impl
             return _professionalsRepository.GetProfessions(professionalId);
         }
 
-        public bool DoesExist(int professionalId)
+        public void OrderService(Expertise expertise)
         {
-            return _professionalsRepository.DoesExist(professionalId);
+            throw new NotImplementedException();
         }
 
-        public Task<Professional> Create(Professional professional)
+        public bool IsFree(DateTime dateTime, int numberOfHours)
+        {
+            throw new NotImplementedException();
+        }
+
+        public new Task<Professional> Create(Professional professional)
         {
             professional.RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000);
             return _professionalsRepository.Create(professional);
-        }
-
-        public Task<bool> Update(Professional professional)
-        {
-            return _professionalsRepository.Update(professional);
-        }
-
-        public Task<bool> Delete(int professionalId)
-        {
-            return _professionalsRepository.Delete(professionalId);
         }
         
         private static int GenerateRegistrationNumber(int min, int max)  

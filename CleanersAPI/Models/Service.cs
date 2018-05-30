@@ -5,8 +5,6 @@ namespace CleanersAPI.Models
     public class Service
     {
         public int Id { get; set; }
-
-        public int ExpertiseId { get; set; }
         
         public int CustomerId { get; set; }
         

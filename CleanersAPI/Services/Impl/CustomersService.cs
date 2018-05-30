@@ -6,7 +6,7 @@ using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class CustomersService : ICustomersService
+    public class CustomersService : CleanersService<Customer>, ICustomersService
     {
 
         private readonly ICustomersRepository _customersRepository;
@@ -16,35 +16,15 @@ namespace CleanersAPI.Services.Impl
             _customersRepository = customersRepository ?? throw new ArgumentNullException(nameof(customersRepository));
         }
 
-        public Task<IEnumerable<Customer>> GetAll()
+        protected override ICleanersRepository<Customer> GetRepository()
         {
-            return _customersRepository.GetAll();
+            return _customersRepository;
         }
 
-        public Task<Customer> GetOneById(int id)
-        {
-            return _customersRepository.GetById(id);
-        }
-
-        public bool DoesExist(int id)
-        {
-            return _customersRepository.DoesExist(id);
-        }
-
-        public Task<Customer> Create(Customer customer)
+        public new Task<Customer> Create(Customer customer)
         {
             customer.RegNumber = "CUST_" + GenerateRegistrationNumber(10000, 90000);
             return _customersRepository.Create(customer);
-        }
-
-        public Task<bool> Update(Customer customer)
-        {
-            return _customersRepository.Update(customer);
-        }
-
-        public Task<bool> Delete(int id)
-        {
-            return _customersRepository.Delete(id);
         }
 
         public Task<IEnumerable<Service>> getOrderedServices(int customerId)

@@ -71,7 +71,6 @@ namespace CleanersAPI.Controllers
             return BadRequest();
         }
 
-        // POST: api/People
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
         {
@@ -107,7 +106,6 @@ namespace CleanersAPI.Controllers
             return NoContent();
         }
         
-        // DELETE: api/People/5
         [HttpDelete("{id}")]
         public IActionResult DeleteCustomer([FromRoute] int id)
         {

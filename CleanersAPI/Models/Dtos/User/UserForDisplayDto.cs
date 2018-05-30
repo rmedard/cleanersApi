@@ -10,8 +10,8 @@ namespace CleanersAPI.Models.Dtos
         
         public ICollection<string> Roles { get; set; }
         
-        public int professionalId { get; set; }
+        public int ProfessionalId { get; set; }
         
-        public int customerId { get; set; }
+        public int CustomerId { get; set; }
     }
 }

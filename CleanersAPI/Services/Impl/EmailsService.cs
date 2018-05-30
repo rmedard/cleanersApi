@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class EmailsService : IEmailsService
+    public class EmailsService : CleanersService<Email>, IEmailsService
     {
 
         private readonly IEmailsRepository _emailsRepository;
@@ -21,35 +21,15 @@ namespace CleanersAPI.Services.Impl
             _configuration = configuration;
         }
 
-        public Task<IEnumerable<Email>> GetAll()
+        protected override ICleanersRepository<Email> GetRepository()
         {
-            return _emailsRepository.GetAll();
+            return _emailsRepository;
         }
 
-        public Task<Email> GetOneById(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool DoesExist(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<Email> Create(Email t)
+        public new Task<Email> Create(Email t)
         {
             var newEmail = SendEmail(t);
             return _emailsRepository.Create(newEmail);
-        }
-
-        public Task<bool> Update(Email t)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<bool> Delete(int id)
-        {
-            throw new System.NotImplementedException();
         }
 
         private Email SendEmail(Email email)
