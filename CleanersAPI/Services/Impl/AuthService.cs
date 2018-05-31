@@ -54,7 +54,7 @@ namespace CleanersAPI.Services.Impl
             _professionalsRepository.Update(professional);
         }
 
-        public string generateLoginToken(User user)
+        public string GenerateLoginToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Token").Value);

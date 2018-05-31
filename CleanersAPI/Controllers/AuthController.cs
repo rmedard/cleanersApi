@@ -37,7 +37,7 @@ namespace CleanersAPI.Controllers
                 return Unauthorized();
             }
 
-            var token = _authService.generateLoginToken(userFromRepo);
+            var token = _authService.GenerateLoginToken(userFromRepo);
             var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
             return Ok(new {token, user});
         }
