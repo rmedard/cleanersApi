@@ -9,12 +9,15 @@ namespace CleanersAPI.Services.Impl
 {
     public class ProfessionalsService : CleanersService<Professional>, IProfessionalsService
     {
-
         private readonly IProfessionalsRepository _professionalsRepository;
+        private readonly IServicesRepository _servicesRepository;
 
-        public ProfessionalsService(IProfessionalsRepository repository)
+        public ProfessionalsService(IProfessionalsRepository professionalsRepository,
+            IServicesRepository servicesRepository)
         {
-            _professionalsRepository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _professionalsRepository = professionalsRepository ??
+                                       throw new ArgumentNullException(nameof(professionalsRepository));
+            _servicesRepository = servicesRepository;
         }
 
         protected override ICleanersRepository<Professional> GetRepository()
@@ -47,9 +50,13 @@ namespace CleanersAPI.Services.Impl
             throw new NotImplementedException();
         }
 
-        public bool IsFree(DateTime dateTime, int numberOfHours)
+        public bool IsFree(int professionalId, DateTime dateTime, int numberOfHours)
         {
-            throw new NotImplementedException();
+            var starTime = dateTime;
+            var endTime = dateTime.AddHours(numberOfHours);
+            return _professionalsRepository.GetOrders(professionalId).Result.Any(serv =>
+                DateTime.Compare(serv.StartTime, endTime) < 0 &&
+                DateTime.Compare(serv.StartTime.AddHours(serv.Duration), starTime) > 0);
         }
 
         public new Task<Professional> Create(Professional professional)
@@ -57,11 +64,11 @@ namespace CleanersAPI.Services.Impl
             professional.RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000);
             return _professionalsRepository.Create(professional);
         }
-        
-        private static int GenerateRegistrationNumber(int min, int max)  
-        {  
-            var random = new Random();  
-            return random.Next(min, max);  
+
+        private static int GenerateRegistrationNumber(int min, int max)
+        {
+            var random = new Random();
+            return random.Next(min, max);
         }
     }
 }
