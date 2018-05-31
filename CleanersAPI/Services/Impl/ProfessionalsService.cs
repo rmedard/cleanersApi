@@ -10,14 +10,11 @@ namespace CleanersAPI.Services.Impl
     public class ProfessionalsService : CleanersService<Professional>, IProfessionalsService
     {
         private readonly IProfessionalsRepository _professionalsRepository;
-        private readonly IServicesRepository _servicesRepository;
 
-        public ProfessionalsService(IProfessionalsRepository professionalsRepository,
-            IServicesRepository servicesRepository)
+        public ProfessionalsService(IProfessionalsRepository professionalsRepository)
         {
             _professionalsRepository = professionalsRepository ??
                                        throw new ArgumentNullException(nameof(professionalsRepository));
-            _servicesRepository = servicesRepository;
         }
 
         protected override ICleanersRepository<Professional> GetRepository()
