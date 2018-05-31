@@ -12,5 +12,6 @@ namespace CleanersAPI.Services
         string GenerateLoginToken(User user);
         void AddUserToProfessional(Professional professional, UserForLoginDto userForLoginDto);
         void AddUserToCustomer(Customer customer, UserForLoginDto userForLoginDto);
+        Task<User> GetUserById(int userId);
     }
 }

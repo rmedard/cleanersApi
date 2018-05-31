@@ -1,27 +1,32 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.Service;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [Authorize]
     public class ServicesController : Controller
     {
         private readonly IProfessionalsService _professionalsService;
         private readonly IExpertiseService _expertiseService;
         private readonly IServicesService _servicesService;
+        private readonly IAuthService _authService;
         private readonly IMapper _mapper;
 
         public ServicesController(IProfessionalsService professionalsService, IExpertiseService expertiseService,
-            IServicesService servicesService, IMapper mapper)
+            IServicesService servicesService, IAuthService authService, IMapper mapper)
         {
             _professionalsService = professionalsService;
             _expertiseService = expertiseService;
             _servicesService = servicesService;
+            _authService = authService;
             _mapper = mapper;
         }
 
@@ -33,6 +38,18 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
+            if (userFromRepo.Customer == null)
+            {
+                return NotFound("No customer found");
+            }
+
+            if (userFromRepo.Customer.Id != serviceForCreate.CustomerId)
+            {
+                return Unauthorized();
+            }
+            
             var isFree = _professionalsService.IsFree(serviceForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 serviceForCreate.StartTime, serviceForCreate.Duration);
             if (!isFree)
@@ -49,7 +66,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Expertise not found");
             }
 
-            service.Customer = null; //Todo Fix this
+            service.Customer = userFromRepo.Customer;
             service.Status = Status.Initiated;
             service.TotalCost = expertise.UnitPrice * serviceForCreate.Duration;
             var newService = _servicesService.Create(service);

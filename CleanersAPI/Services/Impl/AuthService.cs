@@ -17,16 +17,19 @@ namespace CleanersAPI.Services.Impl
         private readonly IAuthRepository _authRepository;
         private readonly IProfessionalsRepository _professionalsRepository;
         private readonly ICustomersRepository _customersRepository;
+        private readonly IUsersRepository _usersRepository;
         private readonly IConfiguration _configuration;
 
         public AuthService(IAuthRepository authRepository, 
             IProfessionalsRepository professionalsRepository,
-            ICustomersRepository customersRepository,
+            ICustomersRepository customersRepository, 
+            IUsersRepository usersRepository,
             IConfiguration configuration)
         {
             _authRepository = authRepository;
             _professionalsRepository = professionalsRepository;
             _customersRepository = customersRepository;
+            _usersRepository = usersRepository;
             _configuration = configuration;
         }
 
@@ -88,7 +91,12 @@ namespace CleanersAPI.Services.Impl
             customer.User = newUser;
             _customersRepository.Update(customer);
         }
-        
+
+        public Task<User> GetUserById(int userId)
+        {
+            return _usersRepository.GetById(userId);
+        }
+
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
