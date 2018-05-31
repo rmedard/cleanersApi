@@ -33,7 +33,8 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var isFree = _professionalsService.IsFree(serviceForCreate.StartTime, serviceForCreate.Duration);
+            var isFree = _professionalsService.IsFree(serviceForCreate.ExpertiseForServiceCreate.ProfessionalId,
+                serviceForCreate.StartTime, serviceForCreate.Duration);
             if (!isFree)
             {
                 return BadRequest("Professional not available");
