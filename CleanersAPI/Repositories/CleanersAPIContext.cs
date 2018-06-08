@@ -30,9 +30,12 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<RoleUser>().HasOne(key => key.user).WithMany(u => u.Roles).HasForeignKey(u => u.userId);
             
             modelBuilder.Entity<Service>().ToTable("services");
+            modelBuilder.Entity<Service>().HasOne(s => s.Customer).WithMany(serv => serv.orders);
+            modelBuilder.Entity<Service>().HasOne(s => s.Expertise);
+            modelBuilder.Entity<Service>().Property(serv => serv.TotalCost).HasColumnType("decimal(10,2)");
             
             modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => new {e.ProfessionId, e.ProfessionalId});
-            modelBuilder.Entity<Expertise>().Property(p => p.UnitPrice).HasColumnType("decimal(10,2)");
+            modelBuilder.Entity<Expertise>().Property(exp => exp.UnitPrice).HasColumnType("decimal(10,2)");
 
             modelBuilder.Entity<Email>().ToTable("emails");
         }

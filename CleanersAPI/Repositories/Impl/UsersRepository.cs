@@ -24,7 +24,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<User> GetById(int id)
         {
-            throw new System.NotImplementedException();
+            return _context.Users.Include(u => u.Customer).Include(u => u.Professional).SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public bool DoesExist(int id)

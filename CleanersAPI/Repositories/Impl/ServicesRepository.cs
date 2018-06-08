@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -13,9 +14,9 @@ namespace CleanersAPI.Repositories.Impl
             _context = context;
         }
 
-        public Task<IEnumerable<Service>> GetAll()
+        public async Task<IEnumerable<Service>> GetAll()
         {
-            throw new System.NotImplementedException();
+            return await _context.Services.ToListAsync();
         }
 
         public Task<Service> GetById(int id)
@@ -28,9 +29,11 @@ namespace CleanersAPI.Repositories.Impl
             throw new System.NotImplementedException();
         }
 
-        public Task<Service> Create(Service t)
+        public async Task<Service> Create(Service t)
         {
-            throw new System.NotImplementedException();
+            var order = _context.Services.Add(t).Entity;
+            await _context.SaveChangesAsync();
+            return order;
         }
 
         public Task<bool> Update(Service t)

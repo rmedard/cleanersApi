@@ -15,5 +15,7 @@ namespace CleanersAPI.Models
         public int? UserId { get; set; }
         
         public User User { get; set; }
+        
+        public ICollection<Service> orders { get; } = new List<Service>();
     }
 }

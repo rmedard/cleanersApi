@@ -40,14 +40,15 @@ namespace CleanersAPI.Controllers
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
+            
+            if (userFromRepo == null ||  userFromRepo.Customer.Id != serviceForCreate.CustomerId)
+            {
+                return Unauthorized();
+            }
+            
             if (userFromRepo.Customer == null)
             {
                 return NotFound("No customer found");
-            }
-
-            if (userFromRepo.Customer.Id != serviceForCreate.CustomerId)
-            {
-                return Unauthorized();
             }
             
             var isFree = _professionalsService.IsFree(serviceForCreate.ExpertiseForServiceCreate.ProfessionalId,
@@ -66,6 +67,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Expertise not found");
             }
 
+            service.Expertise = expertise;
             service.Customer = userFromRepo.Customer;
             service.Status = Status.Initiated;
             service.TotalCost = expertise.UnitPrice * serviceForCreate.Duration;

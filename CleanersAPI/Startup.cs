@@ -69,6 +69,12 @@ namespace CleanersAPI
 
             services.AddScoped<IUsersRepository, UsersRepository>();
 
+            services.AddScoped<IExpertiseService, ExpertiseService>();
+            services.AddScoped<IExpertiseRepository, ExpertiseRepository>();
+
+            services.AddScoped<IServicesService, ServicesService>();
+            services.AddScoped<IServicesRepository, ServicesRepository>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters

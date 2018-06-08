@@ -51,10 +51,11 @@ namespace CleanersAPI.Services.Impl
         {
             var starTime = dateTime;
             var endTime = dateTime.AddHours(numberOfHours);
-            return _professionalsRepository.GetOrders(professionalId).Result.Any(serv =>
-                DateTime.Compare(serv.StartTime, endTime) < 0 &&
-                DateTime.Compare(serv.StartTime.AddHours(serv.Duration), starTime) > 0 && 
-                serv.Status == Status.Accepted);
+
+            return !_professionalsRepository.GetOrders(professionalId).Result.Any(serv =>
+                       DateTime.Compare(serv.StartTime, endTime) < 0 &&
+                       DateTime.Compare(serv.StartTime.AddHours(serv.Duration), starTime) > 0 &&
+                       serv.Status == Status.Accepted);
         }
 
         public new Task<Professional> Create(Professional professional)
