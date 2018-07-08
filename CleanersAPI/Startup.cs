@@ -36,9 +36,9 @@ namespace CleanersAPI
         public void ConfigureServices(IServiceCollection services)
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
-            //services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
-            services.AddDbContext<CleanersApiContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("RemoteMysql")));
+            services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+//            services.AddDbContext<CleanersApiContext>(options =>
+//                options.UseMySql(Configuration.GetConnectionString("RemoteMysql")));
 
             services.AddCors(options =>
             {
@@ -119,7 +119,8 @@ namespace CleanersAPI
                 });
             }
 
-            app.UseCors("CorsPolicy");
+//            app.UseCors("CorsPolicy");
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseMvc();
         }

@@ -25,7 +25,10 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Customer> GetById(int id)
         {
-            return await _context.Customers.FirstOrDefaultAsync(customer => customer.Id == id);
+            return await _context.Customers
+                .Include(c => c.Address)
+                .Include(c => c.orders).ThenInclude(o => o.Expertise).ThenInclude(e => e.Profession)
+                .FirstOrDefaultAsync(customer => customer.Id == id);
         }
 
         public bool DoesExist(int id)
