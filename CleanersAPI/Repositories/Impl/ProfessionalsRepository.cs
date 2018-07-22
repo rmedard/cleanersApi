@@ -42,10 +42,20 @@ namespace CleanersAPI.Repositories.Impl
             _context.SaveChanges();
         }
 
-        public async void UpdateExpertise(Expertise expertise)
+        public void UpdateExpertise(Expertise expertise)
         {
             _context.Entry(expertise).State = EntityState.Modified;
-            await _context.SaveChangesAsync();         
+            Console.WriteLine("Yahinduwe: " + expertise);
+            try
+            {
+                _context.SaveChangesAsync();    
+            }
+            catch (DbUpdateException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+                 
         }
 
         public async Task<IEnumerable<Profession>> GetProfessions(int professionalId)
