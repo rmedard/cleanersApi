@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
-using SQLitePCL;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -22,16 +20,16 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Professionals.Include(prof => prof.Address)
                 .Include(prof => prof.Expertises)
-                .ThenInclude(exp => exp.Profession).ToListAsync();
+                .ThenInclude(exp => exp.Service).ToListAsync();
         }
 
         public Task<Professional> GetById(int id)
         {
-            return _context.Professionals.Include(prof => prof.Address).Include(prof => prof.Expertises).ThenInclude(ex => ex.Profession)
+            return _context.Professionals.Include(prof => prof.Address).Include(prof => prof.Expertises).ThenInclude(ex => ex.Service)
                 .SingleOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<IEnumerable<Service>> GetOrders(int professionalId)
+        public async Task<IEnumerable<Reservation>> GetOrders(int professionalId)
         {
             return await _context.Services.Include(serv => serv.Expertise).Where(s => s.Expertise.ProfessionalId == professionalId).ToListAsync();
         }
@@ -58,10 +56,10 @@ namespace CleanersAPI.Repositories.Impl
                  
         }
 
-        public async Task<IEnumerable<Profession>> GetProfessions(int professionalId)
+        public async Task<IEnumerable<Service>> GetProfessions(int professionalId)
         {
-            var professional = await _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Profession).SingleAsync(prof => prof.Id == professionalId);
-            return professional.Expertises.Select(expertise => expertise.Profession).ToList();
+            var professional = await _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Service).SingleAsync(prof => prof.Id == professionalId);
+            return professional.Expertises.Select(expertise => expertise.Service).ToList();
         }
 
         public bool DoesExist(int professionalId)

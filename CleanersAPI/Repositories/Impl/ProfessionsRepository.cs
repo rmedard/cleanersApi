@@ -17,12 +17,12 @@ namespace CleanersAPI.Repositories.Impl
             _context = context;
         }
 
-        public async Task<IEnumerable<Profession>> GetAll()
+        public async Task<IEnumerable<Service>> GetAll()
         {
             return await _context.Professions.ToListAsync();
         }
 
-        public Task<Profession> GetById(int id)
+        public Task<Service> GetById(int id)
         {
             throw new NotImplementedException();
         }
@@ -32,16 +32,16 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Professions.Any(p => p.Id == professionId);
         }
 
-        public async Task<Profession> Create(Profession profession)
+        public async Task<Service> Create(Service service)
         {
-            var newProfession = _context.Professions.Add(profession).Entity;
+            var newProfession = _context.Professions.Add(service).Entity;
             await _context.SaveChangesAsync();
             return newProfession;
         }
 
-        public async Task<bool> Update(Profession profession)
+        public async Task<bool> Update(Service service)
         {
-            _context.Entry(profession).State = EntityState.Modified;
+            _context.Entry(service).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();

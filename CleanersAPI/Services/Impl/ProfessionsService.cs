@@ -7,7 +7,7 @@ using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class ProfessionsService : CleanersService<Profession>, IProfessionsService
+    public class ProfessionsService : CleanersService<Service>, IProfessionsService
     {
 
         private readonly IProfessionsRepository _professionsRepository;
@@ -17,7 +17,7 @@ namespace CleanersAPI.Services.Impl
             _professionsRepository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        protected override ICleanersRepository<Profession> GetRepository()
+        protected override ICleanersRepository<Service> GetRepository()
         {
             return _professionsRepository;
         }

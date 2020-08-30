@@ -27,7 +27,7 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Customers
                 .Include(c => c.Address)
-                .Include(c => c.orders).ThenInclude(o => o.Expertise).ThenInclude(e => e.Profession)
+                .Include(c => c.orders).ThenInclude(o => o.Expertise).ThenInclude(e => e.Service)
                 .FirstOrDefaultAsync(customer => customer.Id == id);
         }
 
@@ -78,7 +78,7 @@ namespace CleanersAPI.Repositories.Impl
             return false;
         }
 
-        public async Task<IEnumerable<Service>> getCustomerOrderedServices(int customerId)
+        public async Task<IEnumerable<Reservation>> getCustomerOrderedServices(int customerId)
         {
             return await _context.Services.Where(s => s.CustomerId == customerId).ToListAsync();
         }

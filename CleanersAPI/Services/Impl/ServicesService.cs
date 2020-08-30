@@ -5,7 +5,7 @@ using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class ServicesService : CleanersService<Service>, IServicesService
+    public class ServicesService : CleanersService<Reservation>, IServicesService
     {
 
         private readonly IServicesRepository _servicesRepository;
@@ -15,7 +15,7 @@ namespace CleanersAPI.Services.Impl
             _servicesRepository = servicesRepository;
         }
 
-        protected override ICleanersRepository<Service> GetRepository()
+        protected override ICleanersRepository<Reservation> GetRepository()
         {
             return _servicesRepository;
         }

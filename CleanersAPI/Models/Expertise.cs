@@ -9,14 +9,14 @@ namespace CleanersAPI.Models
     public class Expertise
     {
         [Required]
-        public int ProfessionId { get; set; }
+        public int ServiceId { get; set; }
 
         [Required]
         public int ProfessionalId { get; set; }
         
-        public decimal UnitPrice { get; set; }
+        public decimal Rate { get; set; }
         
-        public Profession Profession { get; set; }
+        public Service Service { get; set; }
 
         public Professional Professional { get; set; }
 

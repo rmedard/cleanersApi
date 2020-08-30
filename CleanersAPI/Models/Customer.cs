@@ -16,6 +16,6 @@ namespace CleanersAPI.Models
         
         public User User { get; set; }
         
-        public ICollection<Service> orders { get; } = new List<Service>();
+        public ICollection<Reservation> orders { get; } = new List<Reservation>();
     }
 }

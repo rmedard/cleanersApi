@@ -6,7 +6,7 @@ using CleanersAPI.Models;
 
 namespace CleanersAPI.Repositories
 {
-    public interface IProfessionsRepository : ICleanersRepository<Profession>
+    public interface IProfessionsRepository : ICleanersRepository<Service>
     {
         
     }

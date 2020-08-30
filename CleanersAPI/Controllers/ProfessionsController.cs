@@ -23,7 +23,7 @@ namespace CleanersAPI.Controllers
 
         // GET: api/Professions
         [HttpGet]
-        public Task<IEnumerable<Profession>> GetProfession()
+        public Task<IEnumerable<Service>> GetProfession()
         {
             return _professionsService.GetAll();
         }
@@ -49,19 +49,19 @@ namespace CleanersAPI.Controllers
 
         // PUT: api/Professions/5
         [HttpPut("{id}")]
-        public IActionResult PutProfession([FromRoute] int id, [FromBody] Profession profession)
+        public IActionResult PutProfession([FromRoute] int id, [FromBody] Service service)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != profession.Id)
+            if (id != service.Id)
             {
                 return BadRequest();
             }
 
-            var updated = _professionsService.Update(profession);
+            var updated = _professionsService.Update(service);
 
             if (!updated.Result)
             {
@@ -73,14 +73,14 @@ namespace CleanersAPI.Controllers
 
         // POST: api/Professions
         [HttpPost]
-        public async Task<IActionResult> PostProfession([FromBody] Profession profession)
+        public async Task<IActionResult> PostProfession([FromBody] Service service)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var newProfession = await _professionsService.Create(profession); 
+            var newProfession = await _professionsService.Create(service); 
 
             return CreatedAtAction("GetProfession", new { id = newProfession.Id }, newProfession);
         }

@@ -14,12 +14,12 @@ namespace CleanersAPI.Repositories.Impl
             _context = context;
         }
 
-        public async Task<IEnumerable<Service>> GetAll()
+        public async Task<IEnumerable<Reservation>> GetAll()
         {
             return await _context.Services.ToListAsync();
         }
 
-        public Task<Service> GetById(int id)
+        public Task<Reservation> GetById(int id)
         {
             throw new System.NotImplementedException();
         }
@@ -29,14 +29,14 @@ namespace CleanersAPI.Repositories.Impl
             throw new System.NotImplementedException();
         }
 
-        public async Task<Service> Create(Service t)
+        public async Task<Reservation> Create(Reservation t)
         {
             var order = _context.Services.Add(t).Entity;
             await _context.SaveChangesAsync();
             return order;
         }
 
-        public Task<bool> Update(Service t)
+        public Task<bool> Update(Reservation t)
         {
             throw new System.NotImplementedException();
         }

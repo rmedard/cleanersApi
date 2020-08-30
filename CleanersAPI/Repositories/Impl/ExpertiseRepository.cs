@@ -23,13 +23,13 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<Expertise> GetOne(int professionalId, int professionId)
         {
             return await _context.Expertises.FirstOrDefaultAsync(exp =>
-                exp.ProfessionalId == professionalId && exp.ProfessionId == professionId);
+                exp.ProfessionalId == professionalId && exp.ServiceId == professionId);
         }
 
         public bool DoesExist(int professionalId, int professionId)
         {
             return _context.Expertises.Any(exp =>
-                exp.ProfessionalId == professionalId && exp.ProfessionId == professionId);
+                exp.ProfessionalId == professionalId && exp.ServiceId == professionId);
         }
     }
 }

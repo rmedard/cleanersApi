@@ -6,7 +6,7 @@ using CleanersAPI.Models;
 
 namespace CleanersAPI.Services
 {
-    public interface IProfessionsService : ICleanersService<Profession>
+    public interface IProfessionsService : ICleanersService<Service>
     {
         
     }

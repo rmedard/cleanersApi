@@ -58,7 +58,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Professional not available");
             }
 
-            var service = _mapper.Map<Service>(serviceForCreate);
+            var service = _mapper.Map<Reservation>(serviceForCreate);
             var expertise = _expertiseService.FindExpertise(
                 serviceForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 serviceForCreate.ExpertiseForServiceCreate.ProfessionId).Result;
@@ -69,8 +69,8 @@ namespace CleanersAPI.Controllers
 
             service.Expertise = expertise;
             service.Customer = userFromRepo.Customer;
-            service.Status = Status.Initiated;
-            service.TotalCost = expertise.UnitPrice * serviceForCreate.Duration;
+            service.Status = Status.Confirmed;
+            service.TotalCost = expertise.Rate * serviceForCreate.Duration;
             var newService = _servicesService.Create(service);
             if (newService == null)
             {

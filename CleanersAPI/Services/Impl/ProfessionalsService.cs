@@ -32,12 +32,12 @@ namespace CleanersAPI.Services.Impl
             _professionalsRepository.UpdateExpertise(expertise);
         }
 
-        public Task<IEnumerable<Service>> GetOrders(int professionalId)
+        public Task<IEnumerable<Reservation>> GetOrders(int professionalId)
         {
             return _professionalsRepository.GetOrders(professionalId);
         }
 
-        public Task<IEnumerable<Profession>> GetProfessions(int professionalId)
+        public Task<IEnumerable<Service>> GetProfessions(int professionalId)
         {
             return _professionalsRepository.GetProfessions(professionalId);
         }
@@ -54,8 +54,8 @@ namespace CleanersAPI.Services.Impl
 
             return !_professionalsRepository.GetOrders(professionalId).Result.Any(serv =>
                        DateTime.Compare(serv.StartTime, endTime) < 0 &&
-                       DateTime.Compare(serv.StartTime.AddHours(serv.Duration), starTime) > 0 &&
-                       serv.Status == Status.Accepted);
+                       DateTime.Compare(endTime, starTime) > 0 &&
+                       serv.Status == Status.Confirmed);
         }
 
         public new Task<Professional> Create(Professional professional)

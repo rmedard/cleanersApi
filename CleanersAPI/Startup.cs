@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -49,7 +50,7 @@ namespace CleanersAPI
                         .AllowCredentials()
                         .Build());
             });
-            services.AddAutoMapper();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<DbContext, CleanersApiContext>();
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
@@ -86,7 +87,7 @@ namespace CleanersAPI
                 };
             });
 
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
@@ -95,7 +96,7 @@ namespace CleanersAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -122,7 +123,7 @@ namespace CleanersAPI
 //            app.UseCors("CorsPolicy");
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
-            app.UseMvc();
+             //app.UseMvc();
         }
 
         private static class DbInitializer
@@ -139,26 +140,26 @@ namespace CleanersAPI
                         return;
                     }
 
-                    context.Professions.Add(new Profession
+                    context.Professions.Add(new Service
                     {
                         Title = "Montage meubles",
                         Description = "Montage blablaaaa...",
-                        Category = Category.Bricolage
+                        Category = Category.Interieur
                     });
-                    context.Professions.Add(new Profession
+                    context.Professions.Add(new Service
                     {
                         Title = "Ménage",
                         Description = "Les travaux ménagers etc",
-                        Category = Category.Cleaning
+                        Category = Category.Interieur
                     });
-                    context.Professions.Add(new Profession {Title = "Peinture", Category = Category.Construction});
+                    context.Professions.Add(new Service {Title = "Peinture", Category = Category.Interieur});
 
                     CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
                     var admin = new User {Username = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                     var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                     var adminRoleUser = new RoleUser {role = new Role {Name = RoleName.Admin}, user = admin};
                     var userRoleUser = new RoleUser {role = new Role {Name = RoleName.User}, user = igwe};
-                    var profession = new Profession {Title = "Gutera akabariro", Category = Category.Construction};
+                    var profession = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
                     var professional = new Professional
                     {
                         Address = new Address
@@ -178,9 +179,9 @@ namespace CleanersAPI
 
                     var expertise = new Expertise
                     {
-                        Profession = profession,
+                        Service = profession,
                         Professional = professional,
-                        UnitPrice = 500
+                        Rate = 500
                     };
 
                     context.Users.Add(admin);

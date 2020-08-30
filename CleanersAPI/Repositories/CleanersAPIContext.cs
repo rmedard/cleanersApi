@@ -21,7 +21,7 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Professional>().HasOne(a => a.User)
                 .WithOne(u => u.Professional).HasForeignKey<Professional>(p => p.UserId).OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<Profession>().ToTable("professions");
+            modelBuilder.Entity<Service>().ToTable("professions");
             
             modelBuilder.Entity<User>().ToTable("users").HasIndex(u => u.Username).IsUnique();
             modelBuilder.Entity<Role>().ToTable("roles").HasIndex(r => r.Name).IsUnique();
@@ -29,13 +29,13 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<RoleUser>().HasOne(key => key.role).WithMany(r => r.Users).HasForeignKey(r => r.roleId);
             modelBuilder.Entity<RoleUser>().HasOne(key => key.user).WithMany(u => u.Roles).HasForeignKey(u => u.userId);
             
-            modelBuilder.Entity<Service>().ToTable("services");
-            modelBuilder.Entity<Service>().HasOne(s => s.Customer).WithMany(serv => serv.orders);
-            modelBuilder.Entity<Service>().HasOne(s => s.Expertise);
-            modelBuilder.Entity<Service>().Property(serv => serv.TotalCost).HasColumnType("decimal(10,2)");
+            modelBuilder.Entity<Reservation>().ToTable("services");
+            modelBuilder.Entity<Reservation>().HasOne(s => s.Customer).WithMany(serv => serv.orders);
+            modelBuilder.Entity<Reservation>().HasOne(s => s.Expertise);
+            modelBuilder.Entity<Reservation>().Property(serv => serv.TotalCost).HasColumnType("decimal(5,2)");
             
-            modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => new {e.ProfessionId, e.ProfessionalId});
-            modelBuilder.Entity<Expertise>().Property(exp => exp.UnitPrice).HasColumnType("decimal(10,2)");
+            modelBuilder.Entity<Expertise>().ToTable("professionalService").HasKey(e => new {ProfessionId = e.ServiceId, e.ProfessionalId});
+            modelBuilder.Entity<Expertise>().Property(exp => exp.Rate).HasColumnType("decimal(3,2)");
 
             modelBuilder.Entity<Email>().ToTable("emails");
         }
@@ -44,11 +44,11 @@ namespace CleanersAPI.Repositories
 
         public DbSet<Professional> Professionals { get; set; }
 
-        public DbSet<Profession> Professions { get; set; }
+        public DbSet<Service> Professions { get; set; }
 
         public DbSet<Expertise> Expertises { get; set; }
         
-        public DbSet<Service> Services { get; set; }
+        public DbSet<Reservation> Services { get; set; }
         
         public DbSet<Email> Emails { get; set; }
         

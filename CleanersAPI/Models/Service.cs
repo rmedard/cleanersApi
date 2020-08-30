@@ -1,31 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CleanersAPI.Models
 {
     public class Service
     {
         public int Id { get; set; }
-        
-        public int CustomerId { get; set; }
-        
-        public DateTime StartTime { get; set; }
-        
-        public int Duration { get; set; }
 
-        public decimal TotalCost { get; set; }
+        [Required] public string Title { get; set; }
         
-        public Status Status { get; set; }
-        
-        public Expertise Expertise { get; set; }
-        
-        public Customer Customer { get; set; }
+        public string Description { get; set; }
+
+        [Required] public Category Category { get; set; }
     }
-    
-    public enum Status
+
+    public enum Category
     {
-        Initiated,
-        Accepted,
-        Rejected,
-        Done
+        Exterieur,
+        Interieur
     }
 }

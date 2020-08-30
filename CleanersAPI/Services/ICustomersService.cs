@@ -6,6 +6,6 @@ namespace CleanersAPI.Services
 {
     public interface ICustomersService : ICleanersService<Customer>
     {
-        Task<IEnumerable<Service>> getOrderedServices(int customerId);
+        Task<IEnumerable<Reservation>> getOrderedServices(int customerId);
     }
 }
