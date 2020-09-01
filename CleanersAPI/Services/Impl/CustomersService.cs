@@ -23,7 +23,6 @@ namespace CleanersAPI.Services.Impl
 
         public new Task<Customer> Create(Customer customer)
         {
-            customer.RegNumber = "CUST_" + GenerateRegistrationNumber(10000, 90000);
             return _customersRepository.Create(customer);
         }
 

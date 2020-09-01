@@ -10,15 +10,17 @@ namespace CleanersAPI.Models
     {
         public int Id { get; set; }
 
-        public string Number { get; set; }
+        public string PlotNumber { get; set; }
 
         [Required]
-        public string Street { get; set; }
+        public string StreetName { get; set; }
 
         [Required]
-        public string Commune { get; set; }
+        public string City { get; set; }
 
         [Required]
-        public string Zipcode { get; set; }
+        public string PostalCode { get; set; }
+        
+        public string GeoLocation { get; set; }
     }
 }

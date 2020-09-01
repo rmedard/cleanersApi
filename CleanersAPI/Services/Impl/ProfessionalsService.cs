@@ -60,7 +60,6 @@ namespace CleanersAPI.Services.Impl
 
         public new Task<Professional> Create(Professional professional)
         {
-            professional.RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000);
             return _professionalsRepository.Create(professional);
         }
 

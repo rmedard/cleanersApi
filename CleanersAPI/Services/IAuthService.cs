@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
+using CleanersAPI.Models.Dtos.User;
 
 namespace CleanersAPI.Services
 {

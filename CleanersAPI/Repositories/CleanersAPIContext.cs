@@ -24,18 +24,18 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Service>().ToTable("professions");
             
             modelBuilder.Entity<User>().ToTable("users").HasIndex(u => u.Username).IsUnique();
-            modelBuilder.Entity<Role>().ToTable("roles").HasIndex(r => r.Name).IsUnique();
+            modelBuilder.Entity<Role>().ToTable("roles").HasIndex(r => r.RoleName).IsUnique();
             modelBuilder.Entity<RoleUser>().HasKey(key => new {key.roleId, key.userId});
             modelBuilder.Entity<RoleUser>().HasOne(key => key.role).WithMany(r => r.Users).HasForeignKey(r => r.roleId);
             modelBuilder.Entity<RoleUser>().HasOne(key => key.user).WithMany(u => u.Roles).HasForeignKey(u => u.userId);
             
             modelBuilder.Entity<Reservation>().ToTable("services");
-            modelBuilder.Entity<Reservation>().HasOne(s => s.Customer).WithMany(serv => serv.orders);
+            modelBuilder.Entity<Reservation>().HasOne(s => s.Customer).WithMany(serv => serv.Orders);
             modelBuilder.Entity<Reservation>().HasOne(s => s.Expertise);
             modelBuilder.Entity<Reservation>().Property(serv => serv.TotalCost).HasColumnType("decimal(5,2)");
             
             modelBuilder.Entity<Expertise>().ToTable("professionalService").HasKey(e => new {ProfessionId = e.ServiceId, e.ProfessionalId});
-            modelBuilder.Entity<Expertise>().Property(exp => exp.Rate).HasColumnType("decimal(3,2)");
+            modelBuilder.Entity<Expertise>().Property(exp => exp.HourlyRate).HasColumnType("decimal(3,2)");
 
             modelBuilder.Entity<Email>().ToTable("emails");
         }

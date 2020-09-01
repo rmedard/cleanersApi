@@ -9,13 +9,13 @@ namespace CleanersAPI.Models
     public class Customer : Person
     {
         public int Id { get; set; }
-        
-        public string RegNumber { get; set; }
-        
+
         public int? UserId { get; set; }
         
         public User User { get; set; }
         
-        public ICollection<Reservation> orders { get; } = new List<Reservation>();
+        public bool IsActive { get; set; }
+        
+        public ICollection<Reservation> Orders { get; } = new List<Reservation>();
     }
 }

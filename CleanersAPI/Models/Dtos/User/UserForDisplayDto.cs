@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CleanersAPI.Models.Dtos
+namespace CleanersAPI.Models.Dtos.User
 {
     public class UserForDisplayDto
     {

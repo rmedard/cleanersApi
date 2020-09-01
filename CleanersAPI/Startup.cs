@@ -157,21 +157,20 @@ namespace CleanersAPI
                     CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
                     var admin = new User {Username = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                     var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                    var adminRoleUser = new RoleUser {role = new Role {Name = RoleName.Admin}, user = admin};
-                    var userRoleUser = new RoleUser {role = new Role {Name = RoleName.User}, user = igwe};
+                    var adminRoleUser = new RoleUser {role = new Role {RoleName = RoleName.Admin}, user = admin};
+                    var userRoleUser = new RoleUser {role = new Role {RoleName = RoleName.User}, user = igwe};
                     var profession = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
                     var professional = new Professional
                     {
                         Address = new Address
                         {
-                            Commune = "Schaerbeek",
-                            Street = "Rue Gaucheret",
-                            Zipcode = "1030",
-                            Number = "4"
+                            City = "Schaerbeek",
+                            StreetName = "Rue Gaucheret",
+                            PostalCode = "1030",
+                            PlotNumber = "4"
                         },
                         FirstName = "Igwe",
                         LastName = "Kabutindi",
-                        RegNumber = "PRO_" + GenerateRegistrationNumber(10000, 90000),
                         Email = "medard.rebero@gmail.com",
                         Phone = "+32483378014",
                         User = igwe
@@ -181,7 +180,7 @@ namespace CleanersAPI
                     {
                         Service = profession,
                         Professional = professional,
-                        Rate = 500
+                        HourlyRate = 500
                     };
 
                     context.Users.Add(admin);

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
+using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -68,7 +69,7 @@ namespace CleanersAPI.Services.Impl
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role,
-                        user.Roles.Select(roleUser => roleUser.role).Select(role => role.Name)
+                        user.Roles.Select(roleUser => roleUser.role).Select(role => role.RoleName)
                             .Contains(RoleName.Admin) ? RoleName.Admin.ToString() : RoleName.User.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),

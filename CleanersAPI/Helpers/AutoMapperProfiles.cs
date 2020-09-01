@@ -5,6 +5,7 @@ using AutoMapper;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
 using CleanersAPI.Models.Dtos.Service;
+using CleanersAPI.Models.Dtos.User;
 
 namespace CleanersAPI.Helpers
 {
@@ -14,7 +15,7 @@ namespace CleanersAPI.Helpers
         {
             CreateMap<User, UserForDisplayDto>()
                 .ForMember(dest => dest.Roles,
-                    opt => { opt.MapFrom(src => src.Roles.Select(x => x.role).Select(y => y.Name)); })
+                    opt => { opt.MapFrom(src => src.Roles.Select(x => x.role).Select(y => y.RoleName)); })
                 .ForMember(dest => dest.CustomerId, opt => { opt.MapFrom(src => src.Customer.Id); })
                 .ForMember(dest => dest.ProfessionalId, opt => { opt.MapFrom(src => src.Professional.Id); });
             CreateMap<Expertise, ExpertiseForServiceCreate>()

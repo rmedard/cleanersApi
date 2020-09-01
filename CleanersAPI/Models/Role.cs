@@ -5,7 +5,7 @@ namespace CleanersAPI.Models
     public class Role
     {
         public int Id { get; set; }
-        public RoleName Name { get; set; }
+        public RoleName RoleName { get; set; }
         
         public ICollection<RoleUser> Users { get; set; }
     }

@@ -35,7 +35,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public Role GetRoleByName(RoleName roleName)
         {
-            return _context.Roles.First(r => r.Name == roleName);
+            return _context.Roles.First(r => r.RoleName == roleName);
         }
         
         private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)

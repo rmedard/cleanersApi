@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
+using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 
 namespace CleanersAPI.Controllers

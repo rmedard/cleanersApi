@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos;
+using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

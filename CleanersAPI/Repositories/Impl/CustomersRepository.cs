@@ -27,7 +27,7 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Customers
                 .Include(c => c.Address)
-                .Include(c => c.orders).ThenInclude(o => o.Expertise).ThenInclude(e => e.Service)
+                .Include(c => c.Orders).ThenInclude(o => o.Expertise).ThenInclude(e => e.Service)
                 .FirstOrDefaultAsync(customer => customer.Id == id);
         }
 

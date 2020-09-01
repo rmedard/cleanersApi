@@ -70,7 +70,7 @@ namespace CleanersAPI.Controllers
             service.Expertise = expertise;
             service.Customer = userFromRepo.Customer;
             service.Status = Status.Confirmed;
-            service.TotalCost = expertise.Rate * serviceForCreate.Duration;
+            service.TotalCost = expertise.HourlyRate * serviceForCreate.Duration;
             var newService = _servicesService.Create(service);
             if (newService == null)
             {
