@@ -20,17 +20,21 @@ namespace CleanersAPI.Repositories
 
             modelBuilder.Entity<Professional>().ToTable("professionals").HasKey(p => p.Id);
             modelBuilder.Entity<Professional>().Property(p => p.Id).HasColumnName("professionalId");
-            modelBuilder.Entity<Professional>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Professional>().HasOne(a => a.User)
-                .WithOne(u => u.Professional).HasForeignKey<Professional>(p => p.UserId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Professional>().HasOne(p => p.Address).WithOne();
+            modelBuilder.Entity<Professional>().HasOne(p => p.User)
+                .WithOne(u => u.Professional)
+                .HasForeignKey<Professional>(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<Service>().ToTable("services").HasKey(s => s.Id);
             modelBuilder.Entity<Service>().Property(u => u.Id).HasColumnName("serviceId");
             
-            modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => new {ProfessionId = e.ServiceId, e.ProfessionalId});
+            modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => e.Id);
+            modelBuilder.Entity<Expertise>().Property(e => e.Id).HasColumnName("expertiseId");
+            // modelBuilder.Entity<Expertise>().HasKey(e => new {ProfessionId = e.ServiceId, e.ProfessionalId});
             modelBuilder.Entity<Expertise>().HasOne(e => e.Professional);
             modelBuilder.Entity<Expertise>().HasOne(e => e.Service);
-            modelBuilder.Entity<Expertise>().Property(exp => exp.HourlyRate).HasColumnType("decimal(3,2)");
+            modelBuilder.Entity<Expertise>().Property(exp => exp.HourlyRate).HasColumnType("decimal(5,2)");
             
             modelBuilder.Entity<Reservation>().ToTable("reservations").HasKey(s => s.Id);
             modelBuilder.Entity<Reservation>().Property(s => s.Id).HasColumnName("reservationId");
@@ -38,6 +42,10 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Reservation>().HasOne(s => s.Expertise);
             modelBuilder.Entity<Reservation>().Property(r => r.TotalCost).HasColumnType("decimal(10,2)");
 
+            modelBuilder.Entity<Billing>().ToTable("billing").HasKey(b => b.Id);
+            modelBuilder.Entity<Billing>().Property(b => b.Id).HasColumnName("billingId");
+            modelBuilder.Entity<Billing>().Property(b => b.TotalPrice).HasColumnType("decimal(10,2)");
+            
             modelBuilder.Entity<User>().ToTable("users").HasKey(u => u.Id);
             modelBuilder.Entity<User>().Property(u => u.Id).HasColumnName("userId");
             modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();

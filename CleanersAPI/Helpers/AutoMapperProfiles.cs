@@ -23,9 +23,9 @@ namespace CleanersAPI.Helpers
                 .ForMember(dest => dest.ProfessionId, opt => {opt.MapFrom(src => src.ServiceId);})
                 .ForAllOtherMembers(opt => opt.Ignore());
             CreateMap<ExpertiseForServiceCreate, Expertise>();
-            CreateMap<Reservation, ServiceForCreate>()
+            CreateMap<Reservation, ReservationForCreate>()
                 .ForMember(dest => dest.ExpertiseForServiceCreate, opt => { opt.MapFrom(src => src.Expertise); });
-            CreateMap<ServiceForCreate, Reservation>()
+            CreateMap<ReservationForCreate, Reservation>()
                 .ForMember(dest => dest.Expertise, opt => {opt.MapFrom(src => src.ExpertiseForServiceCreate);});
         }
     }

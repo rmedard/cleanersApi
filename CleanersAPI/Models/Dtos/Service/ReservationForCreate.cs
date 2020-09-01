@@ -2,7 +2,7 @@
 
 namespace CleanersAPI.Models.Dtos.Service
 {
-    public class ServiceForCreate
+    public class ReservationForCreate
     {
         public int CustomerId { get; set; }
         public ExpertiseForServiceCreate ExpertiseForServiceCreate { get; set; }

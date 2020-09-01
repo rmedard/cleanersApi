@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ namespace CleanersAPI.Repositories.Impl
 {
     public class ServicesRepository : IServicesRepository
     {
+
         private readonly CleanersApiContext _context;
 
         public ServicesRepository(CleanersApiContext context)
@@ -14,36 +17,45 @@ namespace CleanersAPI.Repositories.Impl
             _context = context;
         }
 
-        public async Task<IEnumerable<Reservation>> GetAll()
+        public async Task<IEnumerable<Service>> GetAll()
         {
-            return await _context.Reservations.ToListAsync();
+            return await _context.Services.ToListAsync();
         }
 
-        public Task<Reservation> GetById(int id)
+        public Task<Service> GetById(int id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public bool DoesExist(int id)
+        public bool DoesExist(int professionId)
         {
-            throw new System.NotImplementedException();
+            return _context.Services.Any(p => p.Id == professionId);
         }
 
-        public async Task<Reservation> Create(Reservation t)
+        public async Task<Service> Create(Service service)
         {
-            var order = _context.Reservations.Add(t).Entity;
+            var newProfession = _context.Services.Add(service).Entity;
             await _context.SaveChangesAsync();
-            return order;
+            return newProfession;
         }
 
-        public Task<bool> Update(Reservation t)
+        public async Task<bool> Update(Service service)
         {
-            throw new System.NotImplementedException();
+            _context.Entry(service).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }            
+            return true;
         }
 
         public Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

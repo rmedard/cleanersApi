@@ -2,7 +2,7 @@
 
 namespace CleanersAPI.Repositories
 {
-    public interface IServicesRepository : ICleanersRepository<Reservation>
+    public interface IServicesRepository : ICleanersRepository<Service>
     {
         
     }

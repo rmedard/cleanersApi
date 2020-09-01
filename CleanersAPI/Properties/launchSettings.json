@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:56363/",
+      "applicationUrl": "http://localhost:5000",
       "sslPort": 0
     }
   },
@@ -19,11 +19,11 @@
     "CleanersAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/services",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:56364/"
+      "applicationUrl": "http://localhost:5001"
     }
   }
 }

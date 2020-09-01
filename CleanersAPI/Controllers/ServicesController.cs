@@ -1,83 +1,108 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using CleanersAPI.Models;
-using CleanersAPI.Models.Dtos.Service;
 using CleanersAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [Authorize]
+    [ApiController]
     public class ServicesController : Controller
     {
-        private readonly IProfessionalsService _professionalsService;
-        private readonly IExpertiseService _expertiseService;
         private readonly IServicesService _servicesService;
-        private readonly IAuthService _authService;
-        private readonly IMapper _mapper;
 
-        public ServicesController(IProfessionalsService professionalsService, IExpertiseService expertiseService,
-            IServicesService servicesService, IAuthService authService, IMapper mapper)
+        public ServicesController(IServicesService professionsService)
         {
-            _professionalsService = professionalsService;
-            _expertiseService = expertiseService;
-            _servicesService = servicesService;
-            _authService = authService;
-            _mapper = mapper;
+            _servicesService = professionsService;
         }
 
-        [HttpPost]
-        public IActionResult CreateOrder([FromBody] ServiceForCreate serviceForCreate)
+        // GET: api/Service
+        [HttpGet]
+        public Task<IEnumerable<Service>> GetServices()
+        {
+            return _servicesService.GetAll();
+        }
+
+        // GET: api/Service/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetService([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
-            
-            if (userFromRepo == null ||  userFromRepo.Customer.Id != serviceForCreate.CustomerId)
+            var profession = await _servicesService.GetOneById(id);
+
+            if (profession == null)
             {
-                return Unauthorized();
-            }
-            
-            if (userFromRepo.Customer == null)
-            {
-                return NotFound("No customer found");
-            }
-            
-            var isFree = _professionalsService.IsFree(serviceForCreate.ExpertiseForServiceCreate.ProfessionalId,
-                serviceForCreate.StartTime, serviceForCreate.Duration);
-            if (!isFree)
-            {
-                return BadRequest("Professional not available");
+                return NotFound();
             }
 
-            var service = _mapper.Map<Reservation>(serviceForCreate);
-            var expertise = _expertiseService.FindExpertise(
-                serviceForCreate.ExpertiseForServiceCreate.ProfessionalId,
-                serviceForCreate.ExpertiseForServiceCreate.ProfessionId).Result;
-            if (expertise == null)
-            {
-                return BadRequest("Expertise not found");
-            }
-
-            service.Expertise = expertise;
-            service.Customer = userFromRepo.Customer;
-            service.Status = Status.Confirmed;
-            service.TotalCost = expertise.HourlyRate * serviceForCreate.Duration;
-            var newService = _servicesService.Create(service);
-            if (newService == null)
-            {
-                return BadRequest("Order creation failed");
-            }
-
-            return Ok(newService);
+            return Ok(profession);
         }
+
+        // PUT: api/Professions/5
+        [HttpPut("{id}")]
+        public IActionResult PutService([FromRoute] int id, [FromBody] Service service)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != service.Id)
+            {
+                return BadRequest();
+            }
+
+            var updated = _servicesService.Update(service);
+
+            if (!updated.Result)
+            {
+                return BadRequest("Update failed");
+            }
+            
+            return NoContent();
+        }
+
+        // POST: api/Professions
+        [HttpPost]
+        public async Task<IActionResult> PostService([FromBody] Service service)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var newProfession = await _servicesService.Create(service); 
+
+            return CreatedAtAction("GetServices", new { id = newProfession.Id }, newProfession);
+        }
+
+        // DELETE: api/Professions/5
+        [HttpDelete("{id}")]
+        public IActionResult DeleteService([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_servicesService.DoesExist(id))
+            {
+                return NotFound("Profession not found");
+            }
+
+            var deleted = _servicesService.Delete(id);
+            if (!deleted.Result)
+            {
+                return BadRequest("Deletion failed");
+            }
+            return Ok();
+        }
+
     }
 }

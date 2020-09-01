@@ -19,7 +19,7 @@ namespace CleanersAPI.Models
         public string City { get; set; }
 
         [Required]
-        public string PostalCode { get; set; }
+        public int PostalCode { get; set; }
         
         public string GeoLocation { get; set; }
     }

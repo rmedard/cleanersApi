@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
@@ -48,17 +49,18 @@ namespace CleanersAPI
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials()
+                        // .AllowCredentials()
                         .Build());
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<DbContext, CleanersApiContext>();
+            
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
 
-            services.AddScoped<IProfessionsService, ProfessionsService>();
-            services.AddScoped<IProfessionsRepository, ProfessionsRepository>();
+            services.AddScoped<IServicesService, ServicesService>();
+            services.AddScoped<IServicesRepository, ServicesRepository>();
 
             services.AddScoped<ICustomersService, CustomersService>();
             services.AddScoped<ICustomersRepository, CustomersRepository>();
@@ -74,8 +76,8 @@ namespace CleanersAPI
             services.AddScoped<IExpertiseService, ExpertiseService>();
             services.AddScoped<IExpertiseRepository, ExpertiseRepository>();
 
-            services.AddScoped<IServicesService, ServicesService>();
-            services.AddScoped<IServicesRepository, ServicesRepository>();
+            services.AddScoped<IReservationsService, ReservationsReservation>();
+            services.AddScoped<IReservationsRepository, ReservationsRepository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -88,7 +90,13 @@ namespace CleanersAPI
                 };
             });
 
-            services.AddMvc().AddNewtonsoftJson(options =>
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
+
+            services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
@@ -121,10 +129,18 @@ namespace CleanersAPI
                 });
             }
 
-//            app.UseCors("CorsPolicy");
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors("CorsPolicy");
+            // app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             //app.UseMvc();
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 
         private static class DbInitializer
@@ -155,7 +171,7 @@ namespace CleanersAPI
                     });
                     context.Services.Add(new Service
                     {
-                        Title = "Peinture", 
+                        Title = "Peinture",
                         Category = Category.Interieur
                     });
 
@@ -164,14 +180,14 @@ namespace CleanersAPI
                     var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                     var adminRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Admin}, User = admin};
                     var userRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.User}, User = igwe};
-                    var profession = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
+                    var service = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
                     var professional = new Professional
                     {
                         Address = new Address
                         {
                             City = "Schaerbeek",
                             StreetName = "Rue Gaucheret",
-                            PostalCode = "1030",
+                            PostalCode = 1030,
                             PlotNumber = "4"
                         },
                         FirstName = "Igwe",
@@ -183,9 +199,9 @@ namespace CleanersAPI
 
                     var expertise = new Expertise
                     {
-                        Service = profession,
+                        Service = service,
                         Professional = professional,
-                        HourlyRate = 50
+                        HourlyRate = new decimal(50.00)
                     };
 
                     context.Users.Add(admin);

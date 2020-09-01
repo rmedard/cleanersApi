@@ -9,6 +9,7 @@ namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [ApiController]
     public class MailsController : Controller
     {
         private readonly IEmailsService _emailsService;

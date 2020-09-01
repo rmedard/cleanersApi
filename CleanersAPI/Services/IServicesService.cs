@@ -2,7 +2,7 @@
 
 namespace CleanersAPI.Services
 {
-    public interface IServicesService : ICleanersService<Reservation>
+    public interface IServicesService : ICleanersService<Service>
     {
         
     }

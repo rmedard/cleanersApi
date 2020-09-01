@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CleanersAPI.Models;
-using CleanersAPI.Models.Dtos;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [ApiController]
     public class ProfessionalsController : Controller
     {
         private readonly IProfessionalsService _professionalsService;
-        private readonly IProfessionsService _professionsService;
+        private readonly IServicesService _servicesService;
         private readonly IAuthService _authService;
 
         public ProfessionalsController(IProfessionalsService professionalsService, 
-            IProfessionsService professionsService, 
+            IServicesService servicesService, 
             IAuthService authService)
         {
             _professionalsService = professionalsService;
-            _professionsService = professionsService;
+            _servicesService = servicesService;
             _authService = authService;
         }
 
@@ -202,7 +198,7 @@ namespace CleanersAPI.Controllers
 
         private bool ProfessionExists(int id)
         {
-            return _professionsService.DoesExist(id);
+            return _servicesService.DoesExist(id);
         }
     }
 }

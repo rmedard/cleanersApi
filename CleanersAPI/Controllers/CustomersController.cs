@@ -13,6 +13,7 @@ namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
+    [ApiController]
     public class CustomersController : Controller
     {
         private readonly ICustomersService _customersService;
