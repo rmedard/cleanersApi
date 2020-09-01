@@ -16,9 +16,7 @@ namespace CleanersAPI.Models
         public int? UserId { get; set; }
         
         public User User { get; set; }
-        
-        public bool IsActive { get; set; }
-        
+
 //        [JsonIgnore]
         public ICollection<Expertise> Expertises { get; } = new List<Expertise>();
     }

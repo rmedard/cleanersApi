@@ -22,7 +22,9 @@ namespace CleanersAPI.Models
         public string Email { get; set; }
         
         [DataType(DataType.PhoneNumber)]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
+        
+        public bool IsActive { get; set; }
         
         public Address Address { get; set; }
     }

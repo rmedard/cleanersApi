@@ -37,7 +37,8 @@ namespace CleanersAPI
         public void ConfigureServices(IServiceCollection services)
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
-            services.AddDbContext<CleanersApiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<CleanersApiContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 //            services.AddDbContext<CleanersApiContext>(options =>
 //                options.UseMySql(Configuration.GetConnectionString("RemoteMysql")));
 
@@ -123,7 +124,7 @@ namespace CleanersAPI
 //            app.UseCors("CorsPolicy");
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
-             //app.UseMvc();
+            //app.UseMvc();
         }
 
         private static class DbInitializer
@@ -140,25 +141,29 @@ namespace CleanersAPI
                         return;
                     }
 
-                    context.Professions.Add(new Service
+                    context.Services.Add(new Service
                     {
                         Title = "Montage meubles",
                         Description = "Montage blablaaaa...",
                         Category = Category.Interieur
                     });
-                    context.Professions.Add(new Service
+                    context.Services.Add(new Service
                     {
                         Title = "Ménage",
                         Description = "Les travaux ménagers etc",
                         Category = Category.Interieur
                     });
-                    context.Professions.Add(new Service {Title = "Peinture", Category = Category.Interieur});
+                    context.Services.Add(new Service
+                    {
+                        Title = "Peinture", 
+                        Category = Category.Interieur
+                    });
 
                     CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
                     var admin = new User {Username = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                     var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                    var adminRoleUser = new RoleUser {role = new Role {RoleName = RoleName.Admin}, user = admin};
-                    var userRoleUser = new RoleUser {role = new Role {RoleName = RoleName.User}, user = igwe};
+                    var adminRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Admin}, User = admin};
+                    var userRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.User}, User = igwe};
                     var profession = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
                     var professional = new Professional
                     {
@@ -172,7 +177,7 @@ namespace CleanersAPI
                         FirstName = "Igwe",
                         LastName = "Kabutindi",
                         Email = "medard.rebero@gmail.com",
-                        Phone = "+32483378014",
+                        PhoneNumber = "+32483378014",
                         User = igwe
                     };
 
@@ -180,22 +185,16 @@ namespace CleanersAPI
                     {
                         Service = profession,
                         Professional = professional,
-                        HourlyRate = 500
+                        HourlyRate = 50
                     };
 
                     context.Users.Add(admin);
                     context.Expertises.Add(expertise);
-                    context.RoleUsers.Add(adminRoleUser);
-                    context.RoleUsers.Add(userRoleUser);
+                    context.RoleUser.Add(adminRoleUser);
+                    context.RoleUser.Add(userRoleUser);
                     context.SaveChanges();
                 }
             }
-        }
-
-        private static int GenerateRegistrationNumber(int min, int max)
-        {
-            var random = new Random();
-            return random.Next(min, max);
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

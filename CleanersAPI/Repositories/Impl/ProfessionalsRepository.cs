@@ -31,7 +31,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Reservation>> GetOrders(int professionalId)
         {
-            return await _context.Services.Include(serv => serv.Expertise).Where(s => s.Expertise.ProfessionalId == professionalId).ToListAsync();
+            return await _context.Reservations.Include(serv => serv.Expertise).Where(s => s.Expertise.ProfessionalId == professionalId).ToListAsync();
         }
 
         public void GrantExpertise(Expertise expertise)

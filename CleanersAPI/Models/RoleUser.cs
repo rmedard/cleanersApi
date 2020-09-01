@@ -2,9 +2,9 @@
 {
     public class RoleUser
     {
-        public int roleId { get; set; }
-        public int userId { get; set; }
-        public Role role { get; set; }
-        public User user { get; set; }
+        public int RoleId { get; set; }
+        public int UserId { get; set; }
+        public Role Role { get; set; }
+        public User User { get; set; }
     }
 }

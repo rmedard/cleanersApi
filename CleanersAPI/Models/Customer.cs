@@ -13,9 +13,7 @@ namespace CleanersAPI.Models
         public int? UserId { get; set; }
         
         public User User { get; set; }
-        
-        public bool IsActive { get; set; }
-        
-        public ICollection<Reservation> Orders { get; } = new List<Reservation>();
+
+        public ICollection<Reservation> Reservations { get; } = new List<Reservation>();
     }
 }

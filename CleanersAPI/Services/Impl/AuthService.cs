@@ -51,7 +51,7 @@ namespace CleanersAPI.Services.Impl
                 Username = userForLoginDto.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.User)}}
+                Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.User)}}
             };
             
             professional.User = newUser;
@@ -69,7 +69,7 @@ namespace CleanersAPI.Services.Impl
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role,
-                        user.Roles.Select(roleUser => roleUser.role).Select(role => role.RoleName)
+                        user.Roles.Select(roleUser => roleUser.Role).Select(role => role.RoleName)
                             .Contains(RoleName.Admin) ? RoleName.Admin.ToString() : RoleName.User.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),
@@ -86,7 +86,7 @@ namespace CleanersAPI.Services.Impl
                 Username = userForLoginDto.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { role = _authRepository.GetRoleByName(RoleName.User)}}
+                Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.User)}}
             };
 
             customer.User = newUser;

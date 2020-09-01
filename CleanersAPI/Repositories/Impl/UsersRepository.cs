@@ -60,7 +60,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public void CreateRoleUser(RoleUser roleUser)
         {
-            _context.RoleUsers.Add(roleUser);
+            _context.RoleUser.Add(roleUser);
             _context.SaveChanges();
         }
 

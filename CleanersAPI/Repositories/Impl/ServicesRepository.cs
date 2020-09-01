@@ -16,7 +16,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Reservation>> GetAll()
         {
-            return await _context.Services.ToListAsync();
+            return await _context.Reservations.ToListAsync();
         }
 
         public Task<Reservation> GetById(int id)
@@ -31,7 +31,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Reservation> Create(Reservation t)
         {
-            var order = _context.Services.Add(t).Entity;
+            var order = _context.Reservations.Add(t).Entity;
             await _context.SaveChangesAsync();
             return order;
         }

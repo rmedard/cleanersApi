@@ -17,7 +17,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _context.Users.Include(u => u.Roles).ThenInclude(r => r.role)
+            var user = await _context.Users.Include(u => u.Roles).ThenInclude(r => r.Role)
                 .Include(u => u.Customer)
                 .Include(u => u.Professional)
                 .FirstAsync(u => u.Username == username);
