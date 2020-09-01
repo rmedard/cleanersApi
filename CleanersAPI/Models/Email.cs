@@ -30,6 +30,6 @@ namespace CleanersAPI.Models
         
         public bool Sent { get; set; }
         
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
