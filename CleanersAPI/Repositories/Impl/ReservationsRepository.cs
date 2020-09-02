@@ -24,7 +24,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Reservation> GetById(int id)
         {
-            return await _context.Reservations.FirstOrDefaultAsync(reservation => reservation.Id.Equals(id));
+            return await _context.Reservations.SingleOrDefaultAsync(reservation => reservation.Id.Equals(id));
         }
 
         public async Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria searchCriteria)

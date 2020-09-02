@@ -27,8 +27,9 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Customers
                 .Include(c => c.Address)
-                .Include(c => c.Reservations).ThenInclude(o => o.Expertise).ThenInclude(e => e.Service)
-                .FirstOrDefaultAsync(customer => customer.Id == id);
+                .Include(c => c.Reservations)
+                .ThenInclude(o => o.Expertise).ThenInclude(e => e.Service)
+                .SingleOrDefaultAsync(customer => customer.Id == id);
         }
 
         public bool DoesExist(int id)
@@ -38,7 +39,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Customer> Create(Customer reservation)
         {
-            var saved = _context.Customers.Add(reservation).Entity;
+            var saved = (await _context.Customers.AddAsync(reservation)).Entity;
             await _context.SaveChangesAsync();
             return saved;
         }

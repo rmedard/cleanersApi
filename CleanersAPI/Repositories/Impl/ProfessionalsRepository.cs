@@ -21,7 +21,9 @@ namespace CleanersAPI.Repositories.Impl
             return await _context.Professionals
                 .Include(prof => prof.Address)
                 .Include(prof => prof.Expertises)
-                .ThenInclude(exp => exp.Service).ToListAsync();
+                .ThenInclude(exp => exp.Service)
+                .ToListAsync();
+            // return await _context.Professionals.ToListAsync();
         }
 
         public Task<Professional> GetById(int id)

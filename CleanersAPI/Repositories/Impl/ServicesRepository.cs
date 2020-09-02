@@ -19,13 +19,12 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Service>> GetAll()
         {
-            var s = GetById(68).Result;
             return await _context.Services.ToListAsync();
         }
 
         public Task<Service> GetById(int id)
         {
-            return _context.Services.FirstOrDefaultAsync(s => s.Id == id);
+            return _context.Services.SingleOrDefaultAsync(s => s.Id == id);
         }
 
         public bool DoesExist(int professionId)

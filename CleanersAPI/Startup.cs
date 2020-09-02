@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace CleanersAPI
 {
@@ -88,17 +89,25 @@ namespace CleanersAPI
                 };
             });
 
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.IgnoreNullValues = true;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+            services.AddControllers();
 
+            // services.AddControllers().AddJsonOptions(options =>
+            // {
+            //     options.JsonSerializerOptions.IgnoreNullValues = true;
+            //     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            // });
+            //
             // services.AddControllers().AddNewtonsoftJson(options =>
             // {
-            //     options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            //     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            //     // options.SerializerSettings.Converters.Add(new StringEnumConverter());
+            //     // options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             //     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            // });
+            //
+            // services.AddControllersWithViews().AddJsonOptions(options =>
+            // {
+            //     options.JsonSerializerOptions.IgnoreNullValues = true;
+            //     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             // });
         }
 

@@ -20,10 +20,10 @@ namespace CleanersAPI.Repositories.Impl
             return await _context.Expertises.ToListAsync();
         }
 
-        public async Task<Expertise> GetOne(int professionalId, int professionId)
+        public async Task<Expertise> GetOne(int professionalId, int serviceId)
         {
             return await _context.Expertises.FirstOrDefaultAsync(exp =>
-                exp.ProfessionalId == professionalId && exp.ServiceId == professionId);
+                exp.ProfessionalId == professionalId && exp.ServiceId == serviceId);
         }
 
         public bool DoesExist(int professionalId, int professionId)

@@ -21,9 +21,9 @@ namespace CleanersAPI.Models
     public enum Category
     {
         [EnumMember(Value = "Exterieur")]
-        Exterieur,
+        Exterieur = 0,
         
         [EnumMember(Value = "Interieur")]
-        Interieur
+        Interieur = 1
     }
 }

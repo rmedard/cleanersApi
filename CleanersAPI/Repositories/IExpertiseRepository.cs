@@ -7,7 +7,7 @@ namespace CleanersAPI.Repositories
     public interface IExpertiseRepository
     {
         Task<IEnumerable<Expertise>> GetAll();
-        Task<Expertise> GetOne(int professionalId, int professionId);
+        Task<Expertise> GetOne(int professionalId, int serviceId);
         bool DoesExist(int professionalId, int professionId);
     }
 }

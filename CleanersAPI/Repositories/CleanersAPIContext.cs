@@ -1,4 +1,5 @@
-﻿using CleanersAPI.Models;
+﻿using System;
+using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories
@@ -27,7 +28,10 @@ namespace CleanersAPI.Repositories
                 .OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<Service>().ToTable("services").HasKey(s => s.Id);
-            modelBuilder.Entity<Service>().Property(u => u.Id).HasColumnName("serviceId");
+            modelBuilder.Entity<Service>().Property(s => s.Id).HasColumnName("serviceId");
+            modelBuilder.Entity<Service>().Property(s => s.Category)
+                .HasConversion(v => v.ToString(),
+                v => (Category) Enum.Parse(typeof(Category), v));
             
             modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => e.Id);
             modelBuilder.Entity<Expertise>().Property(e => e.Id).HasColumnName("expertiseId");
@@ -37,10 +41,13 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Expertise>().Property(exp => exp.HourlyRate).HasColumnType("decimal(5,2)");
             
             modelBuilder.Entity<Reservation>().ToTable("reservations").HasKey(s => s.Id);
-            modelBuilder.Entity<Reservation>().Property(s => s.Id).HasColumnName("reservationId");
+            modelBuilder.Entity<Reservation>().Property(r => r.Id).HasColumnName("reservationId");
             modelBuilder.Entity<Reservation>().HasOne(s => s.Customer).WithMany(serv => serv.Reservations);
             modelBuilder.Entity<Reservation>().HasOne(s => s.Expertise);
             modelBuilder.Entity<Reservation>().Property(r => r.TotalCost).HasColumnType("decimal(10,2)");
+            modelBuilder.Entity<Reservation>().Property(r => r.Status)
+                .HasConversion(v => v.ToString(),
+                    v => (Status) Enum.Parse(typeof(Status), v));
 
             modelBuilder.Entity<Billing>().ToTable("billing").HasKey(b => b.Id);
             modelBuilder.Entity<Billing>().Property(b => b.Id).HasColumnName("billingId");
@@ -53,6 +60,9 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Role>().ToTable("roles").HasKey(r => r.Id);
             modelBuilder.Entity<Role>().Property(r => r.Id).HasColumnName("roleId");
             modelBuilder.Entity<Role>().HasIndex(r => r.RoleName).IsUnique();
+            modelBuilder.Entity<Role>().Property(r => r.RoleName)
+                .HasConversion(v => v.ToString(),
+                v => (RoleName) Enum.Parse(typeof(RoleName), v));
 
             modelBuilder.Entity<RoleUser>().HasKey(key => new {roleId = key.RoleId, userId = key.UserId});
             modelBuilder.Entity<RoleUser>().HasOne(key => key.Role).WithMany(r => r.Users).HasForeignKey(r => r.RoleId);
@@ -65,6 +75,8 @@ namespace CleanersAPI.Repositories
 
         public DbSet<Professional> Professionals { get; set; }
 
+        public DbSet<Address> Addresses { get; set; }
+        
         public DbSet<Service> Services { get; set; }
 
         public DbSet<Expertise> Expertises { get; set; }
