@@ -32,9 +32,9 @@ namespace CleanersAPI.Repositories.Impl
             throw new System.NotImplementedException();
         }
 
-        public async Task<User> Create(User t)
+        public async Task<User> Create(User reservation)
         {
-            var userEntry = _context.Add(t).Entity;
+            var userEntry = _context.Add(reservation).Entity;
             await _context.SaveChangesAsync();
             return userEntry;
         }

@@ -7,6 +7,6 @@ namespace CleanersAPI.Repositories
 {
     public interface IReservationsRepository : ICleanersRepository<Reservation>
     {
-        Task<IEnumerable<Reservation>> GetBySearchCriteria(ReservationSearchCriteria searchCriteria);
+        Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria searchCriteria);
     }
 }

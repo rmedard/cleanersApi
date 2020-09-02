@@ -20,8 +20,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace CleanersAPI
 {
@@ -76,7 +74,7 @@ namespace CleanersAPI
             services.AddScoped<IExpertiseService, ExpertiseService>();
             services.AddScoped<IExpertiseRepository, ExpertiseRepository>();
 
-            services.AddScoped<IReservationsService, ReservationsReservation>();
+            services.AddScoped<IReservationsService, ReservationsService>();
             services.AddScoped<IReservationsRepository, ReservationsRepository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -90,18 +88,18 @@ namespace CleanersAPI
                 };
             });
 
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddControllers().AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 options.JsonSerializerOptions.IgnoreNullValues = true;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            });
+            // services.AddControllers().AddNewtonsoftJson(options =>
+            // {
+            //     options.SerializerSettings.Converters.Add(new StringEnumConverter());
+            //     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            //     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

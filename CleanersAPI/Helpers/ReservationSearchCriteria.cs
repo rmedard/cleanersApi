@@ -5,32 +5,40 @@ namespace CleanersAPI.Helpers
 {
     public class ReservationSearchCriteria
     {
-        public Professional _professional;
-        public Customer _customer;
-        public Status _status;
-        public DateTime _dateTime;
+        public Professional Professional { get; private set; }
+        public Customer Customer { get; private set; }
+        public Status? Status { get; private set; }
+        public DateTime? DateTime { get; private set; }
 
-        public ReservationSearchCriteria build(Professional professional)
+        public ReservationSearchCriteria()
         {
-            this._professional = professional;
+            Professional = null;
+            Customer = null;
+            Status = null;
+            DateTime = null;
+        }
+
+        public ReservationSearchCriteria Build(Professional professional)
+        {
+            Professional = professional;
             return this;
         }
         
-        public ReservationSearchCriteria build(Customer customer)
+        public ReservationSearchCriteria Build(Customer customer)
         {
-            this._customer = customer;
+            Customer = customer;
             return this;
         }
         
-        public ReservationSearchCriteria build(DateTime dateTime)    
+        public ReservationSearchCriteria Build(DateTime dateTime)    
         {
-            this._dateTime = dateTime;
+            DateTime = dateTime;
             return this;
         }
         
-        public ReservationSearchCriteria build(Status status)
+        public ReservationSearchCriteria Build(Status status)
         {
-            this._status = status;
+            Status = status;
             return this;
         }
     }

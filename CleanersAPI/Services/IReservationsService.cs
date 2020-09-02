@@ -7,6 +7,6 @@ namespace CleanersAPI.Services
 {
     public interface IReservationsService : ICleanersService<Reservation>
     {
-        Task<IEnumerable<Reservation>> searchByProfessionalByStatus(Professional professional, Status status);
+        Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria reservationSearchCriteria);
     }
 }

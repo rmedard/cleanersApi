@@ -36,9 +36,9 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Customers.Any(customer => customer.Id == id);
         }
 
-        public async Task<Customer> Create(Customer customer)
+        public async Task<Customer> Create(Customer reservation)
         {
-            var saved = _context.Customers.Add(customer).Entity;
+            var saved = _context.Customers.Add(reservation).Entity;
             await _context.SaveChangesAsync();
             return saved;
         }

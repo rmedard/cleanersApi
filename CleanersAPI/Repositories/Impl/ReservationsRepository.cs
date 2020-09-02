@@ -22,55 +22,31 @@ namespace CleanersAPI.Repositories.Impl
             return await _context.Reservations.ToListAsync();
         }
 
-        public Task<Reservation> GetById(int id)
+        public async Task<Reservation> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Reservations.FirstOrDefaultAsync(reservation => reservation.Id.Equals(id));
         }
 
-        public async Task<IEnumerable<Reservation>> GetByCustomer(int customerId)
+        public async Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria searchCriteria)
         {
-            return await _context.Reservations.Where(r => r.Customer.Id == customerId).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Reservation>> GetByCustomerByStatus(int customerId, Status status)
-        {
-            return await _context.Reservations
-                .Where(r => r.Customer.Id == customerId && r.Status.Equals(status))
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Reservation>> GetByProfessional(int professionalId)
-        {
-            return await _context.Reservations.Where(r => r.Expertise.ProfessionalId == professionalId)
-                .ToListAsync();
-        }
-        
-        public async Task<IEnumerable<Reservation>> GetByProfessionalByStatus(int professionalId, Status status)
-        {
-            return await _context.Reservations
-                .Where(r => r.Expertise.ProfessionalId == professionalId && r.Status.Equals(status))
-                .ToListAsync();
-        }
-        
-        public async Task<IEnumerable<Reservation>> GetBySearchCriteria(ReservationSearchCriteria searchCriteria)
-        {
-            DbSet<Reservation> queryable = _context.Reservations;
+            var queryable = _context.Reservations.AsNoTracking();
             
-            if (searchCriteria._professional != null)
+            if (searchCriteria.Professional != null)
             {
-                queryable.Where(r => r.Expertise.ProfessionalId.Equals(searchCriteria._professional.Id));
+                queryable = queryable.Where(r => r.Expertise.ProfessionalId.Equals(searchCriteria.Professional.Id));
             }
-            else if(searchCriteria._customer != null)
+            else if(searchCriteria.Customer != null)
             {
-                queryable.Where(r => r.Customer.Id.Equals(searchCriteria._customer.Id));
+                queryable = queryable.Where(r => r.Customer.Id.Equals(searchCriteria.Customer.Id));
             }
-            else if(searchCriteria._status != null)
+            else if(searchCriteria.Status != null)
             {
-                queryable.Where(r => r.Status.Equals(searchCriteria._status));
+                queryable = queryable.Where(r => r.Status.Equals(searchCriteria.Status));
             }
-            else if(searchCriteria._dateTime != null)
+            else if(searchCriteria.DateTime != null)
             {
-                // queryable.Where()
+                queryable = queryable.Where(r =>
+                    r.StartTime.ToShortDateString().Equals(searchCriteria.DateTime.Value.ToShortDateString()));
             }
             return await queryable.ToListAsync();
         }
@@ -80,14 +56,14 @@ namespace CleanersAPI.Repositories.Impl
             throw new NotImplementedException();
         }
 
-        public async Task<Reservation> Create(Reservation t)
+        public async Task<Reservation> Create(Reservation reservation)
         {
-            var order = _context.Reservations.Add(t).Entity;
+            var order = (await _context.Reservations.AddAsync(reservation)).Entity;
             await _context.SaveChangesAsync();
             return order;
         }
 
-        public Task<bool> Update(Reservation t)
+        public Task<bool> Update(Reservation reservation)
         {
             throw new NotImplementedException();
         }

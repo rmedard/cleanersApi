@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace CleanersAPI.Models
 {
@@ -23,8 +24,13 @@ namespace CleanersAPI.Models
     
     public enum Status
     {
+        [EnumMember(Value = "Confirmed")]
         Confirmed,
+        
+        [EnumMember(Value = "Rejected")]
         Rejected,
+        
+        [EnumMember(Value = "Done")]
         Done
     }
 }

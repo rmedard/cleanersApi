@@ -19,12 +19,13 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Service>> GetAll()
         {
+            var s = GetById(68).Result;
             return await _context.Services.ToListAsync();
         }
 
         public Task<Service> GetById(int id)
         {
-            throw new NotImplementedException();
+            return _context.Services.FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public bool DoesExist(int professionId)
@@ -32,9 +33,9 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Services.Any(p => p.Id == professionId);
         }
 
-        public async Task<Service> Create(Service service)
+        public async Task<Service> Create(Service reservation)
         {
-            var newProfession = _context.Services.Add(service).Entity;
+            var newProfession = _context.Services.Add(reservation).Entity;
             await _context.SaveChangesAsync();
             return newProfession;
         }

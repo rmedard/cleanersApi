@@ -20,7 +20,10 @@ namespace CleanersAPI.Models
 
     public enum Category
     {
+        [EnumMember(Value = "Exterieur")]
         Exterieur,
+        
+        [EnumMember(Value = "Interieur")]
         Interieur
     }
 }

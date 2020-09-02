@@ -39,7 +39,7 @@ namespace CleanersAPI.Services.Impl
 
         public Task<IEnumerable<Service>> GetProfessions(int professionalId)
         {
-            return _professionalsRepository.GetProfessions(professionalId);
+            return _professionalsRepository.GetServices(professionalId);
         }
 
         public void OrderService(Expertise expertise)

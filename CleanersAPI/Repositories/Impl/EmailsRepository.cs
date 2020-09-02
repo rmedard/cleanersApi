@@ -31,9 +31,9 @@ namespace CleanersAPI.Repositories.Impl
             throw new System.NotImplementedException();
         }
 
-        public async Task<Email> Create(Email t)
+        public async Task<Email> Create(Email reservation)
         {
-            var newEmail = _context.Emails.Add(t).Entity;
+            var newEmail = _context.Emails.Add(reservation).Entity;
             await _context.SaveChangesAsync();
             return newEmail;
         }

@@ -6,12 +6,12 @@ using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class ReservationsReservation : CleanersService<Reservation>, IReservationsService
+    public class ReservationsService : CleanersService<Reservation>, IReservationsService
     {
 
         private readonly IReservationsRepository _reservationsRepository;
 
-        public ReservationsReservation(IReservationsRepository reservationsRepository)
+        public ReservationsService(IReservationsRepository reservationsRepository)
         {
             _reservationsRepository = reservationsRepository;
         }
@@ -21,10 +21,9 @@ namespace CleanersAPI.Services.Impl
             return _reservationsRepository;
         }
 
-        public Task<IEnumerable<Reservation>> searchByProfessionalByStatus(Professional professional, Status status)
+        public Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria reservationSearchCriteria)
         {
-            ReservationSearchCriteria searchCriteria = new ReservationSearchCriteria().build(professional).build(status);
-            return _reservationsRepository.GetBySearchCriteria(searchCriteria);
+            return _reservationsRepository.Search(reservationSearchCriteria);
         }
     }
 }

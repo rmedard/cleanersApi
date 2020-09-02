@@ -18,7 +18,8 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Professional>> GetAll()
         {
-            return await _context.Professionals.Include(prof => prof.Address)
+            return await _context.Professionals
+                .Include(prof => prof.Address)
                 .Include(prof => prof.Expertises)
                 .ThenInclude(exp => exp.Service).ToListAsync();
         }
@@ -56,7 +57,7 @@ namespace CleanersAPI.Repositories.Impl
                  
         }
 
-        public async Task<IEnumerable<Service>> GetProfessions(int professionalId)
+        public async Task<IEnumerable<Service>> GetServices(int professionalId)
         {
             var professional = await _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Service).SingleAsync(prof => prof.Id == professionalId);
             return professional.Expertises.Select(expertise => expertise.Service).ToList();
@@ -67,9 +68,9 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Professionals.Any(e => e.Id == professionalId);
         }
 
-        public async Task<Professional> Create(Professional professional)
+        public async Task<Professional> Create(Professional reservation)
         {
-            var newProfessional = _context.Professionals.Add(professional).Entity;
+            var newProfessional = _context.Professionals.Add(reservation).Entity;
             await _context.SaveChangesAsync();
             return newProfessional;
         }
