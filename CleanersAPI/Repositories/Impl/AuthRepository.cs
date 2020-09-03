@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
+using CleanersAPI.Models.Dtos.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
@@ -38,7 +39,15 @@ namespace CleanersAPI.Repositories.Impl
         {
             return _context.Roles.First(r => r.RoleName == roleName);
         }
-        
+
+        public Task<User> GetById(int userId)
+        {
+            return _context.Users
+                .Include(u => u.Customer)
+                .Include(u => u.Professional)
+                .SingleOrDefaultAsync(u => u.Id.Equals(userId));
+        }
+
         private static bool VerifyPasswordHash(string password, IReadOnlyList<byte> passwordHash, byte[] passwordSalt)
         {
             using var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt); //Because HMACSHA512() implements IDisposable

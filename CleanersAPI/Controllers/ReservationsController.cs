@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
@@ -34,6 +36,23 @@ namespace CleanersAPI.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetReservation([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var reservation = await _reservationsService.GetOneById(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(reservation);
+        }
+        
         [HttpPost]
         public IActionResult CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
@@ -45,9 +64,9 @@ namespace CleanersAPI.Controllers
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
             
-            if (userFromRepo == null ||  userFromRepo.Customer.Id != reservationForCreate.CustomerId)
+            if (userFromRepo?.Customer == null || userFromRepo.Customer.Id != reservationForCreate.CustomerId)
             {
-                return Unauthorized();
+                return Unauthorized("You don't have permission to create reservation");
             }
             
             if (userFromRepo.Customer == null)
@@ -62,7 +81,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Professional not available");
             }
 
-            var service = _mapper.Map<Reservation>(reservationForCreate);
+            var reservation = _mapper.Map<Reservation>(reservationForCreate);
             var expertise = _expertiseService.FindExpertise(
                 reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.ExpertiseForServiceCreate.ServiceId).Result;
@@ -71,21 +90,21 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Expertise not found");
             }
 
-            service.Expertise = expertise;
-            service.Customer = userFromRepo.Customer;
-            service.Status = Status.Confirmed;
-            service.TotalCost = expertise.HourlyRate * reservationForCreate.Duration;
-            var newService = _reservationsService.Create(service);
-            if (newService == null)
+            reservation.Expertise = expertise;
+            reservation.Customer = userFromRepo.Customer;
+            reservation.Status = Status.Confirmed;
+            reservation.TotalCost = expertise.HourlyRate * reservationForCreate.Duration;
+            var newReservation = _reservationsService.Create(reservation);
+            if (newReservation == null)
             {
                 return BadRequest("Reservation creation failed");
             }
 
-            return Ok(newService);
+            return CreatedAtAction("GetReservation", new {id = newReservation.Id}, newReservation);
         }
 
         [HttpGet]
-        public IActionResult GetReservations([FromQuery]int customerId = 0, [FromQuery]int professionalId = 0, [FromQuery]string status = "", [FromQuery]string date = "")
+        public ActionResult<IEnumerable<Reservation>>  GetReservations([FromQuery]int customerId = 0, [FromQuery]int professionalId = 0, [FromQuery]string status = "", [FromQuery]string date = "")
         {
             if (!ModelState.IsValid)
             {
@@ -129,7 +148,7 @@ namespace CleanersAPI.Controllers
                 searchCriteria.Build(dateTime);
             }
 
-            return Ok(_reservationsService.Search(searchCriteria));
+            return new ActionResult<IEnumerable<Reservation>>(_reservationsService.Search(searchCriteria).Result);
         }
     }
 }

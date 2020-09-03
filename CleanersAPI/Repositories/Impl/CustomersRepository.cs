@@ -76,7 +76,7 @@ namespace CleanersAPI.Repositories.Impl
             return false;
         }
 
-        public async Task<IEnumerable<Reservation>> getCustomerOrderedServices(int customerId)
+        public async Task<IEnumerable<Reservation>> GetCustomerOrderedServices(int customerId)
         {
             return await _context.Reservations.Where(s => s.CustomerId == customerId).ToListAsync();
         }

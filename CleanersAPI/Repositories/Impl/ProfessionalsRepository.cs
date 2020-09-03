@@ -58,7 +58,7 @@ namespace CleanersAPI.Repositories.Impl
                 .Any(r => r.Expertise.ProfessionalId.Equals(professionalId) 
                           && DateTime.Compare(r.StartTime, endTime) < 0
                           && DateTime.Compare(r.EndTime, starTime) > 0
-                          && r.Status.Equals(Status.Confirmed));
+                          && Status.Confirmed.Equals(r.Status));
         }
 
         public async Task<IEnumerable<Expertise>> GetExpertises(int professionalId)

@@ -10,5 +10,7 @@ namespace CleanersAPI.Repositories
         Task<bool> UserExists(string username);
 
         Role GetRoleByName(RoleName roleName);
+
+        Task<User> GetById(int userId);
     }
 }

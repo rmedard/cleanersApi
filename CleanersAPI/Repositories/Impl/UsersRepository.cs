@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CleanersAPI.Repositories.Impl
 {
     public class UsersRepository : IUsersRepository
     {
-        
         private readonly CleanersApiContext _context;
 
         public UsersRepository(CleanersApiContext context)
@@ -24,12 +22,13 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<User> GetById(int id)
         {
-            return _context.Users.Include(u => u.Customer).Include(u => u.Professional).SingleOrDefaultAsync(u => u.Id == id);
+            return _context.Users.Include(u => u.Customer)
+                .Include(u => u.Professional).SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public bool DoesExist(int id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public async Task<User> Create(User customer)
@@ -49,13 +48,14 @@ namespace CleanersAPI.Repositories.Impl
             catch (DbUpdateException)
             {
                 return false;
-            }            
+            }
+
             return true;
         }
 
         public Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void CreateRoleUser(RoleUser roleUser)
