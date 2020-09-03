@@ -8,7 +8,7 @@ namespace CleanersAPI.Models
 
         [Required] public string LastName { get; set; }
 
-        [Required] public int AddressId { get; set; }
+        public int AddressId { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress, ErrorMessage = "Invalid Email Address")]
@@ -18,6 +18,7 @@ namespace CleanersAPI.Models
 
         public bool IsActive { get; set; }
 
+        [Required]
         public Address Address { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace CleanersAPI.Models
         public ICollection<RoleUser> Users { get; set; }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum RoleName
     {
         Admin, User

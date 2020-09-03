@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace CleanersAPI.Models
 {
@@ -14,10 +12,11 @@ namespace CleanersAPI.Models
         [Required] public string Title { get; set; }
         
         public string Description { get; set; }
-
+        
         [Required] public Category Category { get; set; }
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Category
     {
         [EnumMember(Value = "Exterieur")]

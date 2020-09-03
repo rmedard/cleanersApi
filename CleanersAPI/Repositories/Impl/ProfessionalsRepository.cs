@@ -20,21 +20,13 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Professionals
                 .Include(prof => prof.Address)
-                .Include(prof => prof.Expertises)
-                .ThenInclude(exp => exp.Service)
                 .ToListAsync();
-            // return await _context.Professionals.ToListAsync();
         }
 
         public Task<Professional> GetById(int id)
         {
-            return _context.Professionals.Include(prof => prof.Address).Include(prof => prof.Expertises).ThenInclude(ex => ex.Service)
-                .SingleOrDefaultAsync(m => m.Id == id);
-        }
-
-        public async Task<IEnumerable<Reservation>> GetOrders(int professionalId)
-        {
-            return await _context.Reservations.Include(serv => serv.Expertise).Where(s => s.Expertise.ProfessionalId == professionalId).ToListAsync();
+            return _context.Professionals.Include(prof => prof.Address)
+                .SingleOrDefaultAsync(prof => prof.Id.Equals(id));
         }
 
         public void GrantExpertise(Expertise expertise)
@@ -56,13 +48,23 @@ namespace CleanersAPI.Repositories.Impl
                 Console.WriteLine(e);
                 throw;
             }
-                 
         }
 
-        public async Task<IEnumerable<Service>> GetServices(int professionalId)
+        public bool IsFree(int professionalId, DateTime dateTime, int numberOfHours)
         {
-            var professional = await _context.Professionals.Include(p => p.Expertises).ThenInclude(exp => exp.Service).SingleAsync(prof => prof.Id == professionalId);
-            return professional.Expertises.Select(expertise => expertise.Service).ToList();
+            var starTime = dateTime;
+            var endTime = dateTime.AddHours(numberOfHours);
+            return !_context.Reservations
+                .Any(r => r.Expertise.ProfessionalId.Equals(professionalId) 
+                          && DateTime.Compare(r.StartTime, endTime) < 0
+                          && DateTime.Compare(r.EndTime, starTime) > 0
+                          && r.Status.Equals(Status.Confirmed));
+        }
+
+        public async Task<IEnumerable<Expertise>> GetExpertises(int professionalId)
+        {
+            return await _context.Expertises.Include(e => e.Service)
+                .Where(e => e.ProfessionalId.Equals(professionalId)).ToListAsync();
         }
 
         public bool DoesExist(int professionalId)
@@ -70,9 +72,9 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Professionals.Any(e => e.Id == professionalId);
         }
 
-        public async Task<Professional> Create(Professional reservation)
+        public async Task<Professional> Create(Professional professional)
         {
-            var newProfessional = _context.Professionals.Add(reservation).Entity;
+            var newProfessional = (await _context.Professionals.AddAsync(professional)).Entity;
             await _context.SaveChangesAsync();
             return newProfessional;
         }

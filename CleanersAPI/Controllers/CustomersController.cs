@@ -1,13 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
-using CleanersAPI.Models.Dtos;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Controllers
 {
@@ -49,7 +45,6 @@ namespace CleanersAPI.Controllers
             return Ok(customer);
         }
 
-        // PUT: api/People/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer([FromRoute] int id, [FromBody] Customer customer)
         {
@@ -73,40 +68,24 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
+        public async Task<IActionResult> CreateCustomer([FromBody] CustomerForCreate customerForCreate)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var created = await _customersService.Create(customer);
+            if (_authService.UserExists(customerForCreate.Customer.Email).Result)
+            {
+                return BadRequest("Customer already exists. Please login!!");
+            }
+            
+            customerForCreate.Customer.User = _authService.GenerateUserAccount(customerForCreate.Customer, customerForCreate.Password);
+            var newCustomer= await _customersService.Create(customerForCreate.Customer);
 
-            return CreatedAtAction("GetCustomer", new { id = created.Id }, created);
+            return CreatedAtAction("GetCustomer", new { id = newCustomer.Id }, newCustomer);
         }
 
-        [HttpPost("{id}/user")]
-        public IActionResult AddUser([FromRoute] int id, [FromBody] UserForLoginDto userForLoginDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (_authService.UserExists(userForLoginDto.Username).Result)
-            {
-                return BadRequest("Username already exists");
-            }
-
-            var customer = _customersService.GetOneById(id);
-            if (customer == null)
-            {
-                return NotFound("Professional not found");
-            }
-            _authService.AddUserToCustomer(customer.Result, userForLoginDto);
-            return NoContent();
-        }
-        
         [HttpDelete("{id}")]
         public IActionResult DeleteCustomer([FromRoute] int id)
         {

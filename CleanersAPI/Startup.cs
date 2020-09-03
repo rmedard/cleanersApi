@@ -97,12 +97,12 @@ namespace CleanersAPI
             //     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             // });
             //
-            // services.AddControllers().AddNewtonsoftJson(options =>
-            // {
-            //     // options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            //     // options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            //     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            // });
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                // options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                // options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
             //
             // services.AddControllersWithViews().AddJsonOptions(options =>
             // {
@@ -222,11 +222,9 @@ namespace CleanersAPI
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512()) //Because HMACSHA512() implements IDisposable
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
+            using var hmac = new HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
     }
 }

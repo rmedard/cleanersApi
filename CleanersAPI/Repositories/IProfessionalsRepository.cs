@@ -8,9 +8,12 @@ namespace CleanersAPI.Repositories
 {
     public interface IProfessionalsRepository : ICleanersRepository<Professional>
     {
-        Task<IEnumerable<Service>> GetServices(int professionalId);
-        Task<IEnumerable<Reservation>> GetOrders(int professionalId);
+        Task<IEnumerable<Expertise>> GetExpertises(int professionalId);
+        
         void GrantExpertise(Expertise expertise);
+        
         void UpdateExpertise(Expertise expertise);
+        
+        bool IsFree(int professionalId, DateTime dateTime, int numberOfHours);
     }
 }

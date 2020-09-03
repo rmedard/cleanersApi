@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -38,13 +39,11 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Roles.First(r => r.RoleName == roleName);
         }
         
-        private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        private static bool VerifyPasswordHash(string password, IReadOnlyList<byte> passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt)) //Because HMACSHA512() implements IDisposable
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return !computedHash.Where((t, i) => t != passwordHash[i]).Any();
-            }
+            using var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt); //Because HMACSHA512() implements IDisposable
+            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return !computedHash.Where((t, i) => t != passwordHash[i]).Any();
         }
     }
 }

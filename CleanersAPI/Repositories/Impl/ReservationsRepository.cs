@@ -56,9 +56,9 @@ namespace CleanersAPI.Repositories.Impl
             throw new NotImplementedException();
         }
 
-        public async Task<Reservation> Create(Reservation reservation)
+        public async Task<Reservation> Create(Reservation customer)
         {
-            var order = (await _context.Reservations.AddAsync(reservation)).Entity;
+            var order = (await _context.Reservations.AddAsync(customer)).Entity;
             await _context.SaveChangesAsync();
             return order;
         }

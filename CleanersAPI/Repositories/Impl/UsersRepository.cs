@@ -32,9 +32,9 @@ namespace CleanersAPI.Repositories.Impl
             throw new System.NotImplementedException();
         }
 
-        public async Task<User> Create(User reservation)
+        public async Task<User> Create(User customer)
         {
-            var userEntry = _context.Add(reservation).Entity;
+            var userEntry = _context.Add(customer).Entity;
             await _context.SaveChangesAsync();
             return userEntry;
         }
@@ -62,15 +62,6 @@ namespace CleanersAPI.Repositories.Impl
         {
             _context.RoleUser.Add(roleUser);
             _context.SaveChanges();
-        }
-
-        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
         }
     }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
-using CleanersAPI.Models.Dtos;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;

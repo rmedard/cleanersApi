@@ -32,9 +32,9 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Services.Any(p => p.Id == professionId);
         }
 
-        public async Task<Service> Create(Service reservation)
+        public async Task<Service> Create(Service customer)
         {
-            var newProfession = _context.Services.Add(reservation).Entity;
+            var newProfession = _context.Services.Add(customer).Entity;
             await _context.SaveChangesAsync();
             return newProfession;
         }

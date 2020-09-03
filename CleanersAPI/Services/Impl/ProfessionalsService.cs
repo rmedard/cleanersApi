@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
@@ -32,14 +31,9 @@ namespace CleanersAPI.Services.Impl
             _professionalsRepository.UpdateExpertise(expertise);
         }
 
-        public Task<IEnumerable<Reservation>> GetOrders(int professionalId)
+        public Task<IEnumerable<Expertise>> GetExpertises(int professionalId)
         {
-            return _professionalsRepository.GetOrders(professionalId);
-        }
-
-        public Task<IEnumerable<Service>> GetProfessions(int professionalId)
-        {
-            return _professionalsRepository.GetServices(professionalId);
+            return _professionalsRepository.GetExpertises(professionalId);
         }
 
         public void OrderService(Expertise expertise)
@@ -49,24 +43,12 @@ namespace CleanersAPI.Services.Impl
 
         public bool IsFree(int professionalId, DateTime dateTime, int numberOfHours)
         {
-            var starTime = dateTime;
-            var endTime = dateTime.AddHours(numberOfHours);
-
-            return !_professionalsRepository.GetOrders(professionalId).Result.Any(serv =>
-                       DateTime.Compare(serv.StartTime, endTime) < 0 &&
-                       DateTime.Compare(endTime, starTime) > 0 &&
-                       serv.Status == Status.Confirmed);
+            return _professionalsRepository.IsFree(professionalId, dateTime, numberOfHours);
         }
 
         public new Task<Professional> Create(Professional professional)
         {
             return _professionalsRepository.Create(professional);
-        }
-
-        private static int GenerateRegistrationNumber(int min, int max)
-        {
-            var random = new Random();
-            return random.Next(min, max);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
@@ -67,7 +65,7 @@ namespace CleanersAPI.Controllers
             var service = _mapper.Map<Reservation>(reservationForCreate);
             var expertise = _expertiseService.FindExpertise(
                 reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
-                reservationForCreate.ExpertiseForServiceCreate.ProfessionId).Result;
+                reservationForCreate.ExpertiseForServiceCreate.ServiceId).Result;
             if (expertise == null)
             {
                 return BadRequest("Expertise not found");
@@ -89,6 +87,11 @@ namespace CleanersAPI.Controllers
         [HttpGet]
         public IActionResult GetReservations([FromQuery]int customerId = 0, [FromQuery]int professionalId = 0, [FromQuery]string status = "", [FromQuery]string date = "")
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
             var searchCriteria = new ReservationSearchCriteria();
             if (customerId != 0)
             {

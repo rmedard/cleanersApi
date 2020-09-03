@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace CleanersAPI.Models
 {
@@ -22,6 +24,7 @@ namespace CleanersAPI.Models
         public Customer Customer { get; set; }
     }
     
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Status
     {
         [EnumMember(Value = "Confirmed")]

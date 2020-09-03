@@ -25,10 +25,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Customer> GetById(int id)
         {
-            return await _context.Customers
-                .Include(c => c.Address)
-                .Include(c => c.Reservations)
-                .ThenInclude(o => o.Expertise).ThenInclude(e => e.Service)
+            return await _context.Customers.Include(c => c.Address)
                 .SingleOrDefaultAsync(customer => customer.Id == id);
         }
 
@@ -37,9 +34,9 @@ namespace CleanersAPI.Repositories.Impl
             return _context.Customers.Any(customer => customer.Id == id);
         }
 
-        public async Task<Customer> Create(Customer reservation)
+        public async Task<Customer> Create(Customer customer)
         {
-            var saved = (await _context.Customers.AddAsync(reservation)).Entity;
+            var saved = (await _context.Customers.AddAsync(customer)).Entity;
             await _context.SaveChangesAsync();
             return saved;
         }

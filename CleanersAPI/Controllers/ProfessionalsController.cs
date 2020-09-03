@@ -16,8 +16,8 @@ namespace CleanersAPI.Controllers
         private readonly IServicesService _servicesService;
         private readonly IAuthService _authService;
 
-        public ProfessionalsController(IProfessionalsService professionalsService, 
-            IServicesService servicesService, 
+        public ProfessionalsController(IProfessionalsService professionalsService,
+            IServicesService servicesService,
             IAuthService authService)
         {
             _professionalsService = professionalsService;
@@ -50,13 +50,11 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpGet("{id}/expertises")]
-        public IActionResult GetProfessionalExpertises([FromRoute] int id)
+        public ActionResult<IEnumerable<Expertise>> GetProfessionalExpertises([FromRoute] int id)
         {
-            if (!ProfessionalExists(id))
-            {
-                return NotFound();
-            }
-            return Ok(_professionalsService.GetProfessions(id));
+            return !ProfessionalExists(id)
+                ? NotFound()
+                : new ActionResult<IEnumerable<Expertise>>(_professionalsService.GetExpertises(id).Result);
         }
 
         [HttpPut("{id}")]
@@ -81,40 +79,23 @@ namespace CleanersAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Professionals
         [HttpPost]
-        public async Task<IActionResult> PostProfessional([FromBody] Professional professional)
+        public async Task<IActionResult> CreateProfessional([FromBody] ProfessionalForCreate professionalForCreate)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var newProfessional = await _professionalsService.Create(professional);
-
-            return CreatedAtAction("GetProfessional", new { id = newProfessional.Id }, newProfessional);
-        }
-
-        [HttpPost("{id}/user")]
-        public IActionResult AddUser([FromRoute] int id, [FromBody] UserForLoginDto userForLoginDto)
-        {
-            if (!ModelState.IsValid)
+            if (_authService.UserExists(professionalForCreate.Professional.Email).Result)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Professional already exists. Please login!!");
             }
 
-            if (_authService.UserExists(userForLoginDto.Username).Result)
-            {
-                return BadRequest("Username already exists");
-            }
+            professionalForCreate.Professional.User = _authService.GenerateUserAccount(professionalForCreate.Professional, professionalForCreate.Password);
+            var newProfessional = await _professionalsService.Create(professionalForCreate.Professional);
 
-            var professional = _professionalsService.GetOneById(id);
-            if (professional == null)
-            {
-                return NotFound("Professional not found");
-            }
-            _authService.AddUserToProfessional(professional.Result, userForLoginDto);
-            return NoContent();
+            return CreatedAtAction("GetProfessional", new {id = newProfessional.Id}, newProfessional);
         }
 
         [HttpPost("{id}/expertises")]
@@ -133,7 +114,7 @@ namespace CleanersAPI.Controllers
             _professionalsService.GrantExpertise(expertise);
             return Ok();
         }
-        
+
         [HttpPut("{id}/expertises")]
         public IActionResult UpdateExpertise([FromRoute] int id, [FromBody] Expertise expertise)
         {
@@ -174,23 +155,6 @@ namespace CleanersAPI.Controllers
             return BadRequest("Delete failed");
         }
 
-        [HttpGet("{professionalId}/orders")]
-        public async Task<IActionResult> GetOrders([FromRoute] int professionalId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
-            if (!ProfessionalExists(professionalId))
-            {
-                return NotFound("Professional not found");
-            }
-
-            return Ok(await _professionalsService.GetOrders(professionalId));
-        }
-        
-        
         private bool ProfessionalExists(int id)
         {
             return _professionalsService.DoesExist(id);

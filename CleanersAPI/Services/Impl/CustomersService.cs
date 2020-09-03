@@ -30,11 +30,5 @@ namespace CleanersAPI.Services.Impl
         {
             throw new System.NotImplementedException();
         }
-        
-        private static int GenerateRegistrationNumber(int min, int max)  
-        {  
-            var random = new Random();  
-            return random.Next(min, max);  
-        }  
     }
 }

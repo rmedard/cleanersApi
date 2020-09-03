@@ -2,11 +2,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
-using CleanersAPI.Models.Dtos;
-using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -16,20 +15,14 @@ namespace CleanersAPI.Services.Impl
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository _authRepository;
-        private readonly IProfessionalsRepository _professionalsRepository;
-        private readonly ICustomersRepository _customersRepository;
         private readonly IUsersRepository _usersRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthService(IAuthRepository authRepository, 
-            IProfessionalsRepository professionalsRepository,
-            ICustomersRepository customersRepository, 
+        public AuthService(IAuthRepository authRepository,
             IUsersRepository usersRepository,
             IConfiguration configuration)
         {
             _authRepository = authRepository;
-            _professionalsRepository = professionalsRepository;
-            _customersRepository = customersRepository;
             _usersRepository = usersRepository;
             _configuration = configuration;
         }
@@ -44,18 +37,26 @@ namespace CleanersAPI.Services.Impl
             return _authRepository.UserExists(username);
         }
 
-        public void AddUserToProfessional(Professional professional, UserForLoginDto userForLoginDto)
+        public User GenerateUserAccount(Professional professional, string password)
         {
-            CreatePasswordHash(userForLoginDto.Password, out var passwordHash, out var passwordSalt);
-            var newUser = new User {
-                Username = userForLoginDto.Username,
+            CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
+            return new User {
+                Username = professional.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.User)}}
             };
-            
-            professional.User = newUser;
-            _professionalsRepository.Update(professional);
+        }
+        
+        public User GenerateUserAccount(Customer customer, string password)
+        {
+            CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
+            return new User {
+                Username = customer.Email,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.User)}}
+            };
         }
 
         public string GenerateLoginToken(User user)
@@ -78,20 +79,6 @@ namespace CleanersAPI.Services.Impl
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        
-        public void AddUserToCustomer(Customer customer, UserForLoginDto userForLoginDto)
-        {
-            CreatePasswordHash(userForLoginDto.Password, out var passwordHash, out var passwordSalt);
-            var newUser = new User {
-                Username = userForLoginDto.Username,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.User)}}
-            };
-
-            customer.User = newUser;
-            _customersRepository.Update(customer);
-        }
 
         public Task<User> GetUserById(int userId)
         {
@@ -100,11 +87,9 @@ namespace CleanersAPI.Services.Impl
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512()) //Because HMACSHA512() implements IDisposable
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
+            using var hmac = new HMACSHA512(); //Because HMACSHA512() implements IDisposable
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
     }
 }

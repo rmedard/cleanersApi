@@ -10,8 +10,7 @@ namespace CleanersAPI.Services
     {
         void GrantExpertise(Expertise expertise);
         void UpdateExpertise(Expertise expertise);
-        Task<IEnumerable<Reservation>> GetOrders(int professionalId); 
-        Task<IEnumerable<Service>> GetProfessions(int professionalId);
+        Task<IEnumerable<Expertise>> GetExpertises(int professionalId);
         void OrderService(Expertise expertise);
         bool IsFree(int professionalId, DateTime dateTime, int numberOfHours);
     }
