@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
+using Microsoft.Data.SqlClient.Server;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
@@ -29,24 +30,27 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria searchCriteria)
         {
-            var queryable = _context.Reservations.AsNoTracking();
+            IQueryable<Reservation> queryable = _context.Reservations.Include(r => r.Expertise);
             
             if (searchCriteria.Professional != null)
             {
                 queryable = queryable.Where(r => r.Expertise.ProfessionalId.Equals(searchCriteria.Professional.Id));
             }
-            else if(searchCriteria.Customer != null)
+            
+            if(searchCriteria.Customer != null)
             {
-                queryable = queryable.Where(r => r.Customer.Id.Equals(searchCriteria.Customer.Id));
+                queryable = queryable.Where(r => r.CustomerId.Equals(searchCriteria.Customer.Id));
             }
-            else if(searchCriteria.Status != null)
+            
+            if(searchCriteria.Status != null)
             {
-                queryable = queryable.Where(r => r.Status.Equals(searchCriteria.Status));
+                queryable = queryable.Where(r => searchCriteria.Status.Equals(r.Status));
             }
-            else if(searchCriteria.DateTime != null)
+            
+            if(searchCriteria.DateTime != null)
             {
-                queryable = queryable.Where(r =>
-                    r.StartTime.ToShortDateString().Equals(searchCriteria.DateTime.Value.ToShortDateString()));
+                queryable = queryable.Where(r => r.StartTime.DayOfYear.Equals(searchCriteria.DateTime.Value.DayOfYear) 
+                                                 && r.StartTime.Year.Equals(searchCriteria.DateTime.Value.Year));
             }
             return await queryable.ToListAsync();
         }

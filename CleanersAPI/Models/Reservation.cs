@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -9,18 +10,25 @@ namespace CleanersAPI.Models
     {
         public int Id { get; set; }
         
+        [Required]
         public int CustomerId { get; set; }
         
+        [Required]
         public DateTime StartTime { get; set; }
         
+        [Required]
         public DateTime EndTime { get; set; }
 
+        [Required]
         public decimal TotalCost { get; set; }
         
+        [Required]
         public Status Status { get; set; }
         
+        [Required]
         public Expertise Expertise { get; set; }
         
+        [JsonIgnore]
         public Customer Customer { get; set; }
     }
     

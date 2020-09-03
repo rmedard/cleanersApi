@@ -103,8 +103,8 @@ namespace CleanersAPI.Controllers
             return CreatedAtAction("GetReservation", new {id = newReservation.Id}, newReservation);
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Reservation>>  GetReservations([FromQuery]int customerId = 0, [FromQuery]int professionalId = 0, [FromQuery]string status = "", [FromQuery]string date = "")
+        [HttpPost("search")]
+        public ActionResult<IEnumerable<Reservation>>  GetReservations([FromBody] ReservationSearchCriteriaDto reservationSearchCriteriaDto)
         {
             if (!ModelState.IsValid)
             {
@@ -112,36 +112,36 @@ namespace CleanersAPI.Controllers
             }
             
             var searchCriteria = new ReservationSearchCriteria();
-            if (customerId != 0)
+            if (reservationSearchCriteriaDto.CustomerId != 0)
             {
-                if (!_customersService.DoesExist(customerId))
+                if (!_customersService.DoesExist(reservationSearchCriteriaDto.CustomerId))
                 {
-                    return NotFound($"Customer with id {customerId} not found");
+                    return NotFound($"Customer with id {reservationSearchCriteriaDto.CustomerId} not found");
                 }
-                searchCriteria.Build(_customersService.GetOneById(customerId).Result);
+                searchCriteria.Build(_customersService.GetOneById(reservationSearchCriteriaDto.CustomerId).Result);
             }
 
-            if (professionalId != 0)
+            if (reservationSearchCriteriaDto.ProfessionalId != 0)
             {
-                if (!_professionalsService.DoesExist(professionalId))
+                if (!_professionalsService.DoesExist(reservationSearchCriteriaDto.ProfessionalId))
                 {
-                    return NotFound($"Professional with id {professionalId} not found");
+                    return NotFound($"Professional with id {reservationSearchCriteriaDto.ProfessionalId} not found");
                 }
-                searchCriteria.Build(_professionalsService.GetOneById(professionalId).Result);
+                searchCriteria.Build(_professionalsService.GetOneById(reservationSearchCriteriaDto.ProfessionalId).Result);
             }
 
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrEmpty(reservationSearchCriteriaDto.Status))
             {
-                if (!Enum.TryParse(status, out Status reservationStatus))
+                if (!Enum.TryParse(reservationSearchCriteriaDto.Status, out Status reservationStatus))
                 {
                     return BadRequest("Invalid status");
                 }
                 searchCriteria.Build(reservationStatus);
             }
 
-            if (!string.IsNullOrEmpty(date))
+            if (!string.IsNullOrEmpty(reservationSearchCriteriaDto.Date))
             {
-                if (!DateTime.TryParse(date, out var dateTime))
+                if (!DateTime.TryParse(reservationSearchCriteriaDto.Date, out var dateTime))
                 {
                     return BadRequest("Invalid date");
                 }
