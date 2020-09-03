@@ -55,6 +55,9 @@ namespace CleanersAPI
 
             services.AddScoped<DbContext, CleanersApiContext>();
             
+            services.AddScoped<IBillingsService, BillingsService>();
+            services.AddScoped<IBillingsRepository, BillingsRepository>();
+            
             services.AddScoped<IProfessionalsService, ProfessionalsService>();
             services.AddScoped<IProfessionalsRepository, ProfessionalsRepository>();
 

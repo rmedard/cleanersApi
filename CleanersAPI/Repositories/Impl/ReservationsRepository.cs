@@ -52,6 +52,13 @@ namespace CleanersAPI.Repositories.Impl
                 queryable = queryable.Where(r => r.StartTime.DayOfYear.Equals(searchCriteria.DateTime.Value.DayOfYear) 
                                                  && r.StartTime.Year.Equals(searchCriteria.DateTime.Value.Year));
             }
+
+            if (searchCriteria.HasBill != null)
+            {
+                var hasBill = searchCriteria.HasBill.Value;
+                queryable = queryable.Where(r => hasBill ? r.BillingId != null : r.BillingId == null);   
+            }
+
             return await queryable.ToListAsync();
         }
 
@@ -67,9 +74,18 @@ namespace CleanersAPI.Repositories.Impl
             return order;
         }
 
-        public Task<bool> Update(Reservation reservation)
+        public async Task<bool> Update(Reservation reservation)
         {
-            throw new NotImplementedException();
+            _context.Entry(reservation).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }            
+            return true;
         }
 
         public Task<bool> Delete(int id)

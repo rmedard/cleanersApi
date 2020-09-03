@@ -9,6 +9,8 @@ namespace CleanersAPI.Helpers
         public Customer Customer { get; private set; }
         public Status? Status { get; private set; }
         public DateTime? DateTime { get; private set; }
+        
+        public bool? HasBill {get; private set;}
 
         public ReservationSearchCriteria()
         {
@@ -39,6 +41,12 @@ namespace CleanersAPI.Helpers
         public ReservationSearchCriteria Build(Status status)
         {
             Status = status;
+            return this;
+        }
+
+        public ReservationSearchCriteria Build(bool hasBill)
+        {
+            HasBill = hasBill;
             return this;
         }
     }

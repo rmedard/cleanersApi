@@ -30,6 +30,10 @@ namespace CleanersAPI.Models
         
         [JsonIgnore]
         public Customer Customer { get; set; }
+        
+        public int? BillingId { get; set; }
+        
+        public Billing Billing { get; set; }
     }
     
     [JsonConverter(typeof(StringEnumConverter))]

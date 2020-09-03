@@ -148,6 +148,11 @@ namespace CleanersAPI.Controllers
                 searchCriteria.Build(dateTime);
             }
 
+            if (reservationSearchCriteriaDto.HasBill != null)
+            {
+                searchCriteria.Build(reservationSearchCriteriaDto.HasBill.Value);
+            }
+
             return new ActionResult<IEnumerable<Reservation>>(_reservationsService.Search(searchCriteria).Result);
         }
     }
