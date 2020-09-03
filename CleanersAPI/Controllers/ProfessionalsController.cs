@@ -132,7 +132,6 @@ namespace CleanersAPI.Controllers
             return Ok();
         }
 
-        // DELETE: api/Professionals/5
         [HttpDelete("{id}")]
         public IActionResult DeleteProfessional([FromRoute] int id)
         {

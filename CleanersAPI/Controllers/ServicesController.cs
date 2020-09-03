@@ -18,14 +18,12 @@ namespace CleanersAPI.Controllers
             _servicesService = professionsService;
         }
 
-        // GET: api/Service
         [HttpGet]
         public Task<IEnumerable<Service>> GetServices()
         {
             return _servicesService.GetAll();
         }
 
-        // GET: api/Service/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetService([FromRoute] int id)
         {
@@ -44,7 +42,6 @@ namespace CleanersAPI.Controllers
             return Ok(profession);
         }
 
-        // PUT: api/Professions/5
         [HttpPut("{id}")]
         public IActionResult PutService([FromRoute] int id, [FromBody] Service service)
         {
@@ -68,9 +65,8 @@ namespace CleanersAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Professions
         [HttpPost]
-        public async Task<IActionResult> PostService([FromBody] Service service)
+        public async Task<IActionResult> CreateService([FromBody] Service service)
         {
             if (!ModelState.IsValid)
             {
@@ -82,7 +78,6 @@ namespace CleanersAPI.Controllers
             return CreatedAtAction("GetServices", new { id = newProfession.Id }, newProfession);
         }
 
-        // DELETE: api/Professions/5
         [HttpDelete("{id}")]
         public IActionResult DeleteService([FromRoute] int id)
         {
