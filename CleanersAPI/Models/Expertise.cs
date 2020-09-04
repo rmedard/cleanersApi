@@ -19,7 +19,6 @@ namespace CleanersAPI.Models
         
         public decimal HourlyRate { get; set; }
         
-        [JsonIgnore]
         public Service Service { get; set; }
 
         [JsonIgnore]

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
@@ -9,7 +11,6 @@ namespace CleanersAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [ApiController]
     public class ServicesController : Controller
     {
         private readonly IServicesService _servicesService;
@@ -19,11 +20,15 @@ namespace CleanersAPI.Controllers
             _servicesService = professionsService;
         }
 
-        [Authorize(Roles = "Professional")]
         [HttpGet]
-        public Task<IEnumerable<Service>> GetServices()
+        public Task<IEnumerable<Service>> GetServices([FromQuery] string category)
         {
-            return _servicesService.GetAll();
+            if (string.IsNullOrEmpty(category))
+            {
+                return _servicesService.GetAll();
+            }
+
+            return !Enum.TryParse(category, out Category theCategory) ? null : _servicesService.GetServicesByCategory(theCategory);
         }
 
         [HttpGet("{id}")]

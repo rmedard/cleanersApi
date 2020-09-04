@@ -1,4 +1,6 @@
-﻿using CleanersAPI.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using CleanersAPI.Models;
 using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
@@ -15,6 +17,11 @@ namespace CleanersAPI.Services.Impl
         protected override ICleanersRepository<Service> GetRepository()
         {
             return _servicesRepository;
+        }
+
+        public Task<IEnumerable<Service>> GetServicesByCategory(Category category)
+        {
+            return _servicesRepository.GetServicesByCategory(category);
         }
     }
 }

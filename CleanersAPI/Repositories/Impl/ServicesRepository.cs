@@ -57,5 +57,10 @@ namespace CleanersAPI.Repositories.Impl
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IEnumerable<Service>> GetServicesByCategory(Category category)
+        {
+            return await _context.Services.Where(s => category.Equals(s.Category)).ToListAsync();
+        }
     }
 }
