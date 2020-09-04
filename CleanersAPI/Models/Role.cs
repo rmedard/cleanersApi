@@ -16,6 +16,6 @@ namespace CleanersAPI.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum RoleName
     {
-        Admin, User
+        Admin, Customer, Professional
     }
 }

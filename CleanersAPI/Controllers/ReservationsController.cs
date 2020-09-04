@@ -53,6 +53,8 @@ namespace CleanersAPI.Controllers
             return Ok(reservation);
         }
         
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public IActionResult CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
@@ -66,7 +68,7 @@ namespace CleanersAPI.Controllers
             
             if (userFromRepo?.Customer == null || userFromRepo.Customer.Id != reservationForCreate.CustomerId)
             {
-                return Unauthorized("You don't have permission to create reservation");
+                return Forbid("You don't have permission to create reservation");
             }
             
             if (userFromRepo.Customer == null)

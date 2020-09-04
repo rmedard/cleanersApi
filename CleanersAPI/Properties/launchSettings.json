@@ -19,7 +19,7 @@
     "CleanersAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/services",
+      "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -18,6 +19,7 @@ namespace CleanersAPI.Controllers
             _servicesService = professionsService;
         }
 
+        [Authorize(Roles = "Professional")]
         [HttpGet]
         public Task<IEnumerable<Service>> GetServices()
         {

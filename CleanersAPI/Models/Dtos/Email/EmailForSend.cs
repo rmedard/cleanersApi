@@ -1,19 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CleanersAPI.Models
+namespace CleanersAPI.Models.Dtos.Email
 {
-    public class Email
+    public class EmailForSend
     {
-        public int Id { get; set; }
-        
-        [Required]
-        public string SenderNames { get; set; }
-        
-        [Required]
-        [DataType(DataType.EmailAddress, ErrorMessage = "Invalid from email")]
-        public string From { get; set; }
-
         [Required]
         [DataType(DataType.EmailAddress, ErrorMessage = "Invalid to email")]
         public string To { get; set; }
@@ -27,9 +17,5 @@ namespace CleanersAPI.Models
         
         [Required(ErrorMessage = "Email body can't be empty")]
         public string Body { get; set; }
-        
-        public bool Sent { get; set; }
-        
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

@@ -1,9 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using CleanersAPI.Models;
+using CleanersAPI.Models.Dtos.Email;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace CleanersAPI.Controllers
 {
@@ -14,39 +19,49 @@ namespace CleanersAPI.Controllers
     {
         private readonly IEmailsService _emailsService;
 
-        public MailsController(IEmailsService emailsService)
+        private readonly IMapper _mapper;
+
+        private readonly IConfiguration _configuration;
+        
+        public MailsController(IEmailsService emailsService, IConfiguration configuration, IMapper mapper)
         {
             _emailsService = emailsService;
+            _configuration = configuration;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public Task<IEnumerable<Email>> GetEmails()
+        public async Task<ActionResult<IEnumerable<Email>>> GetEmails()
         {
-            return _emailsService.GetAll();
+            return Ok(await _emailsService.GetAll());
         }
 
         [HttpPost]
-        public IActionResult SendEmail([FromBody] Email email)
+        public async Task<IActionResult> SendEmail([FromBody] EmailForSend emailForSend)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var emailValidator = new EmailAddressAttribute();
-            if (!emailValidator.IsValid(email.From) 
-                || !emailValidator.IsValid(email.To) 
-                || !emailValidator.IsValid(email.ReplyTo))
-            {
-                return BadRequest("Invalid email address...");
-            }
+            var email = _mapper.Map<Email>(emailForSend);
+            var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
+            var client = new SendGridClient(apiKey);
+            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From), new EmailAddress(email.To), email.Subject, email.Body, email.Body);
+            var response = await client.SendEmailAsync(msg);
 
-            var newEmail = _emailsService.Create(email);
-            if (newEmail == null || !newEmail.Result.Sent)
+            if (response.StatusCode.Equals(HttpStatusCode.Accepted))
             {
-                return NotFound("Unable to send email...");
+                email.Sent = true;
             }
-
+            
+            var newEmail = await _emailsService.Create(email);
+            
+            if (!response.StatusCode.Equals(HttpStatusCode.Accepted))
+            {
+                return BadRequest(response);
+            }
+            
             return Ok(newEmail);
         }
     }
