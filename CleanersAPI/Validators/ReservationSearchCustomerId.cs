@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace CleanersAPI.Validators
@@ -15,7 +17,7 @@ namespace CleanersAPI.Validators
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var userManager = validationContext.GetService(typeof(UserManager<IdentityUser>));
+            var userManager = validationContext.GetService(typeof(IAuthorizationService));
             var customerId = Convert.ToInt32(value);
             return new ValidationResult("Inv...");
         }
