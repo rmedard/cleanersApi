@@ -8,9 +8,9 @@ namespace CleanersAPI.Services.Impl
     {
         protected abstract ICleanersRepository<T> GetRepository();
         
-        public Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            return GetRepository().GetAll();
+            return await GetRepository().GetAll();
         }
 
         public Task<T> GetOneById(int id)

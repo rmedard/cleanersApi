@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -21,14 +19,18 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpGet]
-        public Task<IEnumerable<Service>> GetServices([FromQuery] string category)
+        public ActionResult<IEnumerable<Service>> GetServices([FromQuery] string category)
         {
             if (string.IsNullOrEmpty(category))
             {
-                return _servicesService.GetAll();
+                return Ok(_servicesService.GetAll().Result);
             }
 
-            return !Enum.TryParse(category, out Category theCategory) ? null : _servicesService.GetServicesByCategory(theCategory);
+            if (!Enum.TryParse(category, out Category theCategory))
+            {
+                return BadRequest("Invalid category name");
+            }
+            return Ok(_servicesService.GetServicesByCategory(theCategory).Result);
         }
 
         [HttpGet("{id}")]
