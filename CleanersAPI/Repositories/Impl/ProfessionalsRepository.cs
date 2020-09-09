@@ -63,6 +63,11 @@ namespace CleanersAPI.Repositories.Impl
                           && Status.Confirmed.Equals(r.Status));
         }
 
+        public async Task<Professional> GetProfessionalByUserId(int userId)
+        {
+            return await _context.Professionals.FirstOrDefaultAsync(p => userId.Equals(p.UserId));
+        }
+
         public async Task<IEnumerable<Expertise>> GetExpertises(int professionalId)
         {
             return await _context.Expertises.Include(e => e.Service)

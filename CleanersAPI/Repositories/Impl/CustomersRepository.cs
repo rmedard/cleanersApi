@@ -80,5 +80,10 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Reservations.Where(s => s.CustomerId == customerId).ToListAsync();
         }
+
+        public async Task<Customer> GetCustomerByUserId(int userId)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.UserId.Equals(userId));
+        }
     }
 }

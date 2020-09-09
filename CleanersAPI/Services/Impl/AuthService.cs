@@ -55,7 +55,13 @@ namespace CleanersAPI.Services.Impl
                 Username = customer.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.Customer)}}
+                Roles =
+                {
+                    new RoleUser
+                    {
+                        Role = _authRepository.GetRoleByName(RoleName.Customer)
+                    }
+                }
             };
         }
 

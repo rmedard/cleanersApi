@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace CleanersAPI.Models
 {
@@ -10,10 +11,13 @@ namespace CleanersAPI.Models
 
         public string Username { get; set; }
 
+        [JsonIgnore]
         public byte[] PasswordHash { get; set; }
 
+        [JsonIgnore]
         public byte[] PasswordSalt { get; set; }
         
+        [JsonIgnore]
         public ICollection<RoleUser> Roles { get; }
 
         public User()
@@ -21,6 +25,8 @@ namespace CleanersAPI.Models
             Roles = new Collection<RoleUser>();
         }
         
-        public Person Person { get; set; }
+        // public Customer Customer { get; set; }
+        //
+        // public Professional Professional { get; set; }
     }
 }

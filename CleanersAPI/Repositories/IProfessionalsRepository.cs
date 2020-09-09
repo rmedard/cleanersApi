@@ -15,5 +15,7 @@ namespace CleanersAPI.Repositories
         void UpdateExpertise(Expertise expertise);
         
         bool IsFree(int professionalId, DateTime dateTime, int numberOfHours);
+        
+        Task<Professional> GetProfessionalByUserId(int userId);
     }
 }

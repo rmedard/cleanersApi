@@ -14,9 +14,11 @@ namespace CleanersAPI.Helpers
         {
             var config = configuration;
             CreateMap<User, UserForDisplayDto>()
-                .ForMember(dest => dest.Roles,
+                .ForMember(dest => dest.Roles, 
                     opt => { opt.MapFrom(src => src.Roles.Select(x => x.Role).Select(y => y.RoleName)); })
-                .ForMember(dest => dest.Person, opt => { opt.MapFrom(src => src.Person); });
+                // .ForMember(dest => dest.Person, opt => { opt.MapFrom(src => src.); })
+                // .ForMember(dest => dest.Professional, opt => { opt.MapFrom(src => "null"); })
+                ;
             CreateMap<Expertise, ExpertiseForServiceCreate>()
                 .ForMember(dest => dest.ProfessionalId, opt => { opt.MapFrom(src => src.ProfessionalId); })
                 .ForMember(dest => dest.ServiceId, opt => { opt.MapFrom(src => src.ServiceId); })

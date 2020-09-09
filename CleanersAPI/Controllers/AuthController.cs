@@ -12,12 +12,16 @@ namespace CleanersAPI.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly ICustomersService _customersService;
+        private readonly IProfessionalsService _professionalsService;
         private readonly IMapper _mapper;
 
-        public AuthController(IAuthService authService, IConfiguration configuration, IMapper mapper)
+        public AuthController(IAuthService authService, ICustomersService customersService, IProfessionalsService professionalsService, IConfiguration configuration, IMapper mapper)
         {
             _authService = authService;
-            _mapper = mapper;
+            _customersService = customersService;
+            _professionalsService = professionalsService;
+                _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -35,7 +39,18 @@ namespace CleanersAPI.Controllers
             }
 
             var token = _authService.GenerateLoginToken(userFromRepo);
+            var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
+
             var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
+            if (customer != null)
+            {
+                user.Person = customer;
+            }
+            else
+            {
+                user.Person = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
+            }
+            
             return Ok(new {token, user});
         }
     }

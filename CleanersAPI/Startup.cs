@@ -197,8 +197,8 @@ namespace CleanersAPI
                 });
 
                 CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
-                var admin = new User {Username = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                var igwe = new User {Username = "igwe", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                var admin = new User {Username = "admin@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                var igwe = new User {Username = "igwe@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                 var adminRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Admin}, User = admin};
                 var professionalRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Professional}, User = igwe};
                 var service = new Service {Title = "Gutera akabariro", Category = Category.Interieur};

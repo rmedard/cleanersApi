@@ -86,7 +86,7 @@ namespace CleanersAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Reservation> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
+        public async Task<ActionResult<Reservation>> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
             if (!ModelState.IsValid)
             {
@@ -95,17 +95,12 @@ namespace CleanersAPI.Controllers
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
-            
-            // if (userFromRepo?.Person.Customer == null || userFromRepo.Customer.Id != reservationForCreate.CustomerId)
-            // {
-            //     return Forbid("You don't have permission to create reservation");
-            // }
-            //
-            // if (userFromRepo.Customer == null)
-            // {
-            //     return NotFound("No customer found");
-            // }
-            
+            var customer = await _customersService.GetCustomerByUserId(reservationForCreate.CustomerId);
+            if (customer == null || !(customer.Id == reservationForCreate.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
+            {
+                return new ForbidResult("You don't have permission to create reservation");
+            }
+
             var isFree = _professionalsService.IsFree(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.StartTime, reservationForCreate.Duration);
             if (!isFree)

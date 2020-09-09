@@ -46,6 +46,11 @@ namespace CleanersAPI.Services.Impl
             return _professionalsRepository.IsFree(professionalId, dateTime, numberOfHours);
         }
 
+        public async Task<Professional> GetProfessionalByUserId(int userId)
+        {
+            return await _professionalsRepository.GetProfessionalByUserId(userId);
+        }
+
         public new Task<Professional> Create(Professional professional)
         {
             return _professionalsRepository.Create(professional);

@@ -18,7 +18,7 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Customer>().ToTable("customers").HasKey(c => c.Id);
             modelBuilder.Entity<Customer>().Property(c => c.Id).HasColumnName("customerId");
             modelBuilder.Entity<Customer>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+            // modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Professional>().ToTable("professionals").HasKey(p => p.Id);
             modelBuilder.Entity<Professional>().Property(p => p.Id).HasColumnName("professionalId");

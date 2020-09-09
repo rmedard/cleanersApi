@@ -119,7 +119,7 @@ namespace CleanersAPI.Controllers
                 return NotFound("Customer not found");
             }
 
-            return Ok(await _customersService.getOrderedServices(id));
+            return Ok(await _customersService.GetOrderedServices(id));
         }
     }
 }

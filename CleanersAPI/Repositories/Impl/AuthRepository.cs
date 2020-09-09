@@ -28,13 +28,13 @@ namespace CleanersAPI.Repositories.Impl
                 return null;
             }
 
-            if (user.Roles.Any(r => RoleName.Professional.Equals(r.Role.RoleName)))
-            {
-                user.Person = _context.Professionals.FirstOrDefault(p => p.UserId.Equals(user.Id));
-            } else if (user.Roles.Any(r => RoleName.Customer.Equals(r.Role.RoleName)))
-            {
-                user.Person = _context.Customers.FirstOrDefault(c => c.UserId.Equals(user.Id));
-            }
+            // if (user.Roles.Any(r => RoleName.Professional.Equals(r.Role.RoleName)))
+            // {
+            //     user.Professional = _context.Professionals.FirstOrDefault(p => p.UserId.Equals(user.Id));
+            // } else if (user.Roles.Any(r => RoleName.Customer.Equals(r.Role.RoleName)))
+            // {
+            //     user.Customer = _context.Customers.FirstOrDefault(c => c.UserId.Equals(user.Id));
+            // }
             
             return VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt) ? user : null;
         }

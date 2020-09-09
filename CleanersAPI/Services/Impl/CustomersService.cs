@@ -26,9 +26,14 @@ namespace CleanersAPI.Services.Impl
             return _customersRepository.Create(customer);
         }
 
-        public Task<IEnumerable<Reservation>> getOrderedServices(int customerId)
+        public Task<IEnumerable<Reservation>> GetOrderedServices(int customerId)
         {
             throw new System.NotImplementedException();
+        }
+
+        public Task<Customer> GetCustomerByUserId(int userId)
+        {
+            return _customersRepository.GetCustomerByUserId(userId);
         }
     }
 }
