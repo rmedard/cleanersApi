@@ -8,6 +8,7 @@ using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.Service;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -16,7 +17,7 @@ namespace CleanersAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ReservationsController : Controller
+    public class ReservationsController : ControllerBase
     {
         private readonly IProfessionalsService _professionalsService;
         private readonly ICustomersService _customersService;
@@ -52,11 +53,40 @@ namespace CleanersAPI.Controllers
 
             return Ok(reservation);
         }
-        
+
+        /// <summary>
+        /// Searches reservations.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     POST /Reservations
+        ///     {
+        ///         "customerId": 1,
+        ///         "expertiseForServiceCreate": {
+        ///             "professionalId": 1,
+        ///             "serviceId": 1
+        ///         },
+        ///         "startTime": "2020-09-03 10:00:00",
+        ///         "duration": 2
+        ///     }
+        /// 
+        /// </remarks>
+        /// <param name="reservationForCreate"></param>
+        /// <returns>A the newly created reservation</returns>
+        /// <response code="201">Returns the newly created reservation</response>
+        /// <response code="401">If user is not authenticated</response>
+        /// <response code="400">If reservation object is invalid or either 'professional' or 'Expertise' does not exist</response>
+        /// <response code="403">If logged-in user is neither 'admin' nor 'customer'</response>
+        /// <response code="404">If 'customer' does not exist</response>
         [Authorize(Roles = "Admin")]
         [Authorize(Roles = "Customer")]
         [HttpPost]
-        public IActionResult CreateReservation([FromBody] ReservationForCreate reservationForCreate)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Reservation> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
             if (!ModelState.IsValid)
             {
@@ -66,15 +96,15 @@ namespace CleanersAPI.Controllers
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
             
-            if (userFromRepo?.Customer == null || userFromRepo.Customer.Id != reservationForCreate.CustomerId)
-            {
-                return Forbid("You don't have permission to create reservation");
-            }
-            
-            if (userFromRepo.Customer == null)
-            {
-                return NotFound("No customer found");
-            }
+            // if (userFromRepo?.Person.Customer == null || userFromRepo.Customer.Id != reservationForCreate.CustomerId)
+            // {
+            //     return Forbid("You don't have permission to create reservation");
+            // }
+            //
+            // if (userFromRepo.Customer == null)
+            // {
+            //     return NotFound("No customer found");
+            // }
             
             var isFree = _professionalsService.IsFree(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.StartTime, reservationForCreate.Duration);
@@ -93,7 +123,7 @@ namespace CleanersAPI.Controllers
             }
 
             reservation.Expertise = expertise;
-            reservation.Customer = userFromRepo.Customer;
+            // reservation.Customer = userFromRepo.Customer;
             reservation.Status = Status.Confirmed;
             reservation.TotalCost = expertise.HourlyRate * reservationForCreate.Duration;
             var newReservation = _reservationsService.Create(reservation);

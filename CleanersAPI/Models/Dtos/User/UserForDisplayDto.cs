@@ -13,5 +13,7 @@ namespace CleanersAPI.Models.Dtos.User
         public int ProfessionalId { get; set; }
         
         public int CustomerId { get; set; }
+        
+        public Person Person { get; set; }
     }
 }

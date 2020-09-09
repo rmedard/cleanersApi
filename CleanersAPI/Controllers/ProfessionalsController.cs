@@ -53,7 +53,7 @@ namespace CleanersAPI.Controllers
         public ActionResult<IEnumerable<Expertise>> GetProfessionalExpertises([FromRoute] int id)
         {
             return !ProfessionalExists(id)
-                ? NotFound()
+                ? NotFound("No professional found")
                 : new ActionResult<IEnumerable<Expertise>>(_professionalsService.GetExpertises(id).Result);
         }
 

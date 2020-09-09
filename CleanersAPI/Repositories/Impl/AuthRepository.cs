@@ -19,14 +19,23 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _context.Users.Include(u => u.Roles).ThenInclude(r => r.Role)
-                .Include(u => u.Customer)
-                .Include(u => u.Professional)
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .ThenInclude(r => r.Role)
                 .FirstAsync(u => u.Username == username);
             if (user == null)
             {
                 return null;
             }
+
+            if (user.Roles.Any(r => RoleName.Professional.Equals(r.Role.RoleName)))
+            {
+                user.Person = _context.Professionals.FirstOrDefault(p => p.UserId.Equals(user.Id));
+            } else if (user.Roles.Any(r => RoleName.Customer.Equals(r.Role.RoleName)))
+            {
+                user.Person = _context.Customers.FirstOrDefault(c => c.UserId.Equals(user.Id));
+            }
+            
             return VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt) ? user : null;
         }
 
@@ -42,10 +51,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<User> GetById(int userId)
         {
-            return _context.Users
-                .Include(u => u.Customer)
-                .Include(u => u.Professional)
-                .SingleOrDefaultAsync(u => u.Id.Equals(userId));
+            return _context.Users.SingleOrDefaultAsync(u => u.Id.Equals(userId));
         }
 
         private static bool VerifyPasswordHash(string password, IReadOnlyList<byte> passwordHash, byte[] passwordSalt)
