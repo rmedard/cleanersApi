@@ -15,5 +15,7 @@ namespace CleanersAPI.Services
         bool IsFree(int professionalId, DateTime dateTime, int numberOfHours);
         
         Task<Professional> GetProfessionalByUserId(int userId);
+
+        Task<IEnumerable<Professional>> GetAvailableProfessionals(AvailabilityFinder availabilityFinder);
     }
 }

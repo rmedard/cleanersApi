@@ -43,7 +43,7 @@ namespace CleanersAPI.Repositories.Impl
             Console.WriteLine("Yahinduwe: " + expertise);
             try
             {
-                _context.SaveChangesAsync();    
+                _context.SaveChangesAsync();
             }
             catch (DbUpdateException e)
             {
@@ -57,7 +57,7 @@ namespace CleanersAPI.Repositories.Impl
             var starTime = dateTime;
             var endTime = dateTime.AddHours(numberOfHours);
             return !_context.Reservations
-                .Any(r => r.Expertise.ProfessionalId.Equals(professionalId) 
+                .Any(r => r.Expertise.ProfessionalId.Equals(professionalId)
                           && DateTime.Compare(r.StartTime, endTime) < 0
                           && DateTime.Compare(r.EndTime, starTime) > 0
                           && Status.Confirmed.Equals(r.Status));
@@ -66,6 +66,20 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<Professional> GetProfessionalByUserId(int userId)
         {
             return await _context.Professionals.FirstOrDefaultAsync(p => userId.Equals(p.UserId));
+        }
+
+        public async Task<IEnumerable<Professional>> GetAvailable(AvailabilityFinder availabilityFinder)
+        {
+            var startTime = availabilityFinder.DateTime;
+            var endTime = availabilityFinder.DateTime.AddHours(availabilityFinder.Duration);
+            return await _context.Professionals
+                .Where(p => !_context.Reservations
+                    .Where(r => DateTime.Compare(r.StartTime, endTime) < 0
+                                && DateTime.Compare(r.EndTime, startTime) > 0)
+                    .Select(r => r.Expertise.ProfessionalId).Contains(p.Id))
+                .Where(p => p.Expertises.Select(e => e.ServiceId).Contains(availabilityFinder.ServiceId))
+                .Include(p => p.Address)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Expertise>> GetExpertises(int professionalId)
@@ -96,7 +110,8 @@ namespace CleanersAPI.Repositories.Impl
             catch (DbUpdateException)
             {
                 return false;
-            }            
+            }
+
             return true;
         }
 

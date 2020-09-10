@@ -79,14 +79,14 @@ namespace CleanersAPI.Controllers
         /// <response code="400">If reservation object is invalid or either 'professional' or 'Expertise' does not exist</response>
         /// <response code="403">If logged-in user is neither 'admin' nor 'customer'</response>
         /// <response code="404">If 'customer' does not exist</response>
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         [Authorize(Roles = "Customer")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Reservation>> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
+        public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
             if (!ModelState.IsValid)
             {
@@ -121,7 +121,7 @@ namespace CleanersAPI.Controllers
             // reservation.Customer = userFromRepo.Customer;
             reservation.Status = Status.Confirmed;
             reservation.TotalCost = expertise.HourlyRate * reservationForCreate.Duration;
-            var newReservation = _reservationsService.Create(reservation);
+            var newReservation = await _reservationsService.Create(reservation);
             if (newReservation == null)
             {
                 return BadRequest("Reservation creation failed");
