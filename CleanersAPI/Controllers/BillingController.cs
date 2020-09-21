@@ -37,7 +37,12 @@ namespace CleanersAPI.Controllers
             var reservationSearchCriteria = new ReservationSearchCriteria()
                 .Build(_customersService.GetOneById(customerId).Result)
                 .Build(false);
-            return _billingsService.Create(reservationSearchCriteria).Result;
+            var billing = _billingsService.Create(reservationSearchCriteria);
+            if (billing == null)
+            {
+                return NotFound("No reservations to bill available");
+            }
+            return billing.Result;
         }
     }
 }
