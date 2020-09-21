@@ -10,6 +10,6 @@ namespace CleanersAPI.Models
         
         public User User { get; set; }
         
-        public IEnumerable<Expertise> Expertises { get; } = new List<Expertise>();
+        public ICollection<Expertise> Expertises { get; } = new List<Expertise>();
     }
 }

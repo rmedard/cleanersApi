@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CleanersAPI.Controllers
 {
@@ -122,6 +124,22 @@ namespace CleanersAPI.Controllers
                 return BadRequest();
             }
 
+            if (!_professionalsService.DoesExist(expertise.ProfessionalId))
+            {
+                return NotFound("Professional not found");
+            }
+
+            if (!_servicesService.DoesExist(expertise.ServiceId))
+            {
+                return NotFound("Service not found");
+            }
+
+            var professional = _professionalsService.GetOneById(expertise.ProfessionalId);
+            if (professional.Result.Expertises.AsQueryable().Any(e => e.ServiceId.Equals(expertise.ServiceId)))
+            {
+                return BadRequest("Professional does already propose this service");
+            }
+            
             _professionalsService.GrantExpertise(expertise);
             return Ok();
         }
