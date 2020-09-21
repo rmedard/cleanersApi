@@ -26,7 +26,9 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<Reservation> GetById(int id)
         {
             return await _context.Reservations
-                .Include(r => r.Expertise)
+                .Include(r => r.Customer)
+                .Include(r => r.Expertise.Professional)
+                .Include(r => r.Expertise.Service)
                 .SingleOrDefaultAsync(reservation => reservation.Id.Equals(id));
         }
 
@@ -73,7 +75,7 @@ namespace CleanersAPI.Repositories.Impl
         {
             var order = (await _context.Reservations.AddAsync(customer)).Entity;
             await _context.SaveChangesAsync();
-            return order;
+            return await GetById(order.Id);
         }
 
         public async Task<bool> Update(Reservation reservation)

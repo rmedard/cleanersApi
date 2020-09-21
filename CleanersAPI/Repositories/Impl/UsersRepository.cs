@@ -22,7 +22,10 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<User> GetById(int id)
         {
-            return _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+            return _context.Users
+                .Include(u => u.Roles)
+                .ThenInclude(r => r.Role)
+                .SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public bool DoesExist(int id)

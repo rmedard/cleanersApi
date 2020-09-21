@@ -213,7 +213,7 @@ namespace CleanersAPI
                     },
                     FirstName = "Igwe",
                     LastName = "Kabutindi",
-                    Email = "medard.rebero@gmail.com",
+                    Email = igwe.Username,
                     PhoneNumber = "+32483378014",
                     User = igwe
                 };

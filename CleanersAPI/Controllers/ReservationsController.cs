@@ -23,16 +23,19 @@ namespace CleanersAPI.Controllers
         private readonly ICustomersService _customersService;
         private readonly IExpertiseService _expertiseService;
         private readonly IReservationsService _reservationsService;
+        private readonly IEmailsService _emailsService;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
 
-        public ReservationsController(IProfessionalsService professionalsService, ICustomersService customersService, IExpertiseService expertiseService,
+        public ReservationsController(IProfessionalsService professionalsService, ICustomersService customersService,
+            IExpertiseService expertiseService, IEmailsService emailsService,
             IReservationsService reservationsService, IAuthService authService, IMapper mapper)
         {
             _professionalsService = professionalsService;
             _customersService = customersService;
             _expertiseService = expertiseService;
             _reservationsService = reservationsService;
+            _emailsService = emailsService;
             _authService = authService;
             _mapper = mapper;
         }
@@ -95,8 +98,9 @@ namespace CleanersAPI.Controllers
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
-            var customer = await _customersService.GetCustomerByUserId(reservationForCreate.CustomerId);
-            if (customer == null || !(customer.Id == reservationForCreate.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
+            var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
+            if (customer == null || !(customer.Id == reservationForCreate.CustomerId &&
+                                      userFromRepo.Id.Equals(customer.UserId)))
             {
                 return new ForbidResult("You don't have permission to create reservation");
             }
@@ -118,7 +122,7 @@ namespace CleanersAPI.Controllers
             }
 
             reservation.Expertise = expertise;
-            // reservation.Customer = userFromRepo.Customer;
+            reservation.Customer = customer;
             reservation.Status = Status.Confirmed;
             reservation.TotalCost = expertise.HourlyRate * reservationForCreate.Duration;
             var newReservation = await _reservationsService.Create(reservation);
@@ -127,17 +131,20 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Reservation creation failed");
             }
 
+            await _emailsService.notifyUsersOnReservationCreation(newReservation);
+
             return CreatedAtAction("GetReservation", new {id = newReservation.Id}, newReservation);
         }
 
         [HttpPost("search")]
-        public ActionResult<IEnumerable<Reservation>>  GetReservations([FromBody] ReservationSearchCriteriaDto reservationSearchCriteriaDto)
+        public ActionResult<IEnumerable<Reservation>> GetReservations(
+            [FromBody] ReservationSearchCriteriaDto reservationSearchCriteriaDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
             var searchCriteria = new ReservationSearchCriteria();
             if (reservationSearchCriteriaDto.CustomerId != 0)
             {
@@ -145,6 +152,7 @@ namespace CleanersAPI.Controllers
                 {
                     return NotFound($"Customer with id {reservationSearchCriteriaDto.CustomerId} not found");
                 }
+
                 searchCriteria.Build(_customersService.GetOneById(reservationSearchCriteriaDto.CustomerId).Result);
             }
 
@@ -154,7 +162,9 @@ namespace CleanersAPI.Controllers
                 {
                     return NotFound($"Professional with id {reservationSearchCriteriaDto.ProfessionalId} not found");
                 }
-                searchCriteria.Build(_professionalsService.GetOneById(reservationSearchCriteriaDto.ProfessionalId).Result);
+
+                searchCriteria.Build(_professionalsService.GetOneById(reservationSearchCriteriaDto.ProfessionalId)
+                    .Result);
             }
 
             if (!string.IsNullOrEmpty(reservationSearchCriteriaDto.Status))
@@ -163,6 +173,7 @@ namespace CleanersAPI.Controllers
                 {
                     return BadRequest("Invalid status");
                 }
+
                 searchCriteria.Build(reservationStatus);
             }
 
@@ -172,6 +183,7 @@ namespace CleanersAPI.Controllers
                 {
                     return BadRequest("Invalid date");
                 }
+
                 searchCriteria.Build(dateTime);
             }
 
@@ -181,6 +193,73 @@ namespace CleanersAPI.Controllers
             }
 
             return new ActionResult<IEnumerable<Reservation>>(_reservationsService.Search(searchCriteria).Result);
+        }
+
+        [HttpGet("{id}/cancel")]
+        public async Task<IActionResult> CancelReservation([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var reservation = await _reservationsService.GetOneById(id);
+            if (reservation == null)
+            {
+                return NotFound("Reservation not found");
+            }
+
+            var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
+            var userRole = userFromRepo.Roles[0].Role.RoleName;
+
+            switch (userRole)
+            {
+                case RoleName.Customer:
+                {
+                    var customer = await _customersService.GetCustomerByUserId(reservation.CustomerId);
+                    if (customer != null &&
+                        !(customer.Id == reservation.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
+                    {
+                        return new ForbidResult("You don't have permission to update this reservation");
+                    }
+
+                    break;
+                }
+                case RoleName.Professional:
+                {
+                    var professional = await _professionalsService.GetProfessionalByUserId(loggedInUserId);
+                    if (professional != null && !professional.Id.Equals(reservation.Expertise.ProfessionalId))
+                    {
+                        return new ForbidResult("You don't have permission to update this reservation");
+                    }
+
+                    break;
+                }
+                case RoleName.Admin:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            if (reservation.BillingId != null)
+            {
+                return BadRequest("You cannot cancel billed reservation");
+            }
+
+            if (reservation.StartTime.CompareTo(DateTime.Now) <= 0)
+            {
+                return BadRequest("You cannot cancel reservation in the past");
+            }
+
+            if (!reservation.Status.Equals(Status.Confirmed))
+            {
+                return NoContent();
+            }
+
+            reservation.Status = Status.Rejected;
+            await _reservationsService.Update(reservation);
+            return Ok("Reservation cancelled successfully");
         }
     }
 }

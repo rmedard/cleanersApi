@@ -18,7 +18,7 @@ namespace CleanersAPI.Models
         public byte[] PasswordSalt { get; set; }
         
         [JsonIgnore]
-        public ICollection<RoleUser> Roles { get; }
+        public IList<RoleUser> Roles { get; }
 
         public User()
         {

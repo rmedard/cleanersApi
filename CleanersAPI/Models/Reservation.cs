@@ -25,10 +25,8 @@ namespace CleanersAPI.Models
         [Required]
         public Status Status { get; set; }
         
-        [Required]
         public Expertise Expertise { get; set; }
         
-        [JsonIgnore]
         public Customer Customer { get; set; }
         
         public int? BillingId { get; set; }

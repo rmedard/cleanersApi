@@ -22,7 +22,7 @@ namespace CleanersAPI.Repositories.Impl
             var user = await _context.Users
                 .Include(u => u.Roles)
                 .ThenInclude(r => r.Role)
-                .FirstAsync(u => u.Username == username);
+                .FirstOrDefaultAsync(u => u.Username == username);
             if (user == null)
             {
                 return null;

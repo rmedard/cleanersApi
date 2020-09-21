@@ -25,7 +25,7 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserForLoginDto userForLoginDto)
+        public async Task<IActionResult> Login([FromForm] UserForLoginDto userForLoginDto)
         {
             if (!ModelState.IsValid)
             {

@@ -34,9 +34,9 @@ namespace CleanersAPI.Controllers
                 return NotFound($"Customer with id {customerId} not found");
             }
             
-            var reservationSearchCriteria = new ReservationSearchCriteria();
-            reservationSearchCriteria.Build(_customersService.GetOneById(customerId).Result);
-            reservationSearchCriteria.Build(false);
+            var reservationSearchCriteria = new ReservationSearchCriteria()
+                .Build(_customersService.GetOneById(customerId).Result)
+                .Build(false);
             return _billingsService.Create(reservationSearchCriteria).Result;
         }
     }
