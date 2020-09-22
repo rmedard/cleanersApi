@@ -39,11 +39,7 @@ namespace CleanersAPI.Models
     {
         [EnumMember(Value = "Confirmed")]
         Confirmed,
-        
         [EnumMember(Value = "Rejected")]
-        Rejected,
-        
-        [EnumMember(Value = "Done")]
-        Done
+        Rejected
     }
 }
