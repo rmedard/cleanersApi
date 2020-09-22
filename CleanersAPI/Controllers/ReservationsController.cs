@@ -83,7 +83,7 @@ namespace CleanersAPI.Controllers
         /// <response code="403">If logged-in user is neither 'admin' nor 'customer'</response>
         /// <response code="404">If 'customer' does not exist</response>
         // [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Admin,Customer")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
