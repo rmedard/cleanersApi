@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Threading.Tasks;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
