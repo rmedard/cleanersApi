@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -51,6 +52,7 @@ namespace CleanersAPI.Controllers
             return Ok(profession);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult PutService([FromRoute] int id, [FromBody] Service service)
         {
@@ -74,6 +76,7 @@ namespace CleanersAPI.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateService([FromBody] Service service)
         {
@@ -87,6 +90,7 @@ namespace CleanersAPI.Controllers
             return CreatedAtAction("GetServices", new { id = newProfession.Id }, newProfession);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteService([FromRoute] int id)
         {
