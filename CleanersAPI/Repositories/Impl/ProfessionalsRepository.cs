@@ -117,9 +117,12 @@ namespace CleanersAPI.Repositories.Impl
             return true;
         }
 
-        public Task<bool> Delete(int professionalId)
+        public async Task<bool> Delete(int professionalId)
         {
-            throw new NotImplementedException();
+            var professional = GetById(professionalId);
+            _context.Professionals.Remove(professional.Result);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

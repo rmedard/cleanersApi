@@ -53,9 +53,12 @@ namespace CleanersAPI.Repositories.Impl
             return true;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var service = GetById(id);
+            _context.Services.Remove(service.Result);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<IEnumerable<Service>> GetServicesByCategory(Category category)

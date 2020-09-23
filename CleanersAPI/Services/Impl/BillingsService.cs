@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class BillingsService : IBillingsService
+    public class BillingsService : CleanersService<Billing>, IBillingsService
     {
         private readonly IBillingsRepository _billingsRepository;
         private readonly IReservationsRepository _reservationsRepository;
@@ -33,24 +33,9 @@ namespace CleanersAPI.Services.Impl
             _configuration = configuration;
         }
 
-        public Task<IEnumerable<Billing>> GetAll()
+        protected override ICleanersRepository<Billing> GetRepository()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<Billing> GetOneById(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool DoesExist(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<Billing> Create(Billing t)
-        {
-            throw new System.NotImplementedException();
+            return _billingsRepository;
         }
 
         public async Task<Billing> Create(ReservationSearchCriteria reservationSearchCriteria)
@@ -125,16 +110,6 @@ namespace CleanersAPI.Services.Impl
                 }
             };
             return await renderer.RenderHtmlAsPdfAsync(result);
-        }
-
-        public Task<bool> Update(Billing t)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<bool> Delete(int id)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
