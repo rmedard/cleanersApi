@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
@@ -13,10 +15,12 @@ namespace CleanersAPI.Controllers
     public class ServicesController : Controller
     {
         private readonly IServicesService _servicesService;
+        private readonly IProfessionalsService _professionalsService;
 
-        public ServicesController(IServicesService professionsService)
+        public ServicesController(IServicesService professionsService, IProfessionalsService professionalsService)
         {
             _servicesService = professionsService;
+            _professionalsService = professionalsService;
         }
 
         [HttpGet]
@@ -89,28 +93,5 @@ namespace CleanersAPI.Controllers
 
             return CreatedAtAction("GetServices", new { id = newProfession.Id }, newProfession);
         }
-
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public IActionResult DeleteService([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (!_servicesService.DoesExist(id))
-            {
-                return NotFound("Profession not found");
-            }
-
-            var deleted = _servicesService.Delete(id);
-            if (!deleted.Result)
-            {
-                return BadRequest("Deletion failed");
-            }
-            return Ok();
-        }
-
     }
 }
