@@ -109,6 +109,7 @@ namespace CleanersAPI
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
             });
         }
 

@@ -104,7 +104,6 @@ namespace CleanersAPI.Controllers
             {
                 return StatusCode(403, "You do not have permission to create this reservation");
             }
-            Console.WriteLine("naharenze...");
             var isFree = _professionalsService.IsFree(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.StartTime, reservationForCreate.Duration);
             if (!isFree)

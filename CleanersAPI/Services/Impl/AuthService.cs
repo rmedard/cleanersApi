@@ -67,20 +67,7 @@ namespace CleanersAPI.Services.Impl
 
         public string GenerateLoginToken(User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Token").Value);
-
-            string userRole;
-            if (user.Roles.Any(r => RoleName.Admin.Equals(r.Role.RoleName)))
-            {
-                userRole = RoleName.Admin.ToString();
-            }
-            else
-            {
-                userRole = RoleName.Customer.Equals(user.Roles.First().Role.RoleName)
-                    ? RoleName.Customer.ToString()
-                    : RoleName.Professional.ToString();
-            }
             
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -88,11 +75,12 @@ namespace CleanersAPI.Services.Impl
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, userRole)
+                    new Claim(ClaimTypes.Role, user.Roles.First().Role.RoleName.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
+            var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
