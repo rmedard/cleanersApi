@@ -89,7 +89,7 @@ namespace CleanersAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
+        public async Task<ActionResult<Reservation>> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
             if (!ModelState.IsValid)
             {
@@ -102,9 +102,9 @@ namespace CleanersAPI.Controllers
             if (customer == null || !(customer.Id == reservationForCreate.CustomerId &&
                                       userFromRepo.Id.Equals(customer.UserId)))
             {
-                return new ForbidResult("You don't have permission to create reservation");
+                return StatusCode(403, "You do not have permission to create this reservation");
             }
-
+            Console.WriteLine("naharenze...");
             var isFree = _professionalsService.IsFree(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.StartTime, reservationForCreate.Duration);
             if (!isFree)
@@ -222,7 +222,7 @@ namespace CleanersAPI.Controllers
                     if (customer != null &&
                         !(customer.Id == reservation.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
                     {
-                        return new ForbidResult("You don't have permission to update this reservation");
+                        return StatusCode(403, "You don't have permission to update this reservation");
                     }
 
                     break;
@@ -232,7 +232,7 @@ namespace CleanersAPI.Controllers
                     var professional = await _professionalsService.GetProfessionalByUserId(loggedInUserId);
                     if (professional != null && !professional.Id.Equals(reservation.Expertise.ProfessionalId))
                     {
-                        return new ForbidResult("You don't have permission to update this reservation");
+                        return StatusCode(403, "You don't have permission to update this reservation");
                     }
 
                     break;
