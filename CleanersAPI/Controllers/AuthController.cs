@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,13 @@ namespace CleanersAPI.Controllers
         private readonly IProfessionalsService _professionalsService;
         private readonly IMapper _mapper;
 
-        public AuthController(IAuthService authService, ICustomersService customersService, IProfessionalsService professionalsService, IConfiguration configuration, IMapper mapper)
+        public AuthController(IAuthService authService, ICustomersService customersService,
+            IProfessionalsService professionalsService, IConfiguration configuration, IMapper mapper)
         {
             _authService = authService;
             _customersService = customersService;
             _professionalsService = professionalsService;
-                _mapper = mapper;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -39,18 +41,22 @@ namespace CleanersAPI.Controllers
             }
 
             var token = _authService.GenerateLoginToken(userFromRepo);
-            var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
-
             var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
-            if (customer != null)
+            user.Person = userFromRepo.Roles[0].Role.RoleName switch
             {
-                user.Person = customer;
-            }
-            else
-            {
-                user.Person = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
-            }
-            
+                RoleName.Customer => await _customersService.GetCustomerByUserId(userFromRepo.Id),
+                RoleName.Professional => await _professionalsService.GetProfessionalByUserId(userFromRepo.Id),
+                RoleName.Admin => new Person
+                {
+                    Email = user.Username,
+                    FirstName = "Admin",
+                    LastName = "HouseCleaners",
+                    PhoneNumber = "+123456789",
+                    IsActive = true
+                },
+                _ => user.Person
+            };
+
             return Ok(new {token, user});
         }
     }

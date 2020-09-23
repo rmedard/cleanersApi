@@ -67,6 +67,7 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<RoleUser>().HasOne(key => key.User).WithMany(u => u.Roles).HasForeignKey(u => u.UserId);
 
             modelBuilder.Entity<Email>().ToTable("emails").HasKey(e => e.Id);
+            modelBuilder.Entity<Email>().Ignore(e => e.PlainTextBody);
         }
 
         public DbSet<Customer> Customers { get; set; }

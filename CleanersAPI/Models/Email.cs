@@ -28,6 +28,8 @@ namespace CleanersAPI.Models
         [Required(ErrorMessage = "Email body can't be empty")]
         public string Body { get; set; }
         
+        public string PlainTextBody { get; set; }
+        
         public bool Sent { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;

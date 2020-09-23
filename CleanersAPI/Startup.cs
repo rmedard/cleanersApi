@@ -96,13 +96,6 @@ namespace CleanersAPI
                 };
             });
 
-            // services.AddAuthorization(config =>
-            // {
-            //     config.AddPolicy(AuthPolicies.Admin, AuthPolicies.AdminPolicy());
-            //     config.AddPolicy(AuthPolicies.Customer, AuthPolicies.CustomerPolicy());
-            //     config.AddPolicy(AuthPolicies.Professional, AuthPolicies.ProfessionalPolicy());
-            // });
-
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -137,7 +130,6 @@ namespace CleanersAPI
                         var error = context.Features.Get<IExceptionHandlerFeature>();
                         if (error != null)
                         {
-//                            context.Response.AddApplicationError(error.Error.Message);
                             await context.Response.WriteAsync(error.Error.Message);
                         }
                     });
@@ -145,11 +137,6 @@ namespace CleanersAPI
             }
 
             app.UseCors("CorsPolicy");
-            // app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            
-            //app.UseMvc();
-
-            // app.UseHttpsRedirection();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

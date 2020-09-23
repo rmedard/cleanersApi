@@ -137,7 +137,7 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpPost("search")]
-        public ActionResult<IEnumerable<Reservation>> GetReservations(
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations(
             [FromBody] ReservationSearchCriteriaDto reservationSearchCriteriaDto)
         {
             if (!ModelState.IsValid)
@@ -192,7 +192,8 @@ namespace CleanersAPI.Controllers
                 searchCriteria.Build(reservationSearchCriteriaDto.HasBill.Value);
             }
 
-            return new ActionResult<IEnumerable<Reservation>>(_reservationsService.Search(searchCriteria).Result);
+            var reservations = await _reservationsService.Search(searchCriteria);
+            return new ActionResult<IEnumerable<Reservation>>(reservations);
         }
 
         [HttpGet("{id}/cancel")]

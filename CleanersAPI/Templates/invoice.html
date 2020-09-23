@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="invoice.css"/>
+    <title>Invoice</title>
+</head>
+<body>
+<div class="header">
+    <div class="logo"></div>
+    <div class="header-text">
+        <h1>Facture</h1>
+    </div>
+</div>
+<div>
+    <h1>{{Names}}</h1>
+    <p>{{Address}}<br>
+        Tel: {{Telephone}}<br>
+        Email: {{Email}}</p>
+</div>
+<table class="positions">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Nbr Of Hours</th>
+        <th>Hourly Rate</th>
+        <th class="right">Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#InvoiceLines}}
+    {{> invoiceRow}}
+    {{/InvoiceLines}}
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="4">Total Price:</td>
+        <td class="right">{{TotalCost}}</td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

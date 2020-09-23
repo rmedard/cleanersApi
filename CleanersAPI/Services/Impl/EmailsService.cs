@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
@@ -26,16 +25,39 @@ namespace CleanersAPI.Services.Impl
             return _emailsRepository;
         }
 
+        public async Task<Response> SendEmail(Email email)
+        {
+            var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
+            var client = new SendGridClient(apiKey);
+            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From), 
+                new EmailAddress(email.To), email.Subject, 
+                string.IsNullOrEmpty(email.PlainTextBody) ? email.Body : email.PlainTextBody, email.Body);
+            return await client.SendEmailAsync(msg);
+        }
+
+        public async Task<Response> SendEmail(Email email, string filename, string attachmentInBase64)
+        {
+            var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
+            var client = new SendGridClient(apiKey);
+            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From), 
+                new EmailAddress(email.To), email.Subject, 
+                string.IsNullOrEmpty(email.PlainTextBody) ? email.Body : email.PlainTextBody, email.Body);
+            msg.AddAttachment(new Attachment
+            {
+                Content = attachmentInBase64,
+                Filename = filename,
+                Type = "application/pdf"
+            });
+            return await client.SendEmailAsync(msg);
+        }
+
         public new Task<Email> Create(Email t)
         {
-            var newEmail = SendEmail(t);
-            return _emailsRepository.Create(newEmail);
+            return _emailsRepository.Create(t);
         }
 
         public async Task notifyUsersOnReservationCreation(Reservation reservation)
         {
-            var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
-            var client = new SendGridClient(apiKey);
             var fromEmail = _configuration.GetValue<string>("SendGrid:senderEmail");
             var fromName = _configuration.GetValue<string>("SendGrid:senderName");
 
@@ -50,11 +72,11 @@ namespace CleanersAPI.Services.Impl
                        "<meta name='viewport' content='width=device-width, initial-scale=1'><title>Notification</title></head>" +
                        $"<body><table><tr><td>Professional:</td><td>{reservation.Expertise.Professional.FirstName}, {reservation.Expertise.Professional.LastName}</td></tr>" +
                        $"<tr><td>Service:</td><td>{reservation.Expertise.Service.Title}</td></tr>" +
-                       $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>"
+                       $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>",
+                PlainTextBody =
+                    $"Customer:{reservation.Expertise.Professional.FirstName}, {reservation.Expertise.Professional.LastName} " +
+                    $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
             };
-            var plainTextBodyCustomer =
-                $"Customer:{reservation.Expertise.Professional.FirstName}, {reservation.Expertise.Professional.LastName} " +
-                $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}";
 
             var emailToProfessional = new Email
             {
@@ -67,21 +89,13 @@ namespace CleanersAPI.Services.Impl
                        "<meta name='viewport' content='width=device-width, initial-scale=1'><title>Notification</title></head>" +
                        $"<body><table><tr><td>Customer:</td><td>{reservation.Customer.FirstName}, {reservation.Customer.LastName}</td></tr>" +
                        $"<tr><td>Service:</td><td>{reservation.Expertise.Service.Title}</td></tr>" +
-                       $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>"
+                       $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>",
+                PlainTextBody = $"Customer:{reservation.Customer.FirstName}, {reservation.Customer.LastName} " +
+                                $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
             };
-            var plainTextBodyProfessional =
-                $"Customer:{reservation.Customer.FirstName}, {reservation.Customer.LastName} " +
-                $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}";
 
-            var msgToCustomer = MailHelper.CreateSingleEmail(new EmailAddress(emailToCustomer.From),
-                new EmailAddress(emailToCustomer.To), emailToCustomer.Subject, plainTextBodyCustomer,
-                emailToCustomer.Body);
-            var responseForCustomer = await client.SendEmailAsync(msgToCustomer);
-
-            var msgToProfessional = MailHelper.CreateSingleEmail(new EmailAddress(emailToProfessional.From),
-                new EmailAddress(emailToProfessional.To), emailToProfessional.Subject, plainTextBodyProfessional,
-                emailToProfessional.Body);
-            var responseForProfessional = await client.SendEmailAsync(msgToProfessional);
+            var responseForCustomer = await SendEmail(emailToCustomer);
+            var responseForProfessional = await SendEmail(emailToProfessional);
 
             if (responseForCustomer.StatusCode.Equals(HttpStatusCode.Accepted))
             {
@@ -95,38 +109,6 @@ namespace CleanersAPI.Services.Impl
 
             await Create(emailToCustomer);
             await Create(emailToProfessional);
-        }
-
-        private Email SendEmail(Email email)
-        {
-            email.Sent = false;
-            var client = new SmtpClient(_configuration["SmtpSettings:server"])
-            {
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_configuration["SmtpSettings:username"],
-                    _configuration["SmtpSettings:password"])
-            };
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(email.From),
-                Sender = new MailAddress(email.From, email.SenderNames),
-                Body = email.Body,
-                Subject = email.Subject
-            };
-            mailMessage.To.Add(email.To);
-            mailMessage.ReplyToList.Add(email.ReplyTo);
-            try
-            {
-                client.SendAsync(mailMessage, "CleanersAppEmail:" + DateTime.Now);
-                email.Sent = true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return email;
         }
     }
 }

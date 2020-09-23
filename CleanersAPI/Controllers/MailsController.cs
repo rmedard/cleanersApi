@@ -7,8 +7,6 @@ using CleanersAPI.Models.Dtos.Email;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace CleanersAPI.Controllers
 {
@@ -45,10 +43,7 @@ namespace CleanersAPI.Controllers
             }
 
             var email = _mapper.Map<Email>(emailForSend);
-            var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
-            var client = new SendGridClient(apiKey);
-            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From), new EmailAddress(email.To), email.Subject, email.Body, email.Body);
-            var response = await client.SendEmailAsync(msg);
+            var response = await _emailsService.SendEmail(email);
 
             if (response.StatusCode.Equals(HttpStatusCode.Accepted))
             {

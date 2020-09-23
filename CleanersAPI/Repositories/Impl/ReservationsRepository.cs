@@ -63,7 +63,10 @@ namespace CleanersAPI.Repositories.Impl
                 queryable = queryable.Where(r => hasBill ? r.BillingId != null : r.BillingId == null);   
             }
 
-            return await queryable.OrderByDescending(r => r.StartTime).ToListAsync();
+            return await queryable
+                .Include(r => r.Expertise)
+                .ThenInclude(e => e.Service)
+                .OrderByDescending(r => r.StartTime).ToListAsync();
         }
 
         public bool DoesExist(int id)

@@ -60,6 +60,7 @@ namespace CleanersAPI.Controllers
             {
                 return NotFound("No reservations to bill available");
             }
+            
             return billing.Result;
         }
     }
