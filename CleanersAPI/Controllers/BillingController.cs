@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
@@ -29,7 +30,7 @@ namespace CleanersAPI.Controllers
 
         [Authorize(Roles = "Admin,Professional")]
         [HttpGet("{customerId}/createBill")]
-        public ActionResult<Billing> CreateBilling([FromRoute] int customerId)
+        public async Task<ActionResult<Billing>> CreateBilling([FromRoute] int customerId)
         {
             if (!ModelState.IsValid)
             {
@@ -55,13 +56,13 @@ namespace CleanersAPI.Controllers
                 reservationSearchCriteria = reservationSearchCriteria.Build(professional);
             }
             
-            var billing = _billingsService.Create(reservationSearchCriteria);
+            var billing = await _billingsService.Create(reservationSearchCriteria);
             if (billing == null)
             {
                 return NotFound("No reservations to bill available");
             }
             
-            return billing.Result;
+            return Ok(billing);
         }
     }
 }
