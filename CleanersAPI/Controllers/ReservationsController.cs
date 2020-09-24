@@ -96,6 +96,11 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (reservationForCreate.StartTime.CompareTo(DateTime.Now) < 0)
+            {
+                return BadRequest("You can't make reservation in the past");
+            }
+            
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
             var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
