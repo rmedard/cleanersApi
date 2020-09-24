@@ -4,10 +4,10 @@ using CleanersAPI.Models;
 
 namespace CleanersAPI.Repositories
 {
-    public interface IExpertiseRepository
+    public interface IExpertiseRepository : ICleanersRepository<Expertise>
     {
-        Task<IEnumerable<Expertise>> GetAll();
         Task<Expertise> GetOne(int professionalId, int serviceId);
-        bool DoesExist(int professionalId, int professionId);
+        
+        Task<IEnumerable<Expertise>> GetExpertisesByServiceId(int serviceId);
     }
 }

@@ -5,7 +5,6 @@ using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace CleanersAPI.Controllers
 {
@@ -28,9 +27,9 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpGet]
-        public Task<IEnumerable<Professional>> GetProfessionals()
+        public async Task<ActionResult<IEnumerable<Professional>>> GetProfessionals([FromQuery] string serviceId)
         {
-            return _professionalsService.GetAll();
+            return Ok(await _professionalsService.GetAll());
         }
 
         [HttpGet("{id}")]
@@ -61,7 +60,7 @@ namespace CleanersAPI.Controllers
 
             return Ok(await _professionalsService.GetAvailableProfessionals(availabilityFinder));
         }
-        
+
         [HttpGet("{id}/expertises")]
         public ActionResult<IEnumerable<Expertise>> GetProfessionalExpertises([FromRoute] int id)
         {

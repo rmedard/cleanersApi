@@ -8,7 +8,6 @@ using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.Service;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers

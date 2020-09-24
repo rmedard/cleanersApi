@@ -6,7 +6,6 @@ using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.Email;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace CleanersAPI.Controllers
 {
@@ -19,12 +18,9 @@ namespace CleanersAPI.Controllers
 
         private readonly IMapper _mapper;
 
-        private readonly IConfiguration _configuration;
-        
-        public MailsController(IEmailsService emailsService, IConfiguration configuration, IMapper mapper)
+        public MailsController(IEmailsService emailsService, IMapper mapper)
         {
             _emailsService = emailsService;
-            _configuration = configuration;
             _mapper = mapper;
         }
 

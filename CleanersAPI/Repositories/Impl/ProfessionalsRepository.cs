@@ -105,6 +105,7 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<bool> Update(Professional professional)
         {
             _context.Entry(professional).State = EntityState.Modified;
+            _context.Entry(professional.Address).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();

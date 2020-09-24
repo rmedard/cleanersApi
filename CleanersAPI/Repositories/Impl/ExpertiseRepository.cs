@@ -17,7 +17,38 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Expertise>> GetAll()
         {
-            return await _context.Expertises.ToListAsync();
+            return await _context.Expertises
+                .Include(e => e.Service)
+                .Include(e => e.Professional)
+                .ToListAsync();
+        }
+
+        public async Task<Expertise> GetById(int id)
+        {
+            return await _context.Expertises
+                .Include(e => e.Service)
+                .Include(e => e.Professional)
+                .FirstOrDefaultAsync(e => e.Id.Equals(id));
+        }
+
+        public bool DoesExist(int id)
+        {
+            return _context.Expertises.Any(e => e.Id == id);
+        }
+
+        public Task<Expertise> Create(Expertise customer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> Update(Expertise t)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> Delete(int id)
+        {
+            throw new System.NotImplementedException();
         }
 
         public async Task<Expertise> GetOne(int professionalId, int serviceId)
@@ -26,10 +57,11 @@ namespace CleanersAPI.Repositories.Impl
                 exp.ProfessionalId == professionalId && exp.ServiceId == serviceId);
         }
 
-        public bool DoesExist(int professionalId, int professionId)
+        public async Task<IEnumerable<Expertise>> GetExpertisesByServiceId(int serviceId)
         {
-            return _context.Expertises.Any(exp =>
-                exp.ProfessionalId == professionalId && exp.ServiceId == professionId);
+            return await _context.Expertises
+                .Include(e => e.Professional)
+                .Where(e => e.ServiceId.Equals(serviceId)).ToListAsync();
         }
     }
 }

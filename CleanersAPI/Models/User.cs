@@ -24,9 +24,5 @@ namespace CleanersAPI.Models
         {
             Roles = new Collection<RoleUser>();
         }
-        
-        // public Customer Customer { get; set; }
-        //
-        // public Professional Professional { get; set; }
     }
 }

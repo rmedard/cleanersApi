@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
 {
-    public class ExpertiseService : IExpertiseService
+    public class ExpertiseService : CleanersService<Expertise>, IExpertiseService
     {
 
         private readonly IExpertiseRepository _expertiseRepository;
@@ -17,6 +18,16 @@ namespace CleanersAPI.Services.Impl
         public Task<Expertise> FindExpertise(int professionalId, int professionId)
         {
             return _expertiseRepository.GetOne(professionalId, professionId);
+        }
+
+        public async Task<IEnumerable<Expertise>> GetExpertisesByServiceId(int serviceId)
+        {
+            return await _expertiseRepository.GetExpertisesByServiceId(serviceId);
+        }
+
+        protected override ICleanersRepository<Expertise> GetRepository()
+        {
+            return _expertiseRepository;
         }
     }
 }
