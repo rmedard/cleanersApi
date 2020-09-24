@@ -57,38 +57,8 @@ namespace CleanersAPI.Controllers
             return Ok(reservation);
         }
 
-        /// <summary>
-        /// Searches reservations.
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        /// 
-        ///     POST /Reservations
-        ///     {
-        ///         "customerId": 1,
-        ///         "expertiseForServiceCreate": {
-        ///             "professionalId": 1,
-        ///             "serviceId": 1
-        ///         },
-        ///         "startTime": "2020-09-03 10:00:00",
-        ///         "duration": 2
-        ///     }
-        /// 
-        /// </remarks>
-        /// <param name="reservationForCreate"></param>
-        /// <returns>A the newly created reservation</returns>
-        /// <response code="201">Returns the newly created reservation</response>
-        /// <response code="401">If user is not authenticated</response>
-        /// <response code="400">If reservation object is invalid or either 'professional' or 'Expertise' does not exist</response>
-        /// <response code="403">If logged-in user is neither 'admin' nor 'customer'</response>
-        /// <response code="404">If 'customer' does not exist</response>
-        // [Authorize(Roles = "Admin")]
         [Authorize(Roles = "Admin,Customer")]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Reservation>> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
             if (!ModelState.IsValid)
@@ -100,15 +70,33 @@ namespace CleanersAPI.Controllers
             {
                 return BadRequest("You can't make reservation in the past");
             }
-            
+
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
-            var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
-            if (customer == null || !(customer.Id == reservationForCreate.CustomerId &&
-                                      userFromRepo.Id.Equals(customer.UserId)))
+            var userFromRepo = await _authService.GetUserById(loggedInUserId);
+            var userRole = userFromRepo.Roles[0].Role.RoleName;
+
+            Customer customer = null;
+
+            switch (userRole)
             {
-                return StatusCode(403, "You do not have permission to create this reservation");
+                case RoleName.Customer:
+                {
+                    customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
+                    if (!customer.Id.Equals(reservationForCreate.CustomerId))
+                    {
+                        return StatusCode(403, "You do not have permission to create this reservation");
+                    }
+                    break;
+                }
+                case RoleName.Admin:
+                    customer = await _customersService.GetOneById(reservationForCreate.CustomerId);
+                    break;
+                case RoleName.Professional:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
             var isFree = _professionalsService.IsFree(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.StartTime, reservationForCreate.Duration);
             if (!isFree)
