@@ -61,6 +61,7 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Expertises
                 .Include(e => e.Professional)
+                .ThenInclude(p => p.Address)
                 .Where(e => e.ServiceId.Equals(serviceId)).ToListAsync();
         }
     }
