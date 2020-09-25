@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanersAPI.Models
 {
@@ -18,6 +13,8 @@ namespace CleanersAPI.Models
         public int ProfessionalId { get; set; }
         
         public decimal HourlyRate { get; set; }
+        
+        public bool Active { get; set; }
         
         public Service Service { get; set; }
         

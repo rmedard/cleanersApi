@@ -43,7 +43,8 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> Update(Customer customer)
         {
-//            _context.Entry(customer).State = EntityState.Modified;
+            _context.Entry(customer).State = EntityState.Modified;
+            _context.Entry(customer.Address).State = EntityState.Modified;
             try
             {
                 _context.Update(customer);

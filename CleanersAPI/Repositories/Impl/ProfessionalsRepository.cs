@@ -79,7 +79,8 @@ namespace CleanersAPI.Repositories.Impl
                     .Where(r => DateTime.Compare(r.StartTime, endTime) < 0
                                 && DateTime.Compare(r.EndTime, startTime) > 0)
                     .Select(r => r.Expertise.ProfessionalId).Contains(p.Id))
-                .Where(p => p.Expertises.Select(e => e.ServiceId).Contains(availabilityFinder.ServiceId))
+                .Where(p => p.Expertises.Where(e => e.Active)
+                    .Select(e => e.ServiceId).Contains(availabilityFinder.ServiceId))
                 .Include(p => p.Address)
                 .ToListAsync();
         }
