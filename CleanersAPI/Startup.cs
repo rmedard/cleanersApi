@@ -141,9 +141,10 @@ namespace CleanersAPI
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "HouseCleaners API"); });
 
+            app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Templates")),
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, @"Templates")),
                 RequestPath = new PathString("/templates")
             });
 
