@@ -27,6 +27,18 @@ namespace CleanersAPI.Controllers
             return _customersService.GetAll();
         }
 
+        [HttpGet("userId/{id}")]
+        public async Task<IActionResult> GetCustomerByUserId([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok(await _customersService.GetCustomerByUserId(id));
+        }
+        
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer([FromRoute] int id)
         {

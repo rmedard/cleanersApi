@@ -50,6 +50,17 @@ namespace CleanersAPI.Controllers
             return Ok(professional);
         }
 
+        [HttpGet("userId/{id}")]
+        public async Task<IActionResult> GetProfessionalByUserId([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok(await _professionalsService.GetProfessionalByUserId(id));
+        }
+        
         [HttpPost("available")]
         public async Task<ActionResult<IEnumerable<Professional>>> GetAvailableProfessionals([FromBody] AvailabilityFinder availabilityFinder)
         {
