@@ -41,9 +41,19 @@ namespace CleanersAPI.Repositories.Impl
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> Update(Expertise t)
+        public async Task<bool> Update(Expertise expertise)
         {
-            throw new System.NotImplementedException();
+            _context.Entry(expertise).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public Task<bool> Delete(int id)

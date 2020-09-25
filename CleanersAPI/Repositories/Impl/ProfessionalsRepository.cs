@@ -42,7 +42,6 @@ namespace CleanersAPI.Repositories.Impl
         public void UpdateExpertise(Expertise expertise)
         {
             _context.Entry(expertise).State = EntityState.Modified;
-            Console.WriteLine("Yahinduwe: " + expertise);
             try
             {
                 _context.SaveChangesAsync();
