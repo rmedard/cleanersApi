@@ -20,7 +20,10 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Reservation>> GetAll()
         {
-            return await _context.Reservations.ToListAsync();
+            return await _context.Reservations
+                .Include(r => r.Expertise)
+                .ThenInclude(e => e.Service)
+                .OrderByDescending(r => r.StartTime).ToListAsync();
         }
 
         public async Task<Reservation> GetById(int id)

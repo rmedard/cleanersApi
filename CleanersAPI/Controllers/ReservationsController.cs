@@ -39,6 +39,13 @@ namespace CleanersAPI.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetAll()
+        {
+            return Ok(await _reservationsService.GetAll());
+        }
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetReservation([FromRoute] int id)
         {
