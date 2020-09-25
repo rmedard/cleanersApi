@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -137,11 +139,14 @@ namespace CleanersAPI
             app.UseCors("CorsPolicy");
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "HouseCleaners API"); });
+
+            app.UseStaticFiles(new StaticFileOptions
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "HouseCleaners API");
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Templates")),
+                RequestPath = new PathString("/templates")
             });
-            
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -182,10 +187,13 @@ namespace CleanersAPI
                 });
 
                 CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
-                var admin = new User {Username = "admin@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                var igwe = new User {Username = "igwe@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                var admin = new User
+                    {Username = "admin@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
+                var igwe = new User
+                    {Username = "igwe@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
                 var adminRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Admin}, User = admin};
-                var professionalRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Professional}, User = igwe};
+                var professionalRoleUser = new RoleUser
+                    {Role = new Role {RoleName = RoleName.Professional}, User = igwe};
                 var service = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
                 var professional = new Professional
                 {

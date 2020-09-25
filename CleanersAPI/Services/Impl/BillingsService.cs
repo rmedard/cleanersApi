@@ -69,8 +69,8 @@ namespace CleanersAPI.Services.Impl
 
         public async Task<PdfDocument> GenerateInvoice(Person person, IEnumerable<Reservation> reservations)
         {
-            var pageTemplate = await System.IO.File.ReadAllTextAsync("Templates/invoice.html");
-            var rowTemplate = await System.IO.File.ReadAllTextAsync("Templates/invoiceRow.html");
+            var pageTemplate = await System.IO.File.ReadAllTextAsync("templates/invoice.html");
+            var rowTemplate = await System.IO.File.ReadAllTextAsync("templates/invoiceRow.html");
             Handlebars.RegisterTemplate("invoiceRow", rowTemplate);
 
             var invoice = new Invoice
