@@ -84,7 +84,9 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Customer> GetCustomerByUserId(int userId)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.UserId.Equals(userId));
+            return await _context.Customers
+                .Include(c => c.Address)
+                .FirstOrDefaultAsync(c => c.UserId.Equals(userId));
         }
     }
 }

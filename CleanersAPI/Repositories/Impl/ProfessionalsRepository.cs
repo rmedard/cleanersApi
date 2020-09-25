@@ -66,7 +66,9 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Professional> GetProfessionalByUserId(int userId)
         {
-            return await _context.Professionals.FirstOrDefaultAsync(p => userId.Equals(p.UserId));
+            return await _context.Professionals
+                .Include(p => p.Address)
+                .FirstOrDefaultAsync(p => userId.Equals(p.UserId));
         }
 
         public async Task<IEnumerable<Professional>> GetAvailable(AvailabilityFinder availabilityFinder)

@@ -52,7 +52,15 @@ namespace CleanersAPI.Controllers
                     FirstName = "Admin",
                     LastName = "HouseCleaners",
                     PhoneNumber = "+123456789",
-                    IsActive = true
+                    IsActive = true,
+                    Address = new Address
+                    {
+                        City = "Brussels",
+                        PlotNumber = "123",
+                        PostalCode = 3300,
+                        StreetName = "Rue de Bruxelles",
+                        Id = 0
+                    }
                 },
                 _ => user.Person
             };
