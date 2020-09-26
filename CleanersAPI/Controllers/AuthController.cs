@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
@@ -42,28 +43,40 @@ namespace CleanersAPI.Controllers
 
             var token = _authService.GenerateLoginToken(userFromRepo);
             var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
-            user.Person = userFromRepo.Roles[0].Role.RoleName switch
+
+            switch (userFromRepo.Roles[0].Role.RoleName)
             {
-                RoleName.Customer => await _customersService.GetCustomerByUserId(userFromRepo.Id),
-                RoleName.Professional => await _professionalsService.GetProfessionalByUserId(userFromRepo.Id),
-                RoleName.Admin => new Person
-                {
-                    Email = user.Username,
-                    FirstName = "Admin",
-                    LastName = "HouseCleaners",
-                    PhoneNumber = "+123456789",
-                    IsActive = true,
-                    Address = new Address
+                case RoleName.Admin:
+                    user.Person = new Person
                     {
-                        City = "Brussels",
-                        PlotNumber = "123",
-                        PostalCode = 3300,
-                        StreetName = "Rue de Bruxelles",
-                        Id = 0
-                    }
-                },
-                _ => user.Person
-            };
+                        Email = user.Username,
+                        FirstName = "Admin",
+                        LastName = "HouseCleaners",
+                        PhoneNumber = "+123456789",
+                        IsActive = true,
+                        Address = new Address
+                        {
+                            City = "Brussels",
+                            PlotNumber = "123",
+                            PostalCode = 3300,
+                            StreetName = "Rue de Bruxelles",
+                            Id = 0
+                        }
+                    };
+                    break;
+                case RoleName.Customer:
+                    var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
+                    user.Person = customer;
+                    user.CustomerId = customer.Id;
+                    break;
+                case RoleName.Professional:
+                    var professional = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
+                    user.Person = professional;
+                    user.ProfessionalId = professional.Id;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             return Ok(new {token, user});
         }
