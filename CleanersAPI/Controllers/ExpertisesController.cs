@@ -39,6 +39,17 @@ namespace CleanersAPI.Controllers
             return Ok(await _expertiseService.GetOneById(id));
         }
 
+        [HttpPost("available")]
+        public async Task<ActionResult<IEnumerable<Expertise>>> GetAvailableExpertises([FromBody] AvailabilityFinder availabilityFinder)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok(await _expertiseService.GetAvailableExpertises(availabilityFinder));
+        }
+        
         [Authorize(Roles = "Admin,Professional")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateExpertise([FromBody] Expertise expertise)

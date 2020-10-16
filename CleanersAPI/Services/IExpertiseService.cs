@@ -9,5 +9,7 @@ namespace CleanersAPI.Services
         Task<Expertise> FindExpertise(int professionalId, int professionId);
 
         Task<IEnumerable<Expertise>> GetExpertisesByServiceId(int serviceId);
+        
+        Task<IEnumerable<Expertise>> GetAvailableExpertises(AvailabilityFinder availabilityFinder);
     }
 }

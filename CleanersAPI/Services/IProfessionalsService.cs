@@ -16,7 +16,5 @@ namespace CleanersAPI.Services
         
         Task<Professional> GetProfessionalByUserId(int userId);
 
-        Task<IEnumerable<Professional>> GetAvailableProfessionals(AvailabilityFinder availabilityFinder);
-
     }
 }

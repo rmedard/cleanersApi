@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
@@ -73,6 +74,21 @@ namespace CleanersAPI.Repositories.Impl
                 .Include(e => e.Professional)
                 .ThenInclude(p => p.Address)
                 .Where(e => e.Active && e.ServiceId.Equals(serviceId)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Expertise>> GetAvailable(AvailabilityFinder availabilityFinder)
+        {
+            var startTime = availabilityFinder.DateTime;
+            var endTime = availabilityFinder.DateTime.AddHours(availabilityFinder.Duration);
+            return await _context.Expertises
+                .Where(e => !_context.Reservations
+                    .Where(r => DateTime.Compare(r.StartTime, endTime) < 0
+                                && DateTime.Compare(r.EndTime, startTime) > 0)
+                    .Select(r => r.Expertise.ProfessionalId).Contains(e.ProfessionalId))
+                .Where(e => availabilityFinder.ServiceId.Equals(e.ServiceId) && e.Active)
+                .Include(e => e.Professional)
+                .ThenInclude(p => p.Address)
+                .ToListAsync();
         }
     }
 }

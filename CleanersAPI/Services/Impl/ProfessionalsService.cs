@@ -51,11 +51,6 @@ namespace CleanersAPI.Services.Impl
             return await _professionalsRepository.GetProfessionalByUserId(userId);
         }
 
-        public async Task<IEnumerable<Professional>> GetAvailableProfessionals(AvailabilityFinder availabilityFinder)
-        {
-            return await _professionalsRepository.GetAvailable(availabilityFinder);
-        }
-
         public new Task<Professional> Create(Professional professional)
         {
             return _professionalsRepository.Create(professional);

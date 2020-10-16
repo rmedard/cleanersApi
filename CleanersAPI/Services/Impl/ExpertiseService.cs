@@ -25,6 +25,11 @@ namespace CleanersAPI.Services.Impl
             return await _expertiseRepository.GetExpertisesByServiceId(serviceId);
         }
 
+        public async Task<IEnumerable<Expertise>> GetAvailableExpertises(AvailabilityFinder availabilityFinder)
+        {
+            return await _expertiseRepository.GetAvailable(availabilityFinder);
+        }
+
         protected override ICleanersRepository<Expertise> GetRepository()
         {
             return _expertiseRepository;
