@@ -27,7 +27,7 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Professional>>> GetProfessionals([FromQuery] string serviceId)
+        public async Task<ActionResult<IEnumerable<Professional>>> GetProfessionals()
         {
             return Ok(await _professionalsService.GetAll());
         }
