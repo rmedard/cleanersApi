@@ -40,7 +40,7 @@ namespace CleanersAPI
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
             services.AddDbContext<CleanersApiContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
 
             services.AddCors(options =>
             {
@@ -189,41 +189,70 @@ namespace CleanersAPI
 
                 CreatePasswordHash("password", out var passwordHash, out var passwordSalt);
                 var admin = new User
-                    {Username = "admin@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                var igwe = new User
-                    {Username = "igwe@gmail.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt};
-                var adminRoleUser = new RoleUser {Role = new Role {RoleName = RoleName.Admin}, User = admin};
-                var professionalRoleUser = new RoleUser
-                    {Role = new Role {RoleName = RoleName.Professional}, User = igwe};
-                var service = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
-                var professional = new Professional
                 {
+                    Email = "admin@gmail.com",
+                    Roles =
+                    {
+                        new RoleUser
+                        {
+                            Role = new Role
+                            {
+                                RoleName = RoleName.Admin
+                            }
+                        }
+                    },
+                    PasswordHash = passwordHash,
+                    PasswordSalt = passwordSalt,
                     Address = new Address
                     {
-                        City = "Schaerbeek",
-                        StreetName = "Rue Gaucheret",
-                        PostalCode = 1030,
-                        PlotNumber = "4"
-                    },
-                    FirstName = "Igwe",
-                    LastName = "Kabutindi",
-                    Email = igwe.Username,
-                    PhoneNumber = "+32483378014",
-                    User = igwe
+                        City = "Brussels",
+                        StreetName = "Rue des marais",
+                        PostalCode = 1000,
+                        PlotNumber = "12b"
+                    }
                 };
+                var service = new Service {Title = "Gutera akabariro", Category = Category.Interieur};
 
                 var expertise = new Expertise
                 {
                     Service = service,
-                    Professional = professional,
-                    HourlyRate = new decimal(50.00)
+                    Professional = new Professional
+                    {
+                        User = new User
+                        {
+                            Email = "igwe@gmail.com",
+                            Roles =
+                            {
+                                new RoleUser
+                                {
+                                    Role = new Role
+                                    {
+                                        RoleName = RoleName.Professional
+                                    }
+                                }
+                            },
+                            Address = new Address
+                            {
+                                City = "Schaerbeek",
+                                StreetName = "Rue Gaucheret",
+                                PostalCode = 1030,
+                                PlotNumber = "4"
+                            },
+                            FirstName = "Igwe",
+                            LastName = "Kabutindi",
+                            PhoneNumber = "+32483378014",
+                            PasswordHash = passwordHash,
+                            PasswordSalt = passwordSalt
+                        },
+                        IsActive = true
+                    },
+                    HourlyRate = new decimal(50.00),
+                    IsActive = true
                 };
 
                 context.Roles.Add(new Role {RoleName = RoleName.Customer});
                 context.Users.Add(admin);
                 context.Expertises.Add(expertise);
-                context.RoleUser.Add(adminRoleUser);
-                context.RoleUser.Add(professionalRoleUser);
                 context.SaveChanges();
             }
         }

@@ -21,7 +21,7 @@ namespace CleanersAPI.Repositories.Impl
             var user = await _context.Users
                 .Include(u => u.Roles)
                 .ThenInclude(r => r.Role)
-                .FirstOrDefaultAsync(u => u.Username == username);
+                .FirstOrDefaultAsync(u => u.Email == username);
             if (user == null)
             {
                 return null;
@@ -31,7 +31,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> UserExists(string username)
         {
-            return await _context.Users.AnyAsync(user => user.Username == username);
+            return await _context.Users.AnyAsync(user => user.Email == username);
         }
 
         public Role GetRoleByName(RoleName roleName)

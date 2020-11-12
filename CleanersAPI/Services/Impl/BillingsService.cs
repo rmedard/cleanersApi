@@ -43,9 +43,9 @@ namespace CleanersAPI.Services.Impl
             var reservations = _reservationsRepository.Search(reservationSearchCriteria).Result.ToList();
             if (!reservations.Any()) return null;
             var billing = new Billing {Date = DateTime.Now, TotalPrice = reservations.Sum(r => r.TotalCost)};
-            var invoice = await GenerateInvoice(reservationSearchCriteria.Customer, reservations);
-
-            var customer = reservationSearchCriteria.Customer;
+            var customer = reservationSearchCriteria.Customer.User;
+            var invoice = await GenerateInvoice(customer, reservations);
+            
             var newEmail = _mapper.Map<Email>(new EmailForSend
             {
                 Subject = "House Cleaners Invoice",
@@ -67,7 +67,7 @@ namespace CleanersAPI.Services.Impl
             return await _billingsRepository.Create(billing, reservations);
         }
 
-        public async Task<PdfDocument> GenerateInvoice(Person person, IEnumerable<Reservation> reservations)
+        public async Task<PdfDocument> GenerateInvoice(User person, IEnumerable<Reservation> reservations)
         {
             var pageTemplate = await System.IO.File.ReadAllTextAsync("templates/invoice.html");
             var rowTemplate = await System.IO.File.ReadAllTextAsync("templates/invoiceRow.html");

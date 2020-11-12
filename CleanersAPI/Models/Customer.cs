@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace CleanersAPI.Models
 {
-    public class Customer : Person
+    public class Customer
     {
         public int Id { get; set; }
 
@@ -11,7 +11,9 @@ namespace CleanersAPI.Models
         
         [JsonIgnore]
         public User User { get; set; }
-
+        
+        public bool IsActive { get; set; }
+        
         [JsonIgnore]
         public IEnumerable<Reservation> Reservations { get; } = new List<Reservation>();
     }

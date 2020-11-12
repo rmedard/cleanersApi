@@ -19,7 +19,8 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<IEnumerable<Professional>> GetAll()
         {
             return await _context.Professionals
-                .Include(prof => prof.Address)
+                .Include(prof => prof.User)
+                .ThenInclude(u => u.Address)
                 .Include(prof => prof.Expertises)
                 .ThenInclude(e => e.Service)
                 .ToListAsync();
@@ -28,7 +29,8 @@ namespace CleanersAPI.Repositories.Impl
         public Task<Professional> GetById(int id)
         {
             return _context.Professionals
-                .Include(prof => prof.Address)
+                .Include(prof => prof.User)
+                .ThenInclude(u => u.Address)
                 .Include(p => p.Expertises)
                 .SingleOrDefaultAsync(prof => prof.Id.Equals(id));
         }
@@ -67,7 +69,8 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<Professional> GetProfessionalByUserId(int userId)
         {
             return await _context.Professionals
-                .Include(p => p.Address)
+                .Include(p => p.User)
+                .ThenInclude(u => u.Address)
                 .FirstOrDefaultAsync(p => userId.Equals(p.UserId));
         }
 
@@ -92,7 +95,8 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<bool> Update(Professional professional)
         {
             _context.Entry(professional).State = EntityState.Modified;
-            _context.Entry(professional.Address).State = EntityState.Modified;
+            _context.Entry(professional.User).State = EntityState.Modified;
+            _context.Entry(professional.User.Address).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();

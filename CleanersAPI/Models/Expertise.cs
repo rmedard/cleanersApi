@@ -14,7 +14,7 @@ namespace CleanersAPI.Models
         
         public decimal HourlyRate { get; set; }
         
-        public bool Active { get; set; }
+        public bool IsActive { get; set; }
         
         public Service Service { get; set; }
         

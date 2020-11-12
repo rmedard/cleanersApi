@@ -20,12 +20,16 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Customer>> GetAll()
         {
-            return await _context.Customers.Include(c => c.Address).ToListAsync();
+            return await _context.Customers
+                .Include(c => c.User)
+                .ThenInclude(u => u.Address).ToListAsync();
         }
 
         public async Task<Customer> GetById(int id)
         {
-            return await _context.Customers.Include(c => c.Address)
+            return await _context.Customers
+                .Include(c => c.User)
+                .ThenInclude(u => u.Address)
                 .SingleOrDefaultAsync(customer => customer.Id == id);
         }
 
@@ -44,7 +48,8 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<bool> Update(Customer customer)
         {
             _context.Entry(customer).State = EntityState.Modified;
-            _context.Entry(customer.Address).State = EntityState.Modified;
+            _context.Entry(customer.User).State = EntityState.Modified;
+            _context.Entry(customer.User.Address).State = EntityState.Modified;
             try
             {
                 _context.Update(customer);
@@ -85,7 +90,8 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<Customer> GetCustomerByUserId(int userId)
         {
             return await _context.Customers
-                .Include(c => c.Address)
+                .Include(c => c.User)
+                .ThenInclude(u => u.Address)
                 .FirstOrDefaultAsync(c => c.UserId.Equals(userId));
         }
     }

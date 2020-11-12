@@ -47,31 +47,14 @@ namespace CleanersAPI.Controllers
             switch (userFromRepo.Roles[0].Role.RoleName)
             {
                 case RoleName.Admin:
-                    user.Person = new Person
-                    {
-                        Email = user.Username,
-                        FirstName = "Admin",
-                        LastName = "HouseCleaners",
-                        PhoneNumber = "+123456789",
-                        IsActive = true,
-                        Address = new Address
-                        {
-                            City = "Brussels",
-                            PlotNumber = "123",
-                            PostalCode = 3300,
-                            StreetName = "Rue de Bruxelles",
-                            Id = 0
-                        }
-                    };
+                    
                     break;
                 case RoleName.Customer:
                     var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
-                    user.Person = customer;
                     user.CustomerId = customer.Id;
                     break;
                 case RoleName.Professional:
                     var professional = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
-                    user.Person = professional;
                     user.ProfessionalId = professional.Id;
                     break;
                 default:

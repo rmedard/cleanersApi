@@ -2,7 +2,7 @@
 
 namespace CleanersAPI.Models
 {
-    public class Professional : Person
+    public class Professional
     {
         public int Id { get; set; }
 
@@ -10,6 +10,7 @@ namespace CleanersAPI.Models
         
         public User User { get; set; }
         
+        public bool IsActive { get; set; }
         public ICollection<Expertise> Expertises { get; } = new List<Expertise>();
     }
 }

@@ -99,7 +99,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (_authService.UserExists(professionalForCreate.Professional.Email).Result)
+            if (_authService.UserExists(professionalForCreate.Professional.User.Email).Result)
             {
                 return BadRequest("Professional already exists. Please login!!");
             }

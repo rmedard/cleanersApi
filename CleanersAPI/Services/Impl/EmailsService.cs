@@ -29,8 +29,8 @@ namespace CleanersAPI.Services.Impl
         {
             var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
             var client = new SendGridClient(apiKey);
-            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From), 
-                new EmailAddress(email.To), email.Subject, 
+            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From),
+                new EmailAddress(email.To), email.Subject,
                 string.IsNullOrEmpty(email.PlainTextBody) ? email.Body : email.PlainTextBody, email.Body);
             return await client.SendEmailAsync(msg);
         }
@@ -39,8 +39,8 @@ namespace CleanersAPI.Services.Impl
         {
             var apiKey = _configuration.GetValue<string>("SendGrid:apiKey");
             var client = new SendGridClient(apiKey);
-            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From), 
-                new EmailAddress(email.To), email.Subject, 
+            var msg = MailHelper.CreateSingleEmail(new EmailAddress(email.From),
+                new EmailAddress(email.To), email.Subject,
                 string.IsNullOrEmpty(email.PlainTextBody) ? email.Body : email.PlainTextBody, email.Body);
             msg.AddAttachment(new Attachment
             {
@@ -64,34 +64,35 @@ namespace CleanersAPI.Services.Impl
             var emailToCustomer = new Email
             {
                 From = fromEmail,
-                To = reservation.Customer.Email,
+                To = reservation.Customer.User.Email,
                 SenderNames = fromName,
                 ReplyTo = fromEmail,
                 Subject = "A new reservation has been created",
                 Body = "<html><head><meta charset='UTF-8'><meta http-equiv='x-ua-compatible' content='IE=edge'>" +
                        "<meta name='viewport' content='width=device-width, initial-scale=1'><title>Notification</title></head>" +
-                       $"<body><table><tr><td>Professional:</td><td>{reservation.Expertise.Professional.FirstName}, {reservation.Expertise.Professional.LastName}</td></tr>" +
+                       $"<body><table><tr><td>Professional:</td><td>{reservation.Expertise.Professional.User.FirstName}, {reservation.Expertise.Professional.User.LastName}</td></tr>" +
                        $"<tr><td>Service:</td><td>{reservation.Expertise.Service.Title}</td></tr>" +
                        $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>",
                 PlainTextBody =
-                    $"Customer:{reservation.Expertise.Professional.FirstName}, {reservation.Expertise.Professional.LastName} " +
+                    $"Customer:{reservation.Expertise.Professional.User.FirstName}, {reservation.Expertise.Professional.User.LastName} " +
                     $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
             };
 
             var emailToProfessional = new Email
             {
                 From = fromEmail,
-                To = reservation.Expertise.Professional.Email,
+                To = reservation.Expertise.Professional.User.Email,
                 SenderNames = fromName,
                 ReplyTo = fromEmail,
                 Subject = "A new reservation has been created",
                 Body = "<html><head><meta charset='UTF-8'><meta http-equiv='x-ua-compatible' content='IE=edge'>" +
                        "<meta name='viewport' content='width=device-width, initial-scale=1'><title>Notification</title></head>" +
-                       $"<body><table><tr><td>Customer:</td><td>{reservation.Customer.FirstName}, {reservation.Customer.LastName}</td></tr>" +
+                       $"<body><table><tr><td>Customer:</td><td>{reservation.Customer.User.FirstName}, {reservation.Customer.User.LastName}</td></tr>" +
                        $"<tr><td>Service:</td><td>{reservation.Expertise.Service.Title}</td></tr>" +
                        $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>",
-                PlainTextBody = $"Customer:{reservation.Customer.FirstName}, {reservation.Customer.LastName} " +
-                                $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
+                PlainTextBody =
+                    $"Customer:{reservation.Customer.User.FirstName}, {reservation.Customer.User.LastName} " +
+                    $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
             };
 
             var responseForCustomer = await SendEmail(emailToCustomer);

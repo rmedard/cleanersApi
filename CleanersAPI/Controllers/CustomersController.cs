@@ -87,7 +87,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (_authService.UserExists(customerForCreate.Customer.Email).Result)
+            if (_authService.UserExists(customerForCreate.Customer.User.Email).Result)
             {
                 return BadRequest("Customer already exists. Please login!!");
             }

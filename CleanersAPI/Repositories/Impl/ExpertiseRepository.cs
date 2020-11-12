@@ -72,23 +72,33 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Expertises
                 .Include(e => e.Professional)
-                .ThenInclude(p => p.Address)
-                .Where(e => e.Active && e.ServiceId.Equals(serviceId)).ToListAsync();
+                .ThenInclude(p => p.User)
+                .ThenInclude(u => u.Address)
+                .Where(e => e.IsActive && e.ServiceId.Equals(serviceId)).ToListAsync();
         }
 
         public async Task<IEnumerable<Expertise>> GetAvailable(AvailabilityFinder availabilityFinder)
         {
             var startTime = availabilityFinder.DateTime;
             var endTime = availabilityFinder.DateTime.AddHours(availabilityFinder.Duration);
-            return await _context.Expertises
+
+            var queryable = _context.Expertises
                 .Where(e => !_context.Reservations
                     .Where(r => DateTime.Compare(r.StartTime, endTime) < 0
                                 && DateTime.Compare(r.EndTime, startTime) > 0)
                     .Select(r => r.Expertise.ProfessionalId).Contains(e.ProfessionalId))
-                .Where(e => availabilityFinder.ServiceId.Equals(e.ServiceId) && e.Active)
+                .Where(e => availabilityFinder.ServiceId.Equals(e.ServiceId) && e.IsActive)
                 .Include(e => e.Professional)
-                .ThenInclude(p => p.Address)
-                .ToListAsync();
+                .ThenInclude(p => p.User)
+                .ThenInclude(u => u.Address);
+            if (availabilityFinder.Order == null) return await queryable.ToListAsync();
+            {
+                if (availabilityFinder.Order.Equals(Order.Descendant))
+                {
+                    return await queryable.OrderByDescending(e => e.HourlyRate).ToListAsync();
+                }
+                return await queryable.OrderBy(e => e.HourlyRate).ToListAsync();
+            }
         }
     }
 }

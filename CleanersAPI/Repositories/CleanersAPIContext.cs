@@ -17,12 +17,10 @@ namespace CleanersAPI.Repositories
 
             modelBuilder.Entity<Customer>().ToTable("customers").HasKey(c => c.Id);
             modelBuilder.Entity<Customer>().Property(c => c.Id).HasColumnName("customerId");
-            modelBuilder.Entity<Customer>().HasOne(a => a.Address).WithOne().OnDelete(DeleteBehavior.Restrict);
-            // modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
-
+            modelBuilder.Entity<Customer>().HasOne(a => a.User).WithOne().OnDelete(DeleteBehavior.Restrict);
+            
             modelBuilder.Entity<Professional>().ToTable("professionals").HasKey(p => p.Id);
             modelBuilder.Entity<Professional>().Property(p => p.Id).HasColumnName("professionalId");
-            modelBuilder.Entity<Professional>().HasOne(p => p.Address).WithOne();
             modelBuilder.Entity<Professional>().HasOne(p => p.User).WithOne().OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Service>().ToTable("services").HasKey(s => s.Id);
@@ -33,7 +31,6 @@ namespace CleanersAPI.Repositories
 
             modelBuilder.Entity<Expertise>().ToTable("expertises").HasKey(e => e.Id);
             modelBuilder.Entity<Expertise>().Property(e => e.Id).HasColumnName("expertiseId");
-            // modelBuilder.Entity<Expertise>().HasKey(e => new {ProfessionId = e.ServiceId, e.ProfessionalId});
             modelBuilder.Entity<Expertise>().HasOne(e => e.Professional);
             modelBuilder.Entity<Expertise>().HasOne(e => e.Service);
             modelBuilder.Entity<Expertise>().Property(exp => exp.HourlyRate).HasColumnType("decimal(5,2)");
@@ -52,8 +49,9 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Billing>().Property(b => b.TotalPrice).HasColumnType("decimal(10,2)");
 
             modelBuilder.Entity<User>().ToTable("users").HasKey(u => u.Id);
+            modelBuilder.Entity<User>().HasOne(u => u.Address).WithMany();
             modelBuilder.Entity<User>().Property(u => u.Id).HasColumnName("userId");
-            modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
             modelBuilder.Entity<Role>().ToTable("roles").HasKey(r => r.Id);
             modelBuilder.Entity<Role>().Property(r => r.Id).HasColumnName("roleId");

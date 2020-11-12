@@ -10,6 +10,6 @@ namespace CleanersAPI.Services
     {
         Task<Billing> Create(ReservationSearchCriteria reservationSearchCriteria);
 
-        Task<PdfDocument> GenerateInvoice(Person person, IEnumerable<Reservation> reservations);
+        Task<PdfDocument> GenerateInvoice(User person, IEnumerable<Reservation> reservations);
     }
 }

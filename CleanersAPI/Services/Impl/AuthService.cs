@@ -41,7 +41,7 @@ namespace CleanersAPI.Services.Impl
         {
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
             return new User {
-                Username = professional.Email,
+                Email = professional.User.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.Professional)}}
@@ -52,7 +52,7 @@ namespace CleanersAPI.Services.Impl
         {
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
             return new User {
-                Username = customer.Email,
+                Email = customer.User.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 Roles =
@@ -74,7 +74,7 @@ namespace CleanersAPI.Services.Impl
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Name, user.Email),
                     new Claim(ClaimTypes.Role, user.Roles.First().Role.RoleName.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),
