@@ -37,38 +37,26 @@ namespace CleanersAPI.Services.Impl
             return _authRepository.UserExists(username);
         }
 
-        public User GenerateUserAccount(Professional professional, string password)
+        public void GenerateUserAccount(Professional professional, string password)
         {
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
-            return new User {
-                Email = professional.User.Email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Roles = { new RoleUser { Role = _authRepository.GetRoleByName(RoleName.Professional)}}
-            };
+            professional.User.PasswordHash = passwordHash;
+            professional.User.PasswordSalt = passwordSalt;
+            professional.User.Roles.Add(new RoleUser {Role = _authRepository.GetRoleByName(RoleName.Professional)});
         }
-        
-        public User GenerateUserAccount(Customer customer, string password)
+
+        public void GenerateUserAccount(Customer customer, string password)
         {
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
-            return new User {
-                Email = customer.User.Email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Roles =
-                {
-                    new RoleUser
-                    {
-                        Role = _authRepository.GetRoleByName(RoleName.Customer)
-                    }
-                }
-            };
+            customer.User.PasswordHash = passwordHash;
+            customer.User.PasswordSalt = passwordSalt;
+            customer.User.Roles.Add(new RoleUser {Role = _authRepository.GetRoleByName(RoleName.Professional)});
         }
 
         public string GenerateLoginToken(User user)
         {
             var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Token").Value);
-            
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -78,7 +66,8 @@ namespace CleanersAPI.Services.Impl
                     new Claim(ClaimTypes.Role, user.Roles.First().Role.RoleName.ToString())
                 }),
                 Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha512Signature)
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);

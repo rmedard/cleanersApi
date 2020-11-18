@@ -10,8 +10,8 @@ namespace CleanersAPI.Services
 
         Task<bool> UserExists(string username);
         string GenerateLoginToken(User user);
-        User GenerateUserAccount(Professional professional, string password);
-        User GenerateUserAccount(Customer customer, string password);
+        void GenerateUserAccount(Professional professional, string password);
+        void GenerateUserAccount(Customer customer, string password);
         Task<User> GetUserById(int userId);
     }
 }

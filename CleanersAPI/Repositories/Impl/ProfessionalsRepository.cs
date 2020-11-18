@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -87,6 +88,12 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<Professional> Create(Professional professional)
         {
+            foreach (var expertise in professional.Expertises)
+            {
+                var service = _context.Services.First(s => expertise.Service.Id.Equals(s.Id));
+                expertise.Service = service;
+            }
+            
             var newProfessional = (await _context.Professionals.AddAsync(professional)).Entity;
             await _context.SaveChangesAsync();
             return newProfessional;

@@ -104,7 +104,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Professional already exists. Please login!!");
             }
 
-            professionalForCreate.Professional.User = _authService.GenerateUserAccount(professionalForCreate.Professional, professionalForCreate.Password);
+            _authService.GenerateUserAccount(professionalForCreate.Professional, professionalForCreate.Password);
             var newProfessional = await _professionalsService.Create(professionalForCreate.Professional);
 
             return CreatedAtAction("GetProfessional", new {id = newProfessional.Id}, newProfessional);

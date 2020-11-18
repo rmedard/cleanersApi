@@ -92,7 +92,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Customer already exists. Please login!!");
             }
             
-            customerForCreate.Customer.User = _authService.GenerateUserAccount(customerForCreate.Customer, customerForCreate.Password);
+            _authService.GenerateUserAccount(customerForCreate.Customer, customerForCreate.Password);
             var newCustomer= await _customersService.Create(customerForCreate.Customer);
 
             return CreatedAtAction("GetCustomer", new { id = newCustomer.Id }, newCustomer);
