@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace CleanersAPI.Controllers
 {
@@ -16,15 +14,13 @@ namespace CleanersAPI.Controllers
         private readonly IAuthService _authService;
         private readonly ICustomersService _customersService;
         private readonly IProfessionalsService _professionalsService;
-        private readonly IMapper _mapper;
 
         public AuthController(IAuthService authService, ICustomersService customersService,
-            IProfessionalsService professionalsService, IConfiguration configuration, IMapper mapper)
+            IProfessionalsService professionalsService)
         {
             _authService = authService;
             _customersService = customersService;
             _professionalsService = professionalsService;
-            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -42,26 +38,32 @@ namespace CleanersAPI.Controllers
             }
 
             var token = _authService.GenerateLoginToken(userFromRepo);
-            var user = _mapper.Map<UserForDisplayDto>(userFromRepo);
+            var userAccount = new UserForDisplayDto {User = userFromRepo};
 
-            switch (userFromRepo.Roles[0].Role.RoleName)
+            foreach (var roleUser in userFromRepo.Roles)
             {
-                case RoleName.Admin:
-                    
-                    break;
-                case RoleName.Customer:
-                    var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
-                    user.CustomerId = customer.Id;
-                    break;
-                case RoleName.Professional:
-                    var professional = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
-                    user.ProfessionalId = professional.Id;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                switch (roleUser.Role.RoleName)
+                {
+                    case RoleName.Customer:
+                    {
+                        var customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
+                        userAccount.CustomerId = customer.Id;
+                        break;
+                    }
+                    case RoleName.Professional:
+                    {
+                        var professional = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
+                        userAccount.ProfessionalId = professional.Id;
+                        break;
+                    }
+                    case RoleName.Admin:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
-            return Ok(new {token, user});
+            return Ok(new {token, userAccount});
         }
     }
 }

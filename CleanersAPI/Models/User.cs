@@ -33,7 +33,6 @@ namespace CleanersAPI.Models
         [Required]
         public Address Address { get; set; }
         
-        [JsonIgnore]
         public IList<RoleUser> Roles { get; }
 
         public User()

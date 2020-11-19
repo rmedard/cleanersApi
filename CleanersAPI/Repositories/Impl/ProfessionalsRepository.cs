@@ -33,6 +33,7 @@ namespace CleanersAPI.Repositories.Impl
                 .Include(prof => prof.User)
                 .ThenInclude(u => u.Address)
                 .Include(p => p.Expertises)
+                .ThenInclude(e => e.Service)
                 .SingleOrDefaultAsync(prof => prof.Id.Equals(id));
         }
 

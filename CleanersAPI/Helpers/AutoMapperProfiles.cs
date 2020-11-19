@@ -13,14 +13,6 @@ namespace CleanersAPI.Helpers
         public AutoMapperProfiles(IConfiguration configuration)
         {
             var config = configuration;
-            CreateMap<User, UserForDisplayDto>()
-                .ForMember(dest => dest.Roles, 
-                    opt => { opt.MapFrom(src => src.Roles.Select(x => x.Role).Select(y => y.RoleName)); })
-                .ForMember(dest => dest.Email, opt => { opt.MapFrom(src => src.Email); })
-                .ForMember(dest => dest.Picture, opt => { opt.MapFrom(src => src.Picture); })
-                .ForMember(dest => dest.FirstName, opt => {opt.MapFrom(src => src.FirstName);})
-                .ForMember(dest => dest.LastName, opt => {opt.MapFrom(src => src.LastName);})
-                ;
             CreateMap<Expertise, ExpertiseForServiceCreate>()
                 .ForMember(dest => dest.ProfessionalId, opt => { opt.MapFrom(src => src.ProfessionalId); })
                 .ForMember(dest => dest.ServiceId, opt => { opt.MapFrom(src => src.ServiceId); })
