@@ -50,7 +50,7 @@ namespace CleanersAPI.Services.Impl
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
             customer.User.PasswordHash = passwordHash;
             customer.User.PasswordSalt = passwordSalt;
-            customer.User.Roles.Add(new RoleUser {Role = _authRepository.GetRoleByName(RoleName.Professional)});
+            customer.User.Roles.Add(new RoleUser {Role = _authRepository.GetRoleByName(RoleName.Customer)});
         }
 
         public string GenerateLoginToken(User user)

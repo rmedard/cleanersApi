@@ -97,6 +97,7 @@ namespace CleanersAPI.Repositories.Impl
                 {
                     return await queryable.OrderByDescending(e => e.HourlyRate).ToListAsync();
                 }
+
                 return await queryable.OrderBy(e => e.HourlyRate).ToListAsync();
             }
         }
