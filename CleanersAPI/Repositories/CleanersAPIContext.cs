@@ -22,7 +22,8 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Professional>().ToTable("professionals").HasKey(p => p.Id);
             modelBuilder.Entity<Professional>().Property(p => p.Id).HasColumnName("professionalId");
             modelBuilder.Entity<Professional>().HasOne(p => p.User).WithOne().OnDelete(DeleteBehavior.Restrict);
-
+            modelBuilder.Entity<Professional>().HasMany(p => p.Expertises);
+            
             modelBuilder.Entity<Service>().ToTable("services").HasKey(s => s.Id);
             modelBuilder.Entity<Service>().Property(s => s.Id).HasColumnName("serviceId");
             modelBuilder.Entity<Service>().Property(s => s.Category)
@@ -39,6 +40,7 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Reservation>().Property(r => r.Id).HasColumnName("reservationId");
             modelBuilder.Entity<Reservation>().HasOne(s => s.Customer).WithMany(serv => serv.Reservations);
             modelBuilder.Entity<Reservation>().HasOne(s => s.Expertise);
+            modelBuilder.Entity<Reservation>().HasOne(s => s.Recurrence).WithMany(r => r.Reservations);
             modelBuilder.Entity<Reservation>().Property(r => r.TotalCost).HasColumnType("decimal(10,2)");
             modelBuilder.Entity<Reservation>().Property(r => r.Status)
                 .HasConversion(v => v.ToString(),
@@ -66,6 +68,9 @@ namespace CleanersAPI.Repositories
 
             modelBuilder.Entity<Email>().ToTable("emails").HasKey(e => e.Id);
             modelBuilder.Entity<Email>().Ignore(e => e.PlainTextBody);
+
+            modelBuilder.Entity<Recurrence>().ToTable("recurrences").HasKey(r => r.Id);
+            modelBuilder.Entity<Recurrence>().Property(r => r.Id).HasColumnName("recurrenceId");
         }
 
         public DbSet<Customer> Customers { get; set; }

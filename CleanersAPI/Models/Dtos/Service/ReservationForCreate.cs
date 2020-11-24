@@ -11,5 +11,7 @@ namespace CleanersAPI.Models.Dtos.Service
         //[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd hh:mm:ss}")]
         [Required] public DateTime StartTime { get; set; }
         [Required] public int Duration { get; set; }
+        
+        public Recurrence Recurrence { get; set; }
     }
 }

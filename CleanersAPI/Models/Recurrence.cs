@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanersAPI.Models
 {
@@ -9,5 +10,7 @@ namespace CleanersAPI.Models
         [Required] public string Label { get; set; }
         
         [Required] public bool IsActive { get; set; }
+        
+        public ICollection<Reservation> Reservations { get; } = new List<Reservation>();
     }
 }

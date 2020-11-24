@@ -22,7 +22,8 @@ namespace CleanersAPI.Helpers
                 .ForMember(dest => dest.ExpertiseForServiceCreate, opt => { opt.MapFrom(src => src.Expertise); });
             CreateMap<ReservationForCreate, Reservation>()
                 .ForMember(dest => dest.Expertise, opt => { opt.MapFrom(src => src.ExpertiseForServiceCreate); })
-                .ForMember(dest => dest.EndTime, opt => { opt.MapFrom(src => src.StartTime.AddHours(src.Duration)); });
+                .ForMember(dest => dest.EndTime, opt => { opt.MapFrom(src => src.StartTime.AddHours(src.Duration)); })
+                .ForMember(dest => dest.Recurrence, opt => {opt.MapFrom(src => src.Recurrence);});
             CreateMap<EmailForSend, Email>()
                 .ForMember(dest => dest.From,
                     opt => { opt.MapFrom(src => config.GetValue<string>("SendGrid:senderEmail")); })
