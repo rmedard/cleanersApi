@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
@@ -19,9 +20,10 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<User> Login(string username, string password)
         {
             var user = await _context.Users
+                .Include(u => u.Address)
                 .Include(u => u.Roles)
                 .ThenInclude(r => r.Role)
-                .FirstOrDefaultAsync(u => u.Email == username);
+                .FirstOrDefaultAsync(u => username.Equals(u.Email));
             if (user == null)
             {
                 return null;

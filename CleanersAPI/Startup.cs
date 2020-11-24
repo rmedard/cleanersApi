@@ -40,7 +40,7 @@ namespace CleanersAPI
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
             services.AddDbContext<CleanersApiContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("LocalConnection2")));
+                options.UseSqlServer(Configuration.GetConnectionString("azure")));
 
             services.AddCors(options =>
             {
@@ -76,6 +76,7 @@ namespace CleanersAPI
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
 
+            services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IUsersRepository, UsersRepository>();
 
             services.AddScoped<IExpertiseService, ExpertiseService>();
@@ -191,6 +192,8 @@ namespace CleanersAPI
                 var admin = new User
                 {
                     Email = "admin@gmail.com",
+                    FirstName = "Admin",
+                    LastName = "Admin",
                     Roles =
                     {
                         new RoleUser

@@ -31,6 +31,11 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            if (!_authService.UserExists(userForLoginDto.Username).Result)
+            {
+                return BadRequest("User does not exist. Please register!");
+            }
+            
             var userFromRepo = await _authService.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
             if (userFromRepo == null)
             {
@@ -65,5 +70,7 @@ namespace CleanersAPI.Controllers
 
             return Ok(new {token, userAccount});
         }
+        
+        
     }
 }

@@ -8,6 +8,7 @@ namespace CleanersAPI.Models
 {
     public class User
     {
+        [JsonProperty(PropertyName = "userId")]
         public int Id { get; set; }
 
         [Required]
@@ -33,7 +34,7 @@ namespace CleanersAPI.Models
         [Required]
         public Address Address { get; set; }
         
-        public IList<RoleUser> Roles { get; }
+        public IList<RoleUser> Roles { get; set; }
 
         public User()
         {
