@@ -30,8 +30,9 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Reservations
                 .Include(r => r.Customer)
-                .Include(r => r.Expertise.Professional)
                 .Include(r => r.Expertise.Service)
+                .Include(r => r.Expertise.Professional)
+                .ThenInclude(p => p.User)
                 .SingleOrDefaultAsync(reservation => reservation.Id.Equals(id));
         }
 

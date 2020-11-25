@@ -129,7 +129,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Reservation creation failed");
             }
 
-            // await _emailsService.notifyUsersOnReservationCreation(newReservation);
+            await _emailsService.notifyUsersOnReservationCreation(newReservation);
 
             return CreatedAtAction("GetReservation", new {id = newReservation.Id}, newReservation);
         }

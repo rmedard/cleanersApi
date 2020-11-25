@@ -1,5 +1,6 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ namespace CleanersAPI.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     
     public class UsersController : Controller
     {

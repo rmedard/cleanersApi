@@ -42,7 +42,11 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> Update(User t)
         {
-            _context.Entry(t).State = EntityState.Modified;
+            _context.Entry(t.Address).State = EntityState.Modified;
+            _context.Entry(t).Property(u => u.Picture).IsModified = true;
+            _context.Entry(t).Property(u => u.FirstName).IsModified = true;
+            _context.Entry(t).Property(u => u.LastName).IsModified = true;
+            _context.Entry(t).Property(u => u.PhoneNumber).IsModified = true;
             try
             {
                 await _context.SaveChangesAsync();
