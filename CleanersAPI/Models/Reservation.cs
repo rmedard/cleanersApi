@@ -25,7 +25,7 @@ namespace CleanersAPI.Models
         [Required]
         public Status Status { get; set; }
         
-        public int? RecurrenceId { get; set; }
+        public int RecurrenceId { get; set; }
         
         public Recurrence Recurrence { get; set; }
 

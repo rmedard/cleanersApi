@@ -11,6 +11,6 @@ namespace CleanersAPI.Models
         
         [Required] public bool IsActive { get; set; }
         
-        public ICollection<Reservation> Reservations { get; } = new List<Reservation>();
+        public IEnumerable<Reservation> Reservations { get; } = new List<Reservation>();
     }
 }

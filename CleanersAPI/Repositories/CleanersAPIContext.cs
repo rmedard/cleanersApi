@@ -71,6 +71,7 @@ namespace CleanersAPI.Repositories
 
             modelBuilder.Entity<Recurrence>().ToTable("recurrences").HasKey(r => r.Id);
             modelBuilder.Entity<Recurrence>().Property(r => r.Id).HasColumnName("recurrenceId");
+            modelBuilder.Entity<Recurrence>().HasMany(r => r.Reservations);
         }
 
         public DbSet<Customer> Customers { get; set; }

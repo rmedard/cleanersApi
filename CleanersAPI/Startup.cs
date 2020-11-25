@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -40,7 +41,9 @@ namespace CleanersAPI
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
             services.AddDbContext<CleanersApiContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("azure")));
+                options
+                    // .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+                    .UseSqlServer(Configuration.GetConnectionString("azure")));
 
             services.AddCors(options =>
             {
