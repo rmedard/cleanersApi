@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanersAPI.Models
 {
@@ -19,6 +20,8 @@ namespace CleanersAPI.Models
         public Service Service { get; set; }
         
         public Professional Professional { get; set; }
+        
+        public ICollection<Reservation> Reservations { get; } = new List<Reservation>();
 
     }
 }

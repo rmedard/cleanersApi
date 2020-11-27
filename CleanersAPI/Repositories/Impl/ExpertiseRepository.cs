@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -31,6 +29,7 @@ namespace CleanersAPI.Repositories.Impl
             return await _context.Expertises
                 .Include(e => e.Service)
                 .Include(e => e.Professional)
+                .Include(e => e.Reservations)
                 .FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
@@ -41,7 +40,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<Expertise> Create(Expertise customer)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public async Task<bool> Update(Expertise expertise)
@@ -61,7 +60,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public Task<bool> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public async Task<Expertise> GetOne(int professionalId, int serviceId)
@@ -84,18 +83,23 @@ namespace CleanersAPI.Repositories.Impl
             var startTime = availabilityFinder.DateTime;
             var endTime = availabilityFinder.DateTime.AddHours(availabilityFinder.Duration);
             var sunday = DateTime.Parse("Jan 4, 1970");
-            
+
             var queryable = _context.Expertises
-                .Where(e => !_context.Reservations.Include(r => r.Recurrence).Include(r => r.Expertise)
-                    .Where(r => r.Expertise.Id.Equals(e.Id) &&
-                        ((r.Recurrence == null || !r.Recurrence.IsActive) && DateTime.Compare(r.StartTime, endTime) < 0 && DateTime.Compare(r.EndTime, startTime) > 0)
-                        || ((r.Recurrence != null && r.Recurrence.IsActive && endTime.Hour.CompareTo(r.StartTime.Hour) > 0 && startTime.Hour.CompareTo(r.EndTime.Hour) < 0)
-                            && 
-                            (("d".Equals(r.Recurrence.Label) && endTime.CompareTo(r.StartTime) > 0) || 
-                             ("w".Equals(r.Recurrence.Label) && r.Recurrence.IsActive && EF.Functions.DateDiffDay(sunday, r.StartTime.Date) % 7 == (int)availabilityFinder.DateTime.DayOfWeek)))
-                        )
-                    .Select(r => r.Expertise.ProfessionalId).Contains(e.ProfessionalId))
+                .Include(e => e.Reservations)
+                .ThenInclude(r => r.Recurrence)
                 .Where(e => availabilityFinder.ServiceId.Equals(e.ServiceId) && e.IsActive)
+                .Where(e => !e.Reservations.Any(r => r.Recurrence == null
+                                                     && r.StartTime.CompareTo(endTime) < 0
+                                                     && r.EndTime.CompareTo(startTime) > 0))
+                .Where(e => !e.Reservations.Any(r => r.Recurrence != null
+                                                     && r.Recurrence.IsActive
+                                                     && startTime.Hour.CompareTo(r.EndTime.Hour) < 0
+                                                     && endTime.Hour.CompareTo(r.StartTime.Hour) > 0
+                                                     && endTime.CompareTo(r.StartTime) > 0
+                                                     && ("d".Equals(r.Recurrence.Label) ||
+                                                         "w".Equals(r.Recurrence.Label)
+                                                         && EF.Functions.DateDiffDay(sunday, r.StartTime.Date) % 7 ==
+                                                         (int) availabilityFinder.DateTime.DayOfWeek)))
                 .Include(e => e.Professional)
                 .ThenInclude(p => p.User)
                 .ThenInclude(u => u.Address);
@@ -105,6 +109,7 @@ namespace CleanersAPI.Repositories.Impl
                 {
                     return await queryable.OrderByDescending(e => e.HourlyRate).ToListAsync();
                 }
+
                 return await queryable.OrderBy(e => e.HourlyRate).ToListAsync();
             }
         }

@@ -25,12 +25,15 @@ namespace CleanersAPI.Models
         [Required]
         public Status Status { get; set; }
         
+        [Required]
+        public int ExpertiseId { get; set; }
+        
+        public Expertise Expertise { get; set; }
+        
         public int? RecurrenceId { get; set; }
         
         public Recurrence Recurrence { get; set; }
 
-        public Expertise Expertise { get; set; }
-        
         public Customer Customer { get; set; }
         
         public int? BillingId { get; set; }
