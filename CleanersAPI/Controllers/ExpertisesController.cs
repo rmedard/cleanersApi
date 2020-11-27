@@ -50,11 +50,11 @@ namespace CleanersAPI.Controllers
             return Ok(_expertiseService.GetAvailableExpertises(availabilityFinder));
         }
         
-        [Authorize(Roles = "Admin,Professional")]
+        [Authorize(Roles = "Professional")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateExpertise([FromBody] Expertise expertise)
+        public async Task<IActionResult> UpdateExpertise([FromRoute] int id, [FromBody] Expertise expertise)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || !id.Equals(expertise.Id))
             {
                 return BadRequest(ModelState);
             }

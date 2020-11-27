@@ -45,7 +45,8 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> Update(Expertise expertise)
         {
-            _context.Entry(expertise).State = EntityState.Modified;
+            _context.Entry(expertise).Property(u => u.HourlyRate).IsModified = true;
+            _context.Entry(expertise).Property(u => u.IsActive).IsModified = true;
             try
             {
                 await _context.SaveChangesAsync();
