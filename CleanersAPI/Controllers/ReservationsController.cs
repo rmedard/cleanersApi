@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -103,9 +104,16 @@ namespace CleanersAPI.Controllers
                     throw new ArgumentOutOfRangeException();
             }
 
-            var isFree = _professionalsService.IsFree(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
-                reservationForCreate.StartTime, reservationForCreate.Duration);
-            if (!isFree)
+            var availabilityFinder = new AvailabilityFinder
+            {
+                DateTime = reservationForCreate.StartTime,
+                Duration = reservationForCreate.Duration,
+                ServiceId = reservationForCreate.ExpertiseForServiceCreate.ServiceId
+            };
+
+            var expertises = _expertiseService.GetAvailableExpertises(availabilityFinder);
+            if (!expertises.Any(e => e.ProfessionalId
+                .Equals(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId)))
             {
                 return BadRequest("Professional not available");
             }

@@ -10,6 +10,6 @@ namespace CleanersAPI.Repositories
         
         Task<IEnumerable<Expertise>> GetExpertisesByServiceId(int serviceId);
 
-        Task<IEnumerable<Expertise>> GetAvailable(AvailabilityFinder availabilityFinder);
+        IEnumerable<Expertise> GetAvailable(AvailabilityFinder availabilityFinder);
     }
 }

@@ -40,14 +40,14 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpPost("available")]
-        public async Task<ActionResult<IEnumerable<Expertise>>> GetAvailableExpertises([FromBody] AvailabilityFinder availabilityFinder)
+        public ActionResult<IEnumerable<Expertise>> GetAvailableExpertises([FromBody] AvailabilityFinder availabilityFinder)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            return Ok(await _expertiseService.GetAvailableExpertises(availabilityFinder));
+            return Ok(_expertiseService.GetAvailableExpertises(availabilityFinder));
         }
         
         [Authorize(Roles = "Admin,Professional")]

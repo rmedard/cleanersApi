@@ -1,9 +1,6 @@
 ﻿using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers

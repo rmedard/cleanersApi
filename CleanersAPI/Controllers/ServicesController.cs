@@ -89,9 +89,9 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var newProfession = await _servicesService.Create(service); 
+            var newService = await _servicesService.Create(service);
 
-            return CreatedAtAction("GetServices", new { id = newProfession.Id }, newProfession);
+            return CreatedAtAction("GetServices", new { id = newService.Id }, newService);
         }
     }
 }

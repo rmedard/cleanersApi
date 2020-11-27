@@ -78,39 +78,38 @@ namespace CleanersAPI.Repositories.Impl
                 .Where(e => e.IsActive && e.ServiceId.Equals(serviceId)).ToListAsync();
         }
 
-        public async Task<IEnumerable<Expertise>> GetAvailable(AvailabilityFinder availabilityFinder)
+        public IEnumerable<Expertise> GetAvailable(AvailabilityFinder availabilityFinder)
         {
             var startTime = availabilityFinder.DateTime;
             var endTime = availabilityFinder.DateTime.AddHours(availabilityFinder.Duration);
             var sunday = DateTime.Parse("Jan 4, 1970");
 
             var queryable = _context.Expertises
-                .Include(e => e.Reservations)
-                .ThenInclude(r => r.Recurrence)
-                .Where(e => availabilityFinder.ServiceId.Equals(e.ServiceId) && e.IsActive)
-                .Where(e => !e.Reservations.Any(r => r.Recurrence == null
-                                                     && r.StartTime.CompareTo(endTime) < 0
-                                                     && r.EndTime.CompareTo(startTime) > 0))
-                .Where(e => !e.Reservations.Any(r => r.Recurrence != null
-                                                     && r.Recurrence.IsActive
-                                                     && startTime.Hour.CompareTo(r.EndTime.Hour) < 0
-                                                     && endTime.Hour.CompareTo(r.StartTime.Hour) > 0
-                                                     && endTime.CompareTo(r.StartTime) > 0
-                                                     && ("d".Equals(r.Recurrence.Label) ||
-                                                         "w".Equals(r.Recurrence.Label)
-                                                         && EF.Functions.DateDiffDay(sunday, r.StartTime.Date) % 7 ==
-                                                         (int) availabilityFinder.DateTime.DayOfWeek)))
-                .Include(e => e.Professional)
-                .ThenInclude(p => p.User)
-                .ThenInclude(u => u.Address);
-            if (availabilityFinder.Order == null) return await queryable.ToListAsync();
+                    .Include(e => e.Reservations)
+                    .ThenInclude(r => r.Recurrence)
+                    .Where(e => !_context.Reservations.Any(r => r.Recurrence == null
+                                                                && e.ProfessionalId.Equals(r.Expertise.ProfessionalId)
+                                                                && r.StartTime.CompareTo(endTime) < 0
+                                                                && r.EndTime.CompareTo(startTime) > 0))
+                    .Where(e => !_context.Reservations.Any(r => r.Recurrence != null
+                                                                && r.Recurrence.IsActive
+                                                                && e.ProfessionalId.Equals(r.Expertise.ProfessionalId)
+                                                                && startTime.Hour.CompareTo(r.EndTime.Hour) < 0
+                                                                && endTime.Hour.CompareTo(r.StartTime.Hour) > 0
+                                                                && endTime.CompareTo(r.StartTime) > 0
+                                                                && ("d".Equals(r.Recurrence.Label) ||
+                                                                    "w".Equals(r.Recurrence.Label)
+                                                                    && EF.Functions.DateDiffDay(sunday, r.StartTime.Date) %
+                                                                    7 ==
+                                                                    (int) availabilityFinder.DateTime.DayOfWeek)))
+                    .Include(e => e.Professional)
+                    .ThenInclude(p => p.User)
+                    .ThenInclude(u => u.Address);
+            if (availabilityFinder.Order == null) return queryable.ToList().FindAll(x => x.ServiceId.Equals(availabilityFinder.ServiceId));
             {
-                if (availabilityFinder.Order.Equals(Order.Descendant))
-                {
-                    return await queryable.OrderByDescending(e => e.HourlyRate).ToListAsync();
-                }
-
-                return await queryable.OrderBy(e => e.HourlyRate).ToListAsync();
+                return availabilityFinder.Order.Equals(Order.Descendant) ? 
+                    queryable.OrderByDescending(e => e.HourlyRate).ToList().FindAll(x => x.ServiceId.Equals(availabilityFinder.ServiceId)) : 
+                    queryable.OrderBy(e => e.HourlyRate).ToList().FindAll(x => x.ServiceId.Equals(availabilityFinder.ServiceId));
             }
         }
     }
