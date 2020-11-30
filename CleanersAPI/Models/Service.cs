@@ -14,6 +14,8 @@ namespace CleanersAPI.Models
         public string Description { get; set; }
         
         [Required] public Category Category { get; set; }
+        
+        public bool IsActive { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

@@ -69,7 +69,7 @@ namespace CleanersAPI.Controllers
             {
                 return BadRequest();
             }
-
+            
             var updated = _servicesService.Update(service);
 
             if (!updated.Result)

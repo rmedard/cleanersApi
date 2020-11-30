@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +42,16 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> Update(Service service)
         {
+            if (!service.IsActive)
+            {
+                var expertises = _context.Expertises.Where(e => e.ServiceId.Equals(service.Id) && e.IsActive).ToList();
+                foreach (var expertise in expertises)
+                {
+                    expertise.IsActive = false;
+                    _context.Entry(expertise).Property(e => e.IsActive).IsModified = true;
+                }
+            }
+            
             _context.Entry(service).State = EntityState.Modified;
             try
             {
