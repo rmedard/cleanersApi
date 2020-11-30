@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,10 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(u => u.Roles)
+                .ThenInclude(r => r.Role)
+                .ToListAsync();
         }
 
         public Task<User> GetById(int id)

@@ -10,6 +10,7 @@ namespace CleanersAPI.Models
         
         public RoleName RoleName { get; set; }
         
+        [JsonIgnore]
         public ICollection<RoleUser> Users { get; set; }
     }
 

@@ -1,6 +1,9 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -8,7 +11,7 @@ namespace CleanersAPI.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     
     public class UsersController : Controller
     {
@@ -20,6 +23,13 @@ namespace CleanersAPI.Controllers
             _usersService = usersService;
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetAll()
+        {
+            return Ok(await _usersService.GetAll());
+        }
+        
         [HttpPatch("{id:int}")]
         public IActionResult UpdateUser([FromRoute] int id, [FromBody] User user)
         {
