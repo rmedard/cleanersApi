@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -14,11 +17,14 @@ namespace CleanersAPI.Controllers
     {
         private readonly ICustomersService _customersService;
         private readonly IAuthService _authService;
+        private readonly IUsersService _usersService;
 
-        public CustomersController(ICustomersService customersService, IAuthService authService)
+        public CustomersController(ICustomersService customersService, IAuthService authService,
+            IUsersService usersService)
         {
             _customersService = customersService;
             _authService = authService;
+            _usersService = usersService;
         }
 
         [HttpGet]
@@ -37,8 +43,8 @@ namespace CleanersAPI.Controllers
 
             return Ok(await _customersService.GetCustomerByUserId(id));
         }
-        
-        
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer([FromRoute] int id)
         {
@@ -48,7 +54,7 @@ namespace CleanersAPI.Controllers
             }
 
             var customer = await _customersService.GetOneById(id);
-            
+
             if (customer == null)
             {
                 return NotFound();
@@ -91,11 +97,36 @@ namespace CleanersAPI.Controllers
             {
                 return BadRequest("Customer already exists. Please login!!");
             }
-            
-            _authService.GenerateUserAccount(customerForCreate.Customer, customerForCreate.Password);
-            var newCustomer= await _customersService.Create(customerForCreate.Customer);
 
-            return CreatedAtAction("GetCustomer", new { id = newCustomer.Id }, newCustomer);
+            _authService.GenerateUserAccount(customerForCreate.Customer, customerForCreate.Password);
+            var newCustomer = await _customersService.Create(customerForCreate.Customer);
+
+            return CreatedAtAction("GetCustomer", new {id = newCustomer.Id}, newCustomer);
+        }
+
+        [Authorize]
+        [HttpPost("addAsRole")]
+        public async Task<IActionResult> AddCustomerRole([FromBody] Customer customer)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var loggedInUser = _usersService.GetOneById(loggedInUserId).Result;
+            if (loggedInUser.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Customer)))
+            {
+                return BadRequest("User has customer role already");
+            }
+            
+            loggedInUser.Roles.Add(new RoleUser
+            {
+                RoleId = 1
+            });
+            customer.User = loggedInUser;
+            var newCustomer = await _customersService.Create(customer);
+            return CreatedAtAction("GetCustomer", new {id = newCustomer.Id}, newCustomer);
         }
 
         [HttpDelete("{id}")]
@@ -115,6 +146,7 @@ namespace CleanersAPI.Controllers
             {
                 return Ok();
             }
+
             return BadRequest();
         }
 
@@ -125,7 +157,7 @@ namespace CleanersAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             if (!_customersService.DoesExist(id))
             {
                 return NotFound("Customer not found");

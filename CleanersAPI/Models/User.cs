@@ -34,6 +34,8 @@ namespace CleanersAPI.Models
         [Required]
         public Address Address { get; set; }
         
+        public bool IsActive { get; set; }
+        
         public IList<RoleUser> Roles { get; set; }
 
         public User()

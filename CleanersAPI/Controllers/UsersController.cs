@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
@@ -30,7 +31,7 @@ namespace CleanersAPI.Controllers
             return Ok(await _usersService.GetAll());
         }
         
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id}")]
         public IActionResult UpdateUser([FromRoute] int id, [FromBody] User user)
         {
             if (!ModelState.IsValid || !id.Equals(user.Id))
@@ -39,7 +40,8 @@ namespace CleanersAPI.Controllers
             }
             
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if (!loggedInUserId.Equals(user.Id))
+            var loggedInUser = _usersService.GetOneById(loggedInUserId);
+            if (!loggedInUserId.Equals(user.Id) && !loggedInUser.Result.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Admin)))
             {
                 return StatusCode(403, "You do not have permission to update this user");
             }

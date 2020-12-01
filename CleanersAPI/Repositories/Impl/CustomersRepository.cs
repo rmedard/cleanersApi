@@ -28,8 +28,8 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<Customer> GetById(int id)
         {
             return await _context.Customers
-                .Include(c => c.User)
-                .ThenInclude(u => u.Address)
+                .Include(c => c.User.Address)
+                .Include(c => c.User.Roles)
                 .Include(c => c.Reservations)
                 .ThenInclude(r => r.Expertise)
                 .ThenInclude(e => e.Service)

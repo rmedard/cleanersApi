@@ -19,6 +19,7 @@ namespace CleanersAPI.Repositories.Impl
         public async Task<IEnumerable<User>> GetAll()
         {
             return await _context.Users
+                .Include(u => u.Address)
                 .Include(u => u.Roles)
                 .ThenInclude(r => r.Role)
                 .ToListAsync();
@@ -46,11 +47,25 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> Update(User t)
         {
+            var customer = _context.Customers.FirstOrDefault(c => c.IsActive && c.UserId.Equals(t.Id));
+            var professional = _context.Professionals.FirstOrDefault(c => c.IsActive && c.UserId.Equals(t.Id));
+            if (customer != null)
+            {
+                customer.IsActive = false;
+                _context.Entry(customer).Property(c => c.IsActive).IsModified = true;
+            }
+            if (professional != null)
+            {
+                professional.IsActive = false;
+                _context.Entry(professional).Property(c => c.IsActive).IsModified = true;
+            }
+            
             _context.Entry(t.Address).State = EntityState.Modified;
             _context.Entry(t).Property(u => u.Picture).IsModified = true;
             _context.Entry(t).Property(u => u.FirstName).IsModified = true;
             _context.Entry(t).Property(u => u.LastName).IsModified = true;
             _context.Entry(t).Property(u => u.PhoneNumber).IsModified = true;
+            _context.Entry(t).Property(u => u.IsActive).IsModified = true;
             try
             {
                 await _context.SaveChangesAsync();
