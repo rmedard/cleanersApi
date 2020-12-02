@@ -217,7 +217,7 @@ namespace CleanersAPI.Controllers
             }
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
+            var userFromRepo = await _authService.GetUserById(loggedInUserId);
             var userRole = userFromRepo.Roles[0].Role.RoleName;
 
             switch (userRole)

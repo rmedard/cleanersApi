@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
@@ -61,23 +62,11 @@ namespace CleanersAPI.Controllers
             
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _authService.GetUserById(loggedInUserId);
-            var userRole = userFromRepo.Roles[0].Role.RoleName;
-
-            switch (userRole)
+            
+            var profession = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
+            if (!profession.Id.Equals(expertise.ProfessionalId))
             {
-                case RoleName.Professional:
-                    var profession = await _professionalsService.GetProfessionalByUserId(userFromRepo.Id);
-                    if (!profession.Id.Equals(expertise.ProfessionalId))
-                    {
-                        return StatusCode(403, "You are not allowed to make this modification");
-                    }
-                    break;
-                case RoleName.Admin:
-                    break;
-                case RoleName.Customer:
-                    return StatusCode(403, "You are not allowed to make this modification");
-                default:
-                    throw new ArgumentOutOfRangeException();
+                return StatusCode(403, "You are not allowed to make this modification");
             }
             await _expertiseService.Update(expertise);
             return Ok();

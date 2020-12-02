@@ -1,6 +1,4 @@
-﻿using CleanersAPI.Validators;
-
-namespace CleanersAPI.Models.Dtos.Service
+﻿namespace CleanersAPI.Models.Dtos.Service
 {
     public class ReservationSearchCriteriaDto
     {

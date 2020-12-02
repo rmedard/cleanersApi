@@ -74,9 +74,9 @@ namespace CleanersAPI.Services.Impl
             return tokenHandler.WriteToken(token);
         }
 
-        public Task<User> GetUserById(int userId)
+        public async Task<User> GetUserById(int userId)
         {
-            return _usersRepository.GetById(userId);
+            return await _usersRepository.GetById(userId);
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

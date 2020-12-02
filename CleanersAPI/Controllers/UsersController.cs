@@ -18,10 +18,14 @@ namespace CleanersAPI.Controllers
     {
 
         private readonly IUsersService _usersService;
+        private readonly ICustomersService _customersService;
+        private readonly IProfessionalsService _professionalsService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, ICustomersService customersService, IProfessionalsService professionalsService)
         {
             _usersService = usersService;
+            _customersService = customersService;
+            _professionalsService = professionalsService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -31,8 +35,8 @@ namespace CleanersAPI.Controllers
             return Ok(await _usersService.GetAll());
         }
         
-        [HttpPatch("{id}")]
-        public IActionResult UpdateUser([FromRoute] int id, [FromBody] User user)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] User user)
         {
             if (!ModelState.IsValid || !id.Equals(user.Id))
             {
@@ -40,14 +44,32 @@ namespace CleanersAPI.Controllers
             }
             
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var loggedInUser = _usersService.GetOneById(loggedInUserId);
-            if (!loggedInUserId.Equals(user.Id) && !loggedInUser.Result.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Admin)))
+            var loggedInUser = await _usersService.GetOneById(loggedInUserId);
+            if (!loggedInUserId.Equals(user.Id) && !loggedInUser.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Admin)))
             {
                 return StatusCode(403, "You do not have permission to update this user");
             }
 
-            var updated = _usersService.Update(user);
-            if (!updated.Result)
+            // if (!user.IsActive)
+            // {
+            //     var customer = _customersService.GetCustomerByUserId(user.Id).Result;
+            //     if (customer != null && customer.IsActive)
+            //     {
+            //         customer.IsActive = false;
+            //         await _customersService.Update(customer);
+            //     }
+            //
+            //     var professional = _professionalsService.GetProfessionalByUserId(user.Id).Result;
+            //     if (professional != null && professional.IsActive)
+            //     {
+            //         professional.IsActive = false;
+            //         await _professionalsService.Update(professional);
+            //     }
+            // }
+
+            loggedInUser = user;
+            var updated = await _usersService.Update(loggedInUser);
+            if (!updated)
             {
                 return BadRequest("User update failed");
             }

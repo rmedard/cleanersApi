@@ -28,9 +28,9 @@ namespace CleanersAPI.Services.Impl
             return GetRepository().Create(t);
         }
 
-        public Task<bool> Update(T t)
+        public async Task<bool> Update(T t)
         {
-            return GetRepository().Update(t);
+            return await GetRepository().Update(t);
         }
 
         public Task<bool> Delete(int id)

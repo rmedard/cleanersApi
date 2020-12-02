@@ -51,8 +51,8 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Billing>().Property(b => b.TotalPrice).HasColumnType("decimal(10,2)");
 
             modelBuilder.Entity<User>().ToTable("users").HasKey(u => u.Id);
-            modelBuilder.Entity<User>().HasOne(u => u.Address).WithMany();
             modelBuilder.Entity<User>().Property(u => u.Id).HasColumnName("userId");
+            modelBuilder.Entity<User>().HasOne(u => u.Address).WithMany();
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
             modelBuilder.Entity<Role>().ToTable("roles").HasKey(r => r.Id);

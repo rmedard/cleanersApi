@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -44,7 +45,6 @@ namespace CleanersAPI
                 options
                     // .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
                     .UseSqlServer(Configuration.GetConnectionString("azure")));
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",

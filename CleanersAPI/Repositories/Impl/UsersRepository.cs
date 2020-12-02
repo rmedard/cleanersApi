@@ -25,9 +25,9 @@ namespace CleanersAPI.Repositories.Impl
                 .ToListAsync();
         }
 
-        public Task<User> GetById(int id)
+        public async Task<User> GetById(int id)
         {
-            return _context.Users
+            return await _context.Users
                 .Include(u => u.Roles)
                 .ThenInclude(r => r.Role)
                 .SingleOrDefaultAsync(u => u.Id == id);
@@ -38,34 +38,15 @@ namespace CleanersAPI.Repositories.Impl
             throw new NotImplementedException();
         }
 
-        public async Task<User> Create(User customer)
+        public async Task<User> Create(User user)
         {
-            var userEntry = _context.Add(customer).Entity;
+            var userEntry = _context.Add(user).Entity;
             await _context.SaveChangesAsync();
             return userEntry;
         }
 
-        public async Task<bool> Update(User t)
+        public async Task<bool> Update(User user)
         {
-            var customer = _context.Customers.FirstOrDefault(c => c.IsActive && c.UserId.Equals(t.Id));
-            var professional = _context.Professionals.FirstOrDefault(c => c.IsActive && c.UserId.Equals(t.Id));
-            if (customer != null)
-            {
-                customer.IsActive = false;
-                _context.Entry(customer).Property(c => c.IsActive).IsModified = true;
-            }
-            if (professional != null)
-            {
-                professional.IsActive = false;
-                _context.Entry(professional).Property(c => c.IsActive).IsModified = true;
-            }
-            
-            _context.Entry(t.Address).State = EntityState.Modified;
-            _context.Entry(t).Property(u => u.Picture).IsModified = true;
-            _context.Entry(t).Property(u => u.FirstName).IsModified = true;
-            _context.Entry(t).Property(u => u.LastName).IsModified = true;
-            _context.Entry(t).Property(u => u.PhoneNumber).IsModified = true;
-            _context.Entry(t).Property(u => u.IsActive).IsModified = true;
             try
             {
                 await _context.SaveChangesAsync();
