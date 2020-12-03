@@ -10,7 +10,7 @@ namespace CleanersAPI.Repositories
     {
         Task<IEnumerable<Expertise>> GetExpertises(int professionalId);
         
-        void GrantExpertise(Expertise expertise);
+        Task<Professional> GrantExpertise(Expertise expertise);
         
         void UpdateExpertise(Expertise expertise);
         

@@ -37,10 +37,11 @@ namespace CleanersAPI.Repositories.Impl
                 .SingleOrDefaultAsync(prof => prof.Id.Equals(id));
         }
 
-        public void GrantExpertise(Expertise expertise)
+        public async Task<Professional> GrantExpertise(Expertise expertise)
         {
-            _context.Expertises.Add(expertise);
-            _context.SaveChanges();
+            await _context.Expertises.AddAsync(expertise);
+            await _context.SaveChangesAsync();
+            return await GetById(expertise.ProfessionalId);
         }
 
         public void UpdateExpertise(Expertise expertise)

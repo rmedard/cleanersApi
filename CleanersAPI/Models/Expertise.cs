@@ -13,6 +13,7 @@ namespace CleanersAPI.Models
         [Required]
         public int ProfessionalId { get; set; }
         
+        [Required]
         public decimal HourlyRate { get; set; }
         
         public bool IsActive { get; set; }

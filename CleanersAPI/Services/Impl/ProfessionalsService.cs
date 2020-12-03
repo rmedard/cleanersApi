@@ -23,9 +23,9 @@ namespace CleanersAPI.Services.Impl
             return _professionalsRepository;
         }
 
-        public void GrantExpertise(Expertise expertise)
+        public Task<Professional> GrantExpertise(Expertise expertise)
         {
-            _professionalsRepository.GrantExpertise(expertise);
+            return _professionalsRepository.GrantExpertise(expertise);
         }
 
         public void UpdateExpertise(Expertise expertise)

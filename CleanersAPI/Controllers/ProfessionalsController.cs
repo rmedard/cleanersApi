@@ -111,7 +111,7 @@ namespace CleanersAPI.Controllers
         }
 
         [HttpPost("{id}/expertises")]
-        public IActionResult AddExpertise([FromRoute] int id, [FromBody] Expertise expertise)
+        public async Task<IActionResult> AddExpertise([FromRoute] int id, [FromBody] Expertise expertise)
         {
             if (!ModelState.IsValid)
             {
@@ -133,14 +133,15 @@ namespace CleanersAPI.Controllers
                 return NotFound("Service not found");
             }
 
-            var professional = _professionalsService.GetOneById(expertise.ProfessionalId);
-            if (professional.Result.Expertises.AsQueryable().Any(e => e.ServiceId.Equals(expertise.ServiceId)))
+            var professional = await _professionalsService.GetOneById(expertise.ProfessionalId);
+            if (professional.Expertises.AsQueryable().Any(e => e.ServiceId.Equals(expertise.ServiceId)))
             {
                 return BadRequest("Professional does already propose this service");
             }
-            
-            _professionalsService.GrantExpertise(expertise);
-            return Ok();
+
+            expertise.IsActive = true;
+            return AcceptedAtAction("GetProfessional", new {id = expertise.ProfessionalId}, 
+                _professionalsService.GrantExpertise(expertise).Result);
         }
 
         [HttpPut("{id}/expertises")]
