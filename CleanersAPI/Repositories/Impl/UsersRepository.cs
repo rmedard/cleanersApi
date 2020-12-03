@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -47,6 +49,17 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> Update(User user)
         {
+            var trackedUser = _context.Users
+                .Include(u => u.Address)
+                .First(u => u.Id.Equals(user.Id));
+
+            _context.Entry(trackedUser.Address).State = EntityState.Modified;
+            _context.Entry(trackedUser).Property(u => u.Picture).IsModified = true;
+            _context.Entry(trackedUser).Property(u => u.FirstName).IsModified = true;
+            _context.Entry(trackedUser).Property(u => u.LastName).IsModified = true;
+            _context.Entry(trackedUser).Property(u => u.PhoneNumber).IsModified = true;
+            _context.Entry(trackedUser).Property(u => u.IsActive).IsModified = true;
+
             try
             {
                 await _context.SaveChangesAsync();

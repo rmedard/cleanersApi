@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -57,14 +58,16 @@ namespace CleanersAPI.Services.Impl
         {
             var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Token").Value);
 
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Email)
+            };
+
+            claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role.Role.RoleName.ToString())));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(ClaimTypes.Role, user.Roles.First().Role.RoleName.ToString())
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha512Signature)
