@@ -31,8 +31,9 @@ namespace CleanersAPI.Repositories.Impl
                 .Include(c => c.User.Address)
                 .Include(c => c.User.Roles)
                 .Include(c => c.Reservations)
-                .ThenInclude(r => r.Expertise)
-                .ThenInclude(e => e.Service)
+                .ThenInclude(r => r.Expertise.Service)
+                .Include(d => d.Reservations)
+                .ThenInclude(r => r.Recurrence)
                 .SingleOrDefaultAsync(customer => customer.Id == id);
         }
 
