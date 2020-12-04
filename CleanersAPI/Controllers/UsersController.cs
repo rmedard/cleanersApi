@@ -20,8 +20,11 @@ namespace CleanersAPI.Controllers
         private readonly IUsersService _usersService;
         private readonly ICustomersService _customersService;
         private readonly IProfessionalsService _professionalsService;
+        
 
-        public UsersController(IUsersService usersService, ICustomersService customersService, IProfessionalsService professionalsService)
+        public UsersController(IUsersService usersService, 
+            ICustomersService customersService, 
+            IProfessionalsService professionalsService)
         {
             _usersService = usersService;
             _customersService = customersService;
