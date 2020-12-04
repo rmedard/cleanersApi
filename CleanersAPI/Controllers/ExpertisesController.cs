@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
