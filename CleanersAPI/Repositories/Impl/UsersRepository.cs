@@ -52,7 +52,14 @@ namespace CleanersAPI.Repositories.Impl
             var trackedUser = _context.Users
                 .Include(u => u.Address)
                 .First(u => u.Id.Equals(user.Id));
-
+            
+            _context.Entry(trackedUser.Address).CurrentValues.SetValues(user.Address);
+            _context.Entry(trackedUser).Property(u => u.Picture).CurrentValue = user.Picture;
+            _context.Entry(trackedUser).Property(u => u.FirstName).CurrentValue = user.FirstName;
+            _context.Entry(trackedUser).Property(u => u.LastName).CurrentValue = user.LastName;
+            _context.Entry(trackedUser).Property(u => u.PhoneNumber).CurrentValue = user.PhoneNumber;
+            _context.Entry(trackedUser).Property(u => u.IsActive).CurrentValue = user.IsActive;
+            
             _context.Entry(trackedUser.Address).State = EntityState.Modified;
             _context.Entry(trackedUser).Property(u => u.Picture).IsModified = true;
             _context.Entry(trackedUser).Property(u => u.FirstName).IsModified = true;

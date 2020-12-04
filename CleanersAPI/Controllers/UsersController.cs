@@ -50,25 +50,24 @@ namespace CleanersAPI.Controllers
                 return StatusCode(403, "You do not have permission to update this user");
             }
 
-            // if (!user.IsActive)
-            // {
-            //     var customer = _customersService.GetCustomerByUserId(user.Id).Result;
-            //     if (customer != null && customer.IsActive)
-            //     {
-            //         customer.IsActive = false;
-            //         await _customersService.Update(customer);
-            //     }
-            //
-            //     var professional = _professionalsService.GetProfessionalByUserId(user.Id).Result;
-            //     if (professional != null && professional.IsActive)
-            //     {
-            //         professional.IsActive = false;
-            //         await _professionalsService.Update(professional);
-            //     }
-            // }
+            if (!user.IsActive)
+            {
+                var customer = _customersService.GetCustomerByUserId(user.Id).Result;
+                if (customer != null && customer.IsActive)
+                {
+                    customer.IsActive = false;
+                    await _customersService.Update(customer);
+                }
+            
+                var professional = _professionalsService.GetProfessionalByUserId(user.Id).Result;
+                if (professional != null && professional.IsActive)
+                {
+                    professional.IsActive = false;
+                    await _professionalsService.Update(professional);
+                }
+            }
 
-            loggedInUser = user;
-            var updated = await _usersService.Update(loggedInUser);
+            var updated = await _usersService.Update(user);
             if (!updated)
             {
                 return BadRequest("User update failed");

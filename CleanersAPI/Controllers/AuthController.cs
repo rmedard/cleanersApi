@@ -42,6 +42,11 @@ namespace CleanersAPI.Controllers
                 return Unauthorized();
             }
 
+            if (!userFromRepo.IsActive)
+            {
+                return StatusCode(403, "Your account has been suspended");
+            }
+
             var token = _authService.GenerateLoginToken(userFromRepo);
             var userAccount = new UserForDisplayDto {User = userFromRepo};
 
@@ -67,10 +72,7 @@ namespace CleanersAPI.Controllers
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
             return Ok(new {token, userAccount});
         }
-        
-        
     }
 }
