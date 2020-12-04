@@ -212,25 +212,34 @@ namespace CleanersAPI.Controllers
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _authService.GetUserById(loggedInUserId);
 
-            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Customer)))
+            var canCancel = false;
+
+            foreach (var role in userFromRepo.Roles)
             {
-                var customer = await _customersService.GetCustomerByUserId(reservation.CustomerId);
-                if (customer != null &&
-                    !(customer.Id == reservation.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
+                if (!role.Role.RoleName.Equals(RoleName.Admin))
                 {
-                    return StatusCode(403, "You don't have permission to update this reservation");
+                    if (role.Role.RoleName.Equals(RoleName.Customer))
+                    {
+                        var customer = await _customersService.GetCustomerByUserId(loggedInUserId);
+                        canCancel = customer != null && customer.Id.Equals(reservation.CustomerId);
+                    } else if (!role.Role.RoleName.Equals(RoleName.Professional))
+                    {
+                        var professional = await _professionalsService.GetProfessionalByUserId(loggedInUserId);
+                        canCancel = professional != null && professional.Id.Equals(reservation.Expertise.ProfessionalId);
+                    }
+                }
+
+                if (canCancel)
+                {
+                    break;
                 }
             }
-
-            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Professional)))
+            
+            if (!canCancel)
             {
-                var professional = await _professionalsService.GetProfessionalByUserId(loggedInUserId);
-                if (professional != null && !professional.Id.Equals(reservation.Expertise.ProfessionalId))
-                {
-                    return StatusCode(403, "You don't have permission to update this reservation");
-                }
+                return StatusCode(403, "You don't have permission to update this reservation");
             }
-
+            
             if (reservation.BillingId != null)
             {
                 return BadRequest("You cannot cancel billed reservation");
