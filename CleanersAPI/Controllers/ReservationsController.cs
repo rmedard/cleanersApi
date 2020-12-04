@@ -259,5 +259,13 @@ namespace CleanersAPI.Controllers
             await _reservationsService.Update(reservation);
             return Ok("Reservation cancelled successfully");
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("generate-reservations")]
+        public async Task<IActionResult> GenerateUpcomingReservations()
+        {
+            await _reservationsService.GenerateUpcomingReservation();
+            return Ok();
+        }
     }
 }

@@ -10,5 +10,7 @@ namespace CleanersAPI.Services
         Task<IEnumerable<Reservation>> Search(ReservationSearchCriteria reservationSearchCriteria);
 
         new Task<Reservation> GetOneById(int reservationId);
+
+        Task GenerateUpcomingReservation();
     }
 }

@@ -25,5 +25,10 @@ namespace CleanersAPI.Services.Impl
         {
             return _reservationsRepository.Search(reservationSearchCriteria);
         }
+
+        public Task GenerateUpcomingReservation()
+        {
+            return _reservationsRepository.GenerateUpcomingReservation();
+        }
     }
 }

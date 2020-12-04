@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
-using Microsoft.Data.SqlClient.Server;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
@@ -77,14 +77,68 @@ namespace CleanersAPI.Repositories.Impl
                 .OrderByDescending(r => r.StartTime).ToListAsync();
         }
 
+        public async Task GenerateUpcomingReservation()
+        {
+            var activeReservations = _context.Reservations.Where(r => r.Recurrence != null 
+                                                                      && r.Recurrence.IsActive 
+                                                                      && r.StartTime.CompareTo(DateTime.Now) > 0)
+                .OrderByDescending(r => r.StartTime);
+            var dailyRecurrenceReservations = activeReservations
+                .Where(r => r.Recurrence.Label.Equals("d")).ToList();
+
+            var dailyRecountCount = dailyRecurrenceReservations.Count;
+            if (dailyRecountCount < 7)
+            {
+                var lastReservation = dailyRecurrenceReservations.Last();
+                while (dailyRecountCount <= 7)
+                {
+                    var newReservation = new Reservation
+                    {
+                        Status = Status.Confirmed,
+                        CustomerId = lastReservation.CustomerId,
+                        ExpertiseId = lastReservation.ExpertiseId,
+                        RecurrenceId = lastReservation.RecurrenceId,
+                        StartTime = lastReservation.StartTime.AddDays(1),
+                        EndTime = lastReservation.EndTime.AddDays(1),
+                        TotalCost = lastReservation.TotalCost
+                    };
+                    await Create(newReservation);
+                    ++dailyRecountCount;
+                }   
+            }
+            
+            var weeklyRecurrenceReservations = activeReservations
+                .Where(r => r.Recurrence.Label.Equals("w")).ToList();
+            var weeklyRecurrenceCount = weeklyRecurrenceReservations.Count;
+            if (weeklyRecurrenceCount < 3)
+            {
+                var lastReservation = weeklyRecurrenceReservations.Last();
+                while (weeklyRecurrenceCount <= 3)
+                {
+                    var newReservation = new Reservation
+                    {
+                        Status = Status.Confirmed,
+                        CustomerId = lastReservation.CustomerId,
+                        ExpertiseId = lastReservation.ExpertiseId,
+                        RecurrenceId = lastReservation.RecurrenceId,
+                        StartTime = lastReservation.StartTime.AddDays(7),
+                        EndTime = lastReservation.EndTime.AddDays(7),
+                        TotalCost = lastReservation.TotalCost
+                    };
+                    await Create(newReservation);
+                    ++weeklyRecurrenceCount;
+                } 
+            }
+        }
+
         public bool DoesExist(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Reservation> Create(Reservation customer)
+        public async Task<Reservation> Create(Reservation reservation)
         {
-            var order = (await _context.Reservations.AddAsync(customer)).Entity;
+            var order = (await _context.Reservations.AddAsync(reservation)).Entity;
             await _context.SaveChangesAsync();
             return await GetById(order.Id);
         }
