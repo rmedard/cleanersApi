@@ -36,7 +36,7 @@ namespace CleanersAPI.Models
         
         public bool IsActive { get; set; }
         
-        public IList<RoleUser> Roles { get; set; }
+        public ICollection<RoleUser> Roles { get; set; }
 
         public User()
         {

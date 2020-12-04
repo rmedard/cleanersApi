@@ -122,7 +122,7 @@ namespace CleanersAPI.Controllers
             
             loggedInUser.Roles.Add(new RoleUser
             {
-                RoleId = 1
+                Role = _usersService.GetRoleByName(RoleName.Customer)
             });
             customer.User = loggedInUser;
             var newCustomer = await _customersService.Create(customer);

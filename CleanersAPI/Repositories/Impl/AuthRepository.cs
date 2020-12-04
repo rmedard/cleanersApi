@@ -23,7 +23,6 @@ namespace CleanersAPI.Repositories.Impl
                 .Include(u => u.Address)
                 .Include(u => u.Roles)
                 .ThenInclude(r => r.Role)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(u => username.Equals(u.Email));
             if (user == null)
             {

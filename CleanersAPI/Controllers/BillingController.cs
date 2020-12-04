@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CleanersAPI.Helpers;
 using CleanersAPI.Models;
@@ -48,9 +49,8 @@ namespace CleanersAPI.Controllers
                 .Build(false);
             
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userFromRepo = _authService.GetUserById(loggedInUserId).Result;
-            var userRole = userFromRepo.Roles[0].Role.RoleName;
-            if (userRole.Equals(RoleName.Professional))
+            var userFromRepo = await _authService.GetUserById(loggedInUserId);
+            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Professional)))
             {
                 var professional = _professionalsService.GetProfessionalByUserId(loggedInUserId).Result;
                 reservationSearchCriteria = reservationSearchCriteria.Build(professional);

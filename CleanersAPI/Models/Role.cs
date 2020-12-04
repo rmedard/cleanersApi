@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -17,6 +18,13 @@ namespace CleanersAPI.Models
     [JsonConverter(typeof(StringEnumConverter))]
     public enum RoleName
     {
-        Admin, Customer, Professional
+        [EnumMember(Value = "Admin")]
+        Admin,
+        
+        [EnumMember(Value = "Customer")]
+        Customer, 
+        
+        [EnumMember(Value = "Professional")]
+        Professional
     }
 }

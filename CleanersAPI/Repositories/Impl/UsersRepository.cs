@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -51,8 +49,10 @@ namespace CleanersAPI.Repositories.Impl
         {
             var trackedUser = _context.Users
                 .Include(u => u.Address)
+                .Include(u => u.Roles)
+                .ThenInclude(r => r.Role)
                 .First(u => u.Id.Equals(user.Id));
-            
+
             _context.Entry(trackedUser.Address).CurrentValues.SetValues(user.Address);
             _context.Entry(trackedUser).Property(u => u.Picture).CurrentValue = user.Picture;
             _context.Entry(trackedUser).Property(u => u.FirstName).CurrentValue = user.FirstName;
@@ -88,6 +88,12 @@ namespace CleanersAPI.Repositories.Impl
         {
             _context.RoleUser.Add(roleUser);
             _context.SaveChanges();
+        }
+
+        public Role GetRoleByName(RoleName roleName)
+        {
+            var roles = _context.Roles.ToListAsync().Result;
+            return roles.Find(r => r.RoleName.Equals(roleName));
         }
     }
 }

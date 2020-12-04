@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.User;
 using CleanersAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanersAPI.Controllers
@@ -16,14 +18,17 @@ namespace CleanersAPI.Controllers
         private readonly IProfessionalsService _professionalsService;
         private readonly IServicesService _servicesService;
         private readonly IAuthService _authService;
+        private readonly IUsersService _usersService;
 
         public ProfessionalsController(IProfessionalsService professionalsService,
             IServicesService servicesService,
-            IAuthService authService)
+            IAuthService authService,
+            IUsersService usersService)
         {
             _professionalsService = professionalsService;
             _servicesService = servicesService;
             _authService = authService;
+            _usersService = usersService;
         }
 
         [HttpGet]
@@ -110,6 +115,39 @@ namespace CleanersAPI.Controllers
             return CreatedAtAction("GetProfessional", new {id = newProfessional.Id}, newProfessional);
         }
 
+        [Authorize(Roles = "Customer")]
+        [HttpPost("{userId}/addProfessionalRole")]
+        public async Task<IActionResult> AddProfessionalRoleToExistingUser([FromRoute] int userId, [FromBody] Professional professional)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            if (loggedInUserId != userId)
+            {
+                return BadRequest("Invalid user identifier!!");
+            }
+            
+            var loggedInUser = await _authService.GetUserById(loggedInUserId);
+            if (loggedInUser.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Professional)))
+            {
+                return BadRequest("User already has professional role!!");
+            }
+
+            loggedInUser.Roles.Add(new RoleUser
+            {
+                Role = _usersService.GetRoleByName(RoleName.Professional)
+            });
+            professional.User = loggedInUser;
+            var newProfessional = await _professionalsService.Create(professional);
+            
+            return CreatedAtAction("GetProfessional", new {id = newProfessional.Id}, newProfessional);
+
+        }
+        
         [HttpPost("{id}/expertises")]
         public async Task<IActionResult> AddExpertise([FromRoute] int id, [FromBody] Expertise expertise)
         {

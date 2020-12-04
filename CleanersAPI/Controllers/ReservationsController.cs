@@ -80,28 +80,21 @@ namespace CleanersAPI.Controllers
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _authService.GetUserById(loggedInUserId);
-            var userRole = userFromRepo.Roles[0].Role.RoleName;
 
             Customer customer = null;
-
-            switch (userRole)
+            
+            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Customer)))
             {
-                case RoleName.Customer:
+                customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
+                if (!customer.Id.Equals(reservationForCreate.CustomerId))
                 {
-                    customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
-                    if (!customer.Id.Equals(reservationForCreate.CustomerId))
-                    {
-                        return StatusCode(403, "You do not have permission to create this reservation");
-                    }
-                    break;
+                    return StatusCode(403, "You do not have permission to create this reservation");
                 }
-                case RoleName.Admin:
-                    customer = await _customersService.GetOneById(reservationForCreate.CustomerId);
-                    break;
-                case RoleName.Professional:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            }
+
+            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Admin)))
+            {
+                customer = await _customersService.GetOneById(reservationForCreate.CustomerId);
             }
 
             var availabilityFinder = new AvailabilityFinder
@@ -218,35 +211,24 @@ namespace CleanersAPI.Controllers
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _authService.GetUserById(loggedInUserId);
-            var userRole = userFromRepo.Roles[0].Role.RoleName;
 
-            switch (userRole)
+            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Customer)))
             {
-                case RoleName.Customer:
+                var customer = await _customersService.GetCustomerByUserId(reservation.CustomerId);
+                if (customer != null &&
+                    !(customer.Id == reservation.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
                 {
-                    var customer = await _customersService.GetCustomerByUserId(reservation.CustomerId);
-                    if (customer != null &&
-                        !(customer.Id == reservation.CustomerId && userFromRepo.Id.Equals(customer.UserId)))
-                    {
-                        return StatusCode(403, "You don't have permission to update this reservation");
-                    }
-
-                    break;
+                    return StatusCode(403, "You don't have permission to update this reservation");
                 }
-                case RoleName.Professional:
+            }
+
+            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Professional)))
+            {
+                var professional = await _professionalsService.GetProfessionalByUserId(loggedInUserId);
+                if (professional != null && !professional.Id.Equals(reservation.Expertise.ProfessionalId))
                 {
-                    var professional = await _professionalsService.GetProfessionalByUserId(loggedInUserId);
-                    if (professional != null && !professional.Id.Equals(reservation.Expertise.ProfessionalId))
-                    {
-                        return StatusCode(403, "You don't have permission to update this reservation");
-                    }
-
-                    break;
+                    return StatusCode(403, "You don't have permission to update this reservation");
                 }
-                case RoleName.Admin:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
 
             if (reservation.BillingId != null)

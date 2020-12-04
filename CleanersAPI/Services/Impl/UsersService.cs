@@ -1,4 +1,5 @@
-﻿using CleanersAPI.Models;
+﻿using System.Threading.Tasks;
+using CleanersAPI.Models;
 using CleanersAPI.Repositories;
 
 namespace CleanersAPI.Services.Impl
@@ -15,6 +16,11 @@ namespace CleanersAPI.Services.Impl
         protected override ICleanersRepository<User> GetRepository()
         {
             return _usersRepository;
+        }
+
+        public Role GetRoleByName(RoleName roleName)
+        {
+            return _usersRepository.GetRoleByName(roleName);
         }
     }
 }
