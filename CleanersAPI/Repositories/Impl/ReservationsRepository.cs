@@ -72,7 +72,7 @@ namespace CleanersAPI.Repositories.Impl
             if (searchCriteria.HasBill != null)
             {
                 var hasBill = searchCriteria.HasBill.Value;
-                queryable = queryable.Where(r => hasBill ? r.BillingId != null : r.BillingId == null);   
+                queryable = queryable.Where(r => hasBill ? r.Billing != null : r.Billing == null);   
             }
 
             return await queryable

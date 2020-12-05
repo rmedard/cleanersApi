@@ -38,6 +38,7 @@ namespace CleanersAPI.Repositories
 
             modelBuilder.Entity<Reservation>().ToTable("reservations").HasKey(s => s.Id);
             modelBuilder.Entity<Reservation>().Property(r => r.Id).HasColumnName("reservationId");
+            modelBuilder.Entity<Reservation>().HasOne(r => r.Billing).WithMany(b => b.Reservations);
             modelBuilder.Entity<Reservation>().HasOne(s => s.Customer).WithMany(serv => serv.Reservations);
             modelBuilder.Entity<Reservation>().HasOne(s => s.Expertise).WithMany(e => e.Reservations);
             modelBuilder.Entity<Reservation>().HasOne(s => s.Recurrence).WithMany(r => r.Reservations);
@@ -49,6 +50,7 @@ namespace CleanersAPI.Repositories
             modelBuilder.Entity<Billing>().ToTable("billing").HasKey(b => b.Id);
             modelBuilder.Entity<Billing>().Property(b => b.Id).HasColumnName("billingId");
             modelBuilder.Entity<Billing>().Property(b => b.TotalPrice).HasColumnType("decimal(10,2)");
+            // modelBuilder.Entity<Billing>().HasMany(b => b.Reservations).WithOne();
 
             modelBuilder.Entity<User>().ToTable("users").HasKey(u => u.Id);
             modelBuilder.Entity<User>().Property(u => u.Id).HasColumnName("userId");

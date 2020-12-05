@@ -240,7 +240,7 @@ namespace CleanersAPI.Controllers
                 return StatusCode(403, "You don't have permission to update this reservation");
             }
             
-            if (reservation.BillingId != null)
+            if (reservation.Billing != null)
             {
                 return BadRequest("You cannot cancel billed reservation");
             }

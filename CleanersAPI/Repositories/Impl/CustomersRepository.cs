@@ -37,6 +37,8 @@ namespace CleanersAPI.Repositories.Impl
                 .ThenInclude(p => p.User)
                 .Include(d => d.Reservations)
                 .ThenInclude(r => r.Recurrence)
+                .Include(d => d.Reservations)
+                .ThenInclude(r => r.Billing)
                 .SingleOrDefaultAsync(customer => customer.Id == id);
         }
 
@@ -106,7 +108,7 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Customers
                 .Where(c => c.Reservations
-                    .Any(r => r.BillingId == null && r.EndTime.CompareTo(DateTime.Now) < 0))
+                    .Any(r => r.Billing == null && r.EndTime.CompareTo(DateTime.Now) < 0))
                 .ToListAsync();
         }
     }
