@@ -102,7 +102,7 @@ namespace CleanersAPI.Repositories.Impl
                         EndTime = lastReservation.EndTime.AddDays(1),
                         TotalCost = lastReservation.TotalCost
                     };
-                    await Create(newReservation);
+                    lastReservation = await Create(newReservation);
                     ++dailyRecountCount;
                 }   
             }
@@ -125,7 +125,7 @@ namespace CleanersAPI.Repositories.Impl
                         EndTime = lastReservation.EndTime.AddDays(7),
                         TotalCost = lastReservation.TotalCost
                     };
-                    await Create(newReservation);
+                    lastReservation = await Create(newReservation);
                     ++weeklyRecurrenceCount;
                 } 
             }
