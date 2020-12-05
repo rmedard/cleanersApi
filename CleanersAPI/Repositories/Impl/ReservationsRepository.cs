@@ -72,6 +72,8 @@ namespace CleanersAPI.Repositories.Impl
             }
 
             return await queryable
+                .Include(r => r.Customer)
+                .ThenInclude(c => c.User)
                 .Include(r => r.Expertise)
                 .ThenInclude(e => e.Service)
                 .OrderByDescending(r => r.StartTime).ToListAsync();

@@ -43,6 +43,7 @@ namespace CleanersAPI.Services.Impl
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
             professional.User.PasswordHash = passwordHash;
             professional.User.PasswordSalt = passwordSalt;
+            professional.User.IsActive = professional.IsActive;
             professional.User.Roles.Add(new RoleUser {Role = _authRepository.GetRoleByName(RoleName.Professional)});
         }
 
@@ -51,6 +52,7 @@ namespace CleanersAPI.Services.Impl
             CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
             customer.User.PasswordHash = passwordHash;
             customer.User.PasswordSalt = passwordSalt;
+            customer.User.IsActive = customer.IsActive;
             customer.User.Roles.Add(new RoleUser {Role = _authRepository.GetRoleByName(RoleName.Customer)});
         }
 
