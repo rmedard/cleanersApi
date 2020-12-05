@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CleanersAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CleanersAPI.Repositories.Impl
 {
@@ -56,6 +57,19 @@ namespace CleanersAPI.Repositories.Impl
             }
             await _context.SaveChangesAsync();
             return newBilling;
+        }
+
+        public async Task<IEnumerable<Billing>> GetBillings()
+        {
+            return await _context.Billings.Include(b => b.Reservations).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Billing>> GetBillings(int customerId)
+        {
+            return await _context.Billings
+                .Include(b => b.Reservations)
+                .Where(b => b.Reservations.Any(r => r.CustomerId.Equals(customerId)))
+                .ToListAsync();
         }
     }
 }

@@ -64,6 +64,10 @@ namespace CleanersAPI.Repositories.Impl
                 queryable = queryable.Where(r => r.StartTime.DayOfYear.Equals(searchCriteria.DateTime.Value.DayOfYear) 
                                                  && r.StartTime.Year.Equals(searchCriteria.DateTime.Value.Year));
             }
+            else
+            {
+                queryable = queryable.Where(r => r.EndTime.CompareTo(DateTime.Now) < 0);
+            }
 
             if (searchCriteria.HasBill != null)
             {

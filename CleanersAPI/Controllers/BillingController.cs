@@ -29,6 +29,22 @@ namespace CleanersAPI.Controllers
             _authService = authService;
         }
 
+        [Authorize(Roles = "Admin,Customer")]
+        [HttpGet]
+        public async Task<ActionResult<Billing>> GetBills([FromQuery] string customerId)
+        {
+            if (!string.IsNullOrEmpty(customerId))
+            {
+                if (!_customersService.DoesExist(int.Parse(customerId)))
+                {
+                    return NotFound($"Customer with id {customerId} not found");
+                }
+
+                return Ok(await _billingsService.GetBillings(int.Parse(customerId)));
+            }
+            return Ok(await _billingsService.GetBillings());
+        }
+        
         [Authorize(Roles = "Admin,Professional")]
         [HttpGet("{customerId}/createBill")]
         public async Task<ActionResult<Billing>> CreateBilling([FromRoute] int customerId)
@@ -63,6 +79,18 @@ namespace CleanersAPI.Controllers
             }
             
             return Ok(billing);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("createBill")]
+        public async Task<IActionResult> CreateAllBillings()
+        {
+             var customerIds = _customersService.GetAvailableBillableCustomers().Result.Select(c => c.Id).ToList();
+             foreach (var customerId in customerIds)
+             {
+                 await CreateBilling(customerId);
+             }
+             return Ok();
         }
     }
 }

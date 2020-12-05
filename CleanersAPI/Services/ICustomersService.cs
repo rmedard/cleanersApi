@@ -9,5 +9,6 @@ namespace CleanersAPI.Services
         Task<IEnumerable<Reservation>> GetOrderedServices(int customerId);
 
         Task<Customer> GetCustomerByUserId(int userId);
+        Task<IEnumerable<Customer>> GetAvailableBillableCustomers();
     }
 }

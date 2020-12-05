@@ -101,5 +101,13 @@ namespace CleanersAPI.Repositories.Impl
                 .ThenInclude(u => u.Address)
                 .FirstOrDefaultAsync(c => c.UserId.Equals(userId));
         }
+
+        public async Task<IEnumerable<Customer>> GetAvailableBillableCustomers()
+        {
+            return await _context.Customers
+                .Where(c => c.Reservations
+                    .Any(r => r.BillingId == null && r.EndTime.CompareTo(DateTime.Now) < 0))
+                .ToListAsync();
+        }
     }
 }

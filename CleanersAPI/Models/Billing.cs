@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CleanersAPI.Models
@@ -12,5 +13,7 @@ namespace CleanersAPI.Models
 
         [Required]
         public decimal TotalPrice { get; set; }
+        
+        public ICollection<Reservation> Reservations { get; } = new List<Reservation>();
     }
 }

@@ -35,5 +35,10 @@ namespace CleanersAPI.Services.Impl
         {
             return _customersRepository.GetCustomerByUserId(userId);
         }
+
+        public Task<IEnumerable<Customer>> GetAvailableBillableCustomers()
+        {
+            return _customersRepository.GetAvailableBillableCustomers();
+        }
     }
 }

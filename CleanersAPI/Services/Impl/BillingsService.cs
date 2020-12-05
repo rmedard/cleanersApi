@@ -111,5 +111,15 @@ namespace CleanersAPI.Services.Impl
             };
             return await renderer.RenderHtmlAsPdfAsync(result);
         }
+
+        public async Task<IEnumerable<Billing>> GetBillings()
+        {
+            return await _billingsRepository.GetBillings();
+        }
+
+        public async Task<IEnumerable<Billing>> GetBillings(int customerId)
+        {
+            return await _billingsRepository.GetBillings(customerId);
+        }
     }
 }

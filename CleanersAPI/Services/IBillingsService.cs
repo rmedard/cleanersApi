@@ -11,5 +11,9 @@ namespace CleanersAPI.Services
         Task<Billing> Create(ReservationSearchCriteria reservationSearchCriteria);
 
         Task<PdfDocument> GenerateInvoice(User person, IEnumerable<Reservation> reservations);
+        
+        Task<IEnumerable<Billing>> GetBillings();
+        
+        Task<IEnumerable<Billing>> GetBillings(int customerId);
     }
 }
