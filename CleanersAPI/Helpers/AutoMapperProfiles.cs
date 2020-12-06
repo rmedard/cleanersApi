@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using AutoMapper;
-using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
 using CleanersAPI.Models;
 using CleanersAPI.Models.Dtos.Email;
 using CleanersAPI.Models.Dtos.Service;
-using CleanersAPI.Models.Dtos.User;
+using Microsoft.Extensions.Configuration;
 
 namespace CleanersAPI.Helpers
 {

@@ -64,7 +64,7 @@ namespace CleanersAPI.Controllers
             return Ok(reservation);
         }
 
-        [Authorize(Roles = "Admin,Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public async Task<ActionResult<Reservation>> CreateReservation([FromBody] ReservationForCreate reservationForCreate)
         {
@@ -73,16 +73,18 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Validate if reservation is not in the past
             if (reservationForCreate.StartTime.CompareTo(DateTime.Now) < 0)
             {
                 return BadRequest("You can't make reservation in the past");
             }
 
+            //Fetch logged in user
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _authService.GetUserById(loggedInUserId);
-
-            Customer customer = null;
             
+            // Validate if logged in customer is creating his own reservation
+            Customer customer = null;
             if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Customer)))
             {
                 customer = await _customersService.GetCustomerByUserId(userFromRepo.Id);
@@ -92,11 +94,6 @@ namespace CleanersAPI.Controllers
                 }
             }
 
-            if (userFromRepo.Roles.Any(r => r.Role.RoleName.Equals(RoleName.Admin)))
-            {
-                customer = await _customersService.GetOneById(reservationForCreate.CustomerId);
-            }
-
             var availabilityFinder = new AvailabilityFinder
             {
                 DateTime = reservationForCreate.StartTime,
@@ -104,14 +101,15 @@ namespace CleanersAPI.Controllers
                 ServiceId = reservationForCreate.ExpertiseForServiceCreate.ServiceId
             };
 
+            // Check if professional is available
             var expertises = _expertiseService.GetAvailableExpertises(availabilityFinder);
             if (!expertises.Any(e => e.ProfessionalId
                 .Equals(reservationForCreate.ExpertiseForServiceCreate.ProfessionalId)))
             {
                 return BadRequest("Professional not available");
             }
-
-            var reservation = _mapper.Map<Reservation>(reservationForCreate);
+            
+            // Check if expertise is exists
             var expertise = _expertiseService.FindExpertise(
                 reservationForCreate.ExpertiseForServiceCreate.ProfessionalId,
                 reservationForCreate.ExpertiseForServiceCreate.ServiceId).Result;
@@ -120,6 +118,8 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Expertise not found");
             }
 
+            // Create reservation
+            var reservation = _mapper.Map<Reservation>(reservationForCreate);
             reservation.Expertise = expertise;
             reservation.Customer = customer;
             reservation.Status = Status.Confirmed;
@@ -130,6 +130,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest("Reservation creation failed");
             }
 
+            // Send notification email
             await _emailsService.notifyUsersOnReservationCreation(newReservation);
 
             return CreatedAtAction("GetReservation", new {id = newReservation.Id}, newReservation);
