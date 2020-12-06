@@ -61,7 +61,14 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Billing>> GetBillings()
         {
-            return await _context.Billings.Include(b => b.Reservations).ToListAsync();
+            return await _context.Billings
+                .Include(b => b.Reservations)
+                .ThenInclude(r => r.Expertise)
+                .ThenInclude(e => e.Service)
+                .Include(b => b.Reservations)
+                .ThenInclude(r => r.Customer)
+                .ThenInclude(c => c.User)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Billing>> GetBillings(int customerId)
