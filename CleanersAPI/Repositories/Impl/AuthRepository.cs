@@ -33,7 +33,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<bool> UserExists(string username)
         {
-            return await _context.Users.AnyAsync(user => user.Email == username);
+            return await _context.Users.AnyAsync(user => user.Email.Equals(username));
         }
 
         public Role GetRoleByName(RoleName roleName)

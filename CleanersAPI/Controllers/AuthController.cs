@@ -31,7 +31,7 @@ namespace CleanersAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!_authService.UserExists(userForLoginDto.Username).Result)
+            if (!await _authService.UserExists(userForLoginDto.Username))
             {
                 return BadRequest("User does not exist. Please register!");
             }
@@ -39,7 +39,7 @@ namespace CleanersAPI.Controllers
             var userFromRepo = await _authService.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
             if (userFromRepo == null)
             {
-                return Unauthorized();
+                return StatusCode(401, "Invalid credentials");
             }
 
             if (!userFromRepo.IsActive)

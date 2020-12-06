@@ -85,18 +85,25 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task GenerateUpcomingReservation()
         {
+            //Fetch all active and future reservations
             var activeReservations = _context.Reservations.Where(r => r.Recurrence != null 
                                                                       && r.Recurrence.IsActive 
                                                                       && r.StartTime.CompareTo(DateTime.Now) > 0)
                 .OrderByDescending(r => r.StartTime);
+            
+            //Group daily recurring reservations by customerId
             var dailyRecurrenceReservations = activeReservations
                 .Where(r => r.Recurrence.Label.Equals("d")).ToList();
 
-            var dailyRecountCount = dailyRecurrenceReservations.Count;
-            if (dailyRecountCount < 7)
+            var groupingDaily = dailyRecurrenceReservations.GroupBy(r => r.CustomerId);
+            
+            //Loop through customer reservations + create additional reservations
+            foreach (var grouping in groupingDaily)
             {
-                var lastReservation = dailyRecurrenceReservations.Last();
-                while (dailyRecountCount <= 7)
+                var dailyReservationsCount = grouping.Count();
+                if (dailyReservationsCount >= 7) continue;
+                var lastReservation = grouping.Last();
+                while (dailyReservationsCount <= 7)
                 {
                     var newReservation = new Reservation
                     {
@@ -109,31 +116,36 @@ namespace CleanersAPI.Repositories.Impl
                         TotalCost = lastReservation.TotalCost
                     };
                     lastReservation = await Create(newReservation);
-                    ++dailyRecountCount;
-                }   
+                    ++dailyReservationsCount;
+                }
             }
-            
+
+            //Group weekly recurring reservations by customerId
             var weeklyRecurrenceReservations = activeReservations
                 .Where(r => r.Recurrence.Label.Equals("w")).ToList();
-            var weeklyRecurrenceCount = weeklyRecurrenceReservations.Count;
-            if (weeklyRecurrenceCount < 3)
+            var groupingWeekly = weeklyRecurrenceReservations.GroupBy(r => r.CustomerId);
+            foreach (var grouping in groupingWeekly)
             {
-                var lastReservation = weeklyRecurrenceReservations.Last();
-                while (weeklyRecurrenceCount <= 3)
+                var weeklyRecurrenceCount = grouping.Count();
+                if (weeklyRecurrenceCount < 3)
                 {
-                    var newReservation = new Reservation
+                    var lastReservation = grouping.Last();
+                    while (weeklyRecurrenceCount <= 3)
                     {
-                        Status = Status.Confirmed,
-                        CustomerId = lastReservation.CustomerId,
-                        ExpertiseId = lastReservation.ExpertiseId,
-                        RecurrenceId = lastReservation.RecurrenceId,
-                        StartTime = lastReservation.StartTime.AddDays(7),
-                        EndTime = lastReservation.EndTime.AddDays(7),
-                        TotalCost = lastReservation.TotalCost
-                    };
-                    lastReservation = await Create(newReservation);
-                    ++weeklyRecurrenceCount;
-                } 
+                        var newReservation = new Reservation
+                        {
+                            Status = Status.Confirmed,
+                            CustomerId = lastReservation.CustomerId,
+                            ExpertiseId = lastReservation.ExpertiseId,
+                            RecurrenceId = lastReservation.RecurrenceId,
+                            StartTime = lastReservation.StartTime.AddDays(7),
+                            EndTime = lastReservation.EndTime.AddDays(7),
+                            TotalCost = lastReservation.TotalCost
+                        };
+                        lastReservation = await Create(newReservation);
+                        ++weeklyRecurrenceCount;
+                    } 
+                }   
             }
         }
 
