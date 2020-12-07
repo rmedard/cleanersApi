@@ -212,7 +212,7 @@ namespace CleanersAPI.Controllers
 
             var loggedInUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userFromRepo = await _authService.GetUserById(loggedInUserId);
-
+            
             var canCancel = false;
 
             foreach (var role in userFromRepo.Roles)
@@ -258,6 +258,8 @@ namespace CleanersAPI.Controllers
 
             reservation.Status = Status.Rejected;
             await _reservationsService.Update(reservation);
+            // Send notification email
+            await _emailsService.notifyUsersOnReservationCancellation(reservation);
             return Ok("Reservation cancelled successfully");
         }
 

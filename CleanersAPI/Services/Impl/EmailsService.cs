@@ -111,5 +111,61 @@ namespace CleanersAPI.Services.Impl
             await Create(emailToCustomer);
             await Create(emailToProfessional);
         }
+
+        public async Task notifyUsersOnReservationCancellation(Reservation reservation)
+        {
+            var fromEmail = _configuration.GetValue<string>("SendGrid:senderEmail");
+            var fromName = _configuration.GetValue<string>("SendGrid:senderName");
+            
+            var emailToCustomer = new Email
+            {
+                From = fromEmail,
+                To = reservation.Customer.User.Email,
+                SenderNames = fromName,
+                ReplyTo = fromEmail,
+                Subject = "Your reservation has been cancelled",
+                Body = "<html><head><meta charset='UTF-8'><meta http-equiv='x-ua-compatible' content='IE=edge'>" +
+                       "<meta name='viewport' content='width=device-width, initial-scale=1'><title>Notification</title></head>" +
+                       $"<body><h3 style='color:red'>Reservation cancelled</h3><table><tr><td>Professional:</td><td>{reservation.Expertise.Professional.User.FirstName}, {reservation.Expertise.Professional.User.LastName}</td></tr>" +
+                       $"<tr><td>Service:</td><td>{reservation.Expertise.Service.Title}</td></tr>" +
+                       $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>",
+                PlainTextBody =
+                    $"Customer:{reservation.Expertise.Professional.User.FirstName}, {reservation.Expertise.Professional.User.LastName} " +
+                    $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
+            };
+            
+            var emailToProfessional = new Email
+            {
+                From = fromEmail,
+                To = reservation.Expertise.Professional.User.Email,
+                SenderNames = fromName,
+                ReplyTo = fromEmail,
+                Subject = "Reservation has been cancelled",
+                Body = "<html><head><meta charset='UTF-8'><meta http-equiv='x-ua-compatible' content='IE=edge'>" +
+                       "<meta name='viewport' content='width=device-width, initial-scale=1'><title>Notification</title></head>" +
+                       $"<body><h3 style='color:red'>Reservation cancelled</h3><table><tr><td>Customer:</td><td>{reservation.Customer.User.FirstName}, {reservation.Customer.User.LastName}</td></tr>" +
+                       $"<tr><td>Service:</td><td>{reservation.Expertise.Service.Title}</td></tr>" +
+                       $"<tr><td>Date:</td><td>{reservation.StartTime} à {reservation.EndTime}</td></tr></table></body></html>",
+                PlainTextBody =
+                    $"Customer:{reservation.Customer.User.FirstName}, {reservation.Customer.User.LastName} " +
+                    $"Service:{reservation.Expertise.Service.Title} Date:{reservation.StartTime} à {reservation.EndTime}"
+            };
+            
+            var responseForCustomer = await SendEmail(emailToCustomer);
+            var responseForProfessional = await SendEmail(emailToProfessional);
+
+            if (responseForCustomer.StatusCode.Equals(HttpStatusCode.Accepted))
+            {
+                emailToCustomer.Sent = true;
+            }
+
+            if (responseForProfessional.StatusCode.Equals(HttpStatusCode.Accepted))
+            {
+                emailToProfessional.Sent = true;
+            }
+
+            await Create(emailToCustomer);
+            await Create(emailToProfessional);
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Reservations
                 .Include(r => r.Customer)
+                .ThenInclude(c => c.User)
                 .Include(r => r.Expertise.Service)
                 .Include(r => r.Expertise.Professional)
                 .ThenInclude(p => p.User)
