@@ -75,6 +75,11 @@ namespace CleanersAPI.Repositories.Impl
         {
             return await _context.Billings
                 .Include(b => b.Reservations)
+                .ThenInclude(r => r.Expertise)
+                .ThenInclude(e => e.Service)
+                .Include(b => b.Reservations)
+                .ThenInclude(r => r.Customer)
+                .ThenInclude(c => c.User)
                 .Where(b => b.Reservations.Any(r => r.CustomerId.Equals(customerId)))
                 .ToListAsync();
         }

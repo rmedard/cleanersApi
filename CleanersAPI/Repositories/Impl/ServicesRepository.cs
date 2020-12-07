@@ -74,6 +74,7 @@ namespace CleanersAPI.Repositories.Impl
 
         public async Task<IEnumerable<Service>> GetServicesByCategory(Category category)
         {
+            Console.WriteLine(DateTime.Now);
             return await _context.Services.Where(s => category.Equals(s.Category)).ToListAsync();
         }
     }

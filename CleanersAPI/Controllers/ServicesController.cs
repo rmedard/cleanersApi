@@ -15,12 +15,10 @@ namespace CleanersAPI.Controllers
     public class ServicesController : Controller
     {
         private readonly IServicesService _servicesService;
-        private readonly IProfessionalsService _professionalsService;
 
-        public ServicesController(IServicesService professionsService, IProfessionalsService professionalsService)
+        public ServicesController(IServicesService professionsService)
         {
             _servicesService = professionsService;
-            _professionalsService = professionalsService;
         }
 
         [HttpGet]
